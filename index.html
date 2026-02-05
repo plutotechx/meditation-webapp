@@ -28,29 +28,29 @@
       background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer
     }
     button:disabled{opacity:.6;cursor:not-allowed}
-    .msg{margin-top:12px;min-height:22px}
+    .msg{margin-top:12px;min-height:22px;white-space:pre-line}
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
     .small{font-size:12px;color:var(--muted);margin-top:10px}
+    a.linkbtn{display:block;text-decoration:none}
+    a.linkbtn button{margin-top:10px;background:rgba(255,255,255,.10);color:var(--text);border:1px solid rgba(255,255,255,.14)}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
       <h1>Update Daily Meditation</h1>
-      <p class="muted">
-        บันทึกข้อมูลการนั่งสมาธิ
-      </p>
+      <p class="muted">บันทึกข้อมูลการนั่งสมาธิ</p>
 
       <form id="f">
         <label>ชื่อ - ชื่อเล่น</label>
         <select name="name" required>
           <option value="">— เลือกชื่อ —</option>
+          <option>สุรเชษฐ์ (ตั้ม)</option>
           <option>บัญญัติ (แดง)</option>
           <option>รัชเศรษฐ์ (ยศ)</option>
           <option>ชนุดม (ดอน)</option>
           <option>ทรงชัย (ทรง)</option>
-          <option>สุรเชษฐ์ (ตั้ม)</option>
           <option>สุรุ่งรัตน์ (เก่ง)</option>
           <option>อติพร (โอ)</option>
           <option>เกสณี (เก๋)</option>
@@ -119,8 +119,14 @@
         </select>
 
         <button id="btn" type="submit">บันทึกข้อมูล</button>
+
+        <!-- ปุ่มไปหน้าตรวจสอบสถานะ (FINAL) -->
+        <a class="linkbtn" href="/status.html">
+          <button type="button">ตรวจสอบสถานะรายวัน</button>
+        </a>
+
         <div class="msg" id="msg"></div>
-        <div class="small">หมายเหตุ ตรวจสอบข้อมูลก่อนกดบันทึกข้อมูล</div>
+        <div class="small">หมายเหตุ: ตรวจสอบข้อมูลก่อนกดบันทึกข้อมูล</div>
       </form>
     </div>
   </div>
