@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ตรวจสอบสถานะรายวัน</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.12);
+      --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
+      --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
+    }
+    body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
+    .wrap{max-width:820px;margin:0 auto;padding:24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+    h1{margin:0 0 6px;font-size:22px}
+    .muted{color:var(--muted);margin:0 0 16px;line-height:1.55}
+    label{display:block;margin:12px 0 6px}
+    select{
+      width:100%;box-sizing:border-box;border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background:var(--input);color:#fff;padding:12px 12px;outline:none
+    }
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
+    button{
+      margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;
+      background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer
+    }
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .msg{margin-top:12px;min-height:22px;white-space:pre-line}
+    .msg.ok{color:var(--ok)}
+    .msg.bad{color:var(--danger)}
+    .small{font-size:12px;color:var(--muted);margin-top:10px}
+    .topbar{display:flex;gap:10px;margin-bottom:12px}
+    .topbar a{color:var(--muted);text-decoration:none}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a href="/index.html">← กลับหน้าบันทึก</a>
+    </div>
+
+    <div class="card">
+      <h1>ตรวจสอบสถานะรายวัน</h1>
+      <p class="muted" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</p>
+
+      <div class="grid">
+        <div>
+          <label>ชื่อ - ชื่อเล่น</label>
+          <select id="name" required>
+            <option value="">กำลังโหลดรายชื่อ...</option>
+          </select>
+        </div>
+
+        <div>
+          <label>วันที่ต้องการตรวจสอบ (เฉพาะสัปดาห์นี้)</label>
+          <select id="date" required></select>
+        </div>
+      </div>
+
+      <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
+      <div class="msg" id="result"></div>
+
+      <div class="small">
+        ช่วงเวลาที่นับ: 00:00–23:59 ของวันที่เลือก (อิง Timestamp ในชีต)
+      </div>
+    </div>
+  </div>
+
+<script>
+  const nameEl = document.getElementById("name");
+  const dateEl = document.getElementById("date");
+  const btnEl  = document.getElementById("checkBtn");
+  const resEl  = document.getElementById("result");
+  const weekHeaderEl = document.getElementById("weekHeader");
+
+  // ------- Time helpers (Asia/Bangkok) -------
+  function nowInBangkok() {
+    const s = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+    return new Date(s);
+  }
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function toISODate(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+
+  // จันทร์=0 ... อาทิตย์=6
+  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
+
+  function thaiDateLabel(d){
+    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit", timeZone:"Asia/Bangkok" });
+  }
+
+  function mondayOfWeek(d){
+    // JS: Sun=0 Mon=1 ... Sat=6
+    const day = d.getDay();
+    const diff = (day === 0) ? -6 : (1 - day);
+    const m = new Date(d);
+    m.setDate(d.getDate() + diff);
+    m.setHours(0,0,0,0);
+    return m;
+  }
+
+  // ------- Build week dropdown + highlight today -------
+  function buildCurrentWeekOptions(){
+    const nowBkk = nowInBangkok();
+    const mon = mondayOfWeek(nowBkk);
+    const sun = new Date(mon);
+    sun.setDate(mon.getDate() + 6);
+
+    const todayISO = toISODate(nowBkk);
+
+    // Header: สัปดาห์นี้: จันทร์ ... – อาทิตย์ ...
+    weekHeaderEl.textContent =
+      `สัปดาห์นี้: จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
+
+    dateEl.innerHTML = "";
+    for (let i=0; i<7; i++){
+      const d = new Date(mon);
+      d.setDate(mon.getDate() + i);
+
+      const iso = toISODate(d);
+      const base = `${TH_DOW[i]} ${thaiDateLabel(d)}`;
+      const label = (iso === todayISO) ? `${base} (วันนี้)` : base;
+
+      const opt = document.createElement("option");
+      opt.value = iso;
+      opt.textContent = label;
+
+      // Attempt highlight (some browsers ignore option styling)
+      if (iso === todayISO) {
+        opt.style.fontWeight = "700";
+        opt.style.background = "rgba(106,169,255,.25)";
+      }
+
+      dateEl.appendChild(opt);
+    }
+
+    // Default select = today
+    dateEl.value = todayISO;
+  }
+
+  // ------- Load names from People sheet via /api/names -------
+  async function loadNames(){
+    nameEl.innerHTML = `<option value="">— เลือกชื่อ —</option>`;
+
+    try{
+      const r = await fetch("/api/names", { method:"GET" });
+      const out = await r.json().catch(()=>({}));
+
+      if (!r.ok || !out.ok) throw new Error(out.error || "load_names_failed");
+
+      if (!out.names || out.names.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "ไม่มีรายชื่อในแท็บ People";
+        nameEl.appendChild(opt);
+        return;
+      }
+
+      for (const n of out.names){
+        const opt = document.createElement("option");
+        opt.value = n;
+        opt.textContent = n;
+        nameEl.appendChild(opt);
+      }
+    }catch(e){
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "โหลดรายชื่อไม่สำเร็จ (ตรวจ /api/names)";
+      nameEl.appendChild(opt);
+    }
+  }
+
+  // Init
+  buildCurrentWeekOptions();
+  loadNames();
+
+  // ------- Check status via /api/check -------
+  btnEl.addEventListener("click", async () => {
+    const name = nameEl.value;
+    const date = dateEl.value;
+
+    resEl.className = "msg";
+    resEl.textContent = "";
+
+    if (!name) {
+      resEl.className = "msg bad";
+      resEl.textContent = "กรุณาเลือกชื่อก่อน";
+      return;
+    }
+    if (!date) {
+      resEl.className = "msg bad";
+      resEl.textContent = "กรุณาเลือกวันที่ก่อน";
+      return;
+    }
+
+    btnEl.disabled = true;
+    resEl.textContent = "กำลังตรวจสอบ...";
+
+    try {
+      const r = await fetch("/api/check", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ name, date })
+      });
+      const out = await r.json().catch(() => ({}));
+
+      if (r.ok && out.ok) {
+        const s1 = out.sessions?.s1 ? `ครั้งที่ 1: ${out.sessions.s1}` : `ครั้งที่ 1: —`;
+        const s2 = out.sessions?.s2 ? `ครั้งที่ 2: ${out.sessions.s2}` : `ครั้งที่ 2: —`;
+        const s3 = out.sessions?.s3 ? `ครั้งที่ 3: ${out.sessions.s3}` : `ครั้งที่ 3: —`;
+
+        resEl.className = out.completed ? "msg ok" : "msg bad";
+        resEl.textContent =
+          `วันที่ ${out.date_display} | ${out.name}\n` +
+          `สถานะ: ${out.completed ? "ครบ 3 ครั้ง ✅" : `ทำแล้ว ${out.count}/3 ⏳`}\n` +
+          `${s1}\n${s2}\n${s3}`;
+      } else {
+        resEl.className = "msg bad";
+        resEl.textContent = "ตรวจสอบไม่สำเร็จ ❌ " + (out.error || "unknown_error");
+      }
+    } catch (e) {
+      resEl.className = "msg bad";
+      resEl.textContent = "ตรวจสอบไม่สำเร็จ ❌ " + e;
+    } finally {
+      btnEl.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
