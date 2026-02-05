@@ -16,7 +16,7 @@
     h1{margin:0 0 6px;font-size:22px}
     .muted{color:var(--muted);margin:0 0 16px;line-height:1.55}
     label{display:block;margin:12px 0 6px}
-    select{
+    select,input{
       width:100%;box-sizing:border-box;border-radius:14px;
       border:1px solid rgba(255,255,255,.18);
       background:var(--input);color:#fff;padding:12px 12px;outline:none
@@ -34,10 +34,8 @@
     .small{font-size:12px;color:var(--muted);margin-top:10px}
     a.linkbtn{display:block;text-decoration:none}
     a.linkbtn button{
-      margin-top:10px;
-      background:rgba(255,255,255,.10);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.14)
+      margin-top:10px;background:rgba(255,255,255,.10);
+      color:var(--text);border:1px solid rgba(255,255,255,.14)
     }
   </style>
 </head>
@@ -48,7 +46,6 @@
       <h1>Update Daily Meditation</h1>
       <p class="muted">บันทึกข้อมูลการนั่งสมาธิ</p>
 
-      <!-- สำคัญ: บรรทัดนี้ต้องมี เพื่อให้โชว์ช่วงสัปดาห์ -->
       <p class="muted" id="weekHeader" style="margin-top:-10px;margin-bottom:12px;">
         กำลังคำนวณช่วงสัปดาห์...
       </p>
@@ -103,12 +100,12 @@
 
         <div class="grid">
           <div>
-            <label>ช่วงสัปดาห์</label>
-            <select name="weekday" required>
-              <option value="">— เลือกวัน —</option>
-              <option>จันทร์</option><option>อังคาร</option><option>พุธ</option>
-              <option>พฤหัส</option><option>ศุกร์</option><option>เสาร์</option><option>อาทิตย์</option>
-            </select>
+            <label>วันที่บันทึก (เฉพาะสัปดาห์นี้)</label>
+            <!-- ค่า “วันนี้” จะมี (วันนี้) เหมือนหน้า status -->
+            <select id="logDate" name="logDate" required></select>
+
+            <!-- ส่ง weekday ให้ระบบเดิม (แต่ Code.gs จะคำนวณจาก logDate อีกทีเพื่อความชัวร์) -->
+            <input type="hidden" id="weekdayHidden" name="weekday" value="">
           </div>
 
           <div>
@@ -131,7 +128,6 @@
 
         <button id="btn" type="submit">บันทึกข้อมูล</button>
 
-        <!-- ปุ่มไปหน้าตรวจสอบสถานะ -->
         <a class="linkbtn" href="/status.html">
           <button type="button">ตรวจสอบสถานะรายวัน</button>
         </a>
@@ -143,16 +139,18 @@
   </div>
 
 <script>
-  // ========= WEEK HEADER (Bangkok) =========
+  // ====== Time helpers (Bangkok) ======
+  const TIMEZONE = "Asia/Bangkok";
+  const weekHeaderEl = document.getElementById("weekHeader");
+
   function nowInBangkok() {
-    const s = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+    const s = new Date().toLocaleString("en-US", { timeZone: TIMEZONE });
     return new Date(s);
   }
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function toISODate(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
   function thaiDateLabel(d){
-    return d.toLocaleDateString("th-TH", {
-      day:"numeric", month:"short", year:"2-digit",
-      timeZone:"Asia/Bangkok"
-    });
+    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit", timeZone: TIMEZONE });
   }
   function mondayOfWeek(d){
     const day = d.getDay(); // Sun=0
@@ -162,29 +160,51 @@
     m.setHours(0,0,0,0);
     return m;
   }
-  (function showWeekHeaderSafe(){
-    const weekHeaderEl = document.getElementById("weekHeader");
-    if (!weekHeaderEl) return;
 
+  // ====== Week header ======
+  (function showWeekHeader(){
     const nowBkk = nowInBangkok();
     const mon = mondayOfWeek(nowBkk);
-    const sun = new Date(mon);
-    sun.setDate(mon.getDate() + 6);
-
-    weekHeaderEl.textContent =
-      `สัปดาห์นี้: จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
+    const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+    weekHeaderEl.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
   })();
 
-  // (optional) auto-select weekday = today (Bangkok) if user hasn't picked
-  (function autoSelectWeekday(){
-    const map = { 1:"จันทร์", 2:"อังคาร", 3:"พุธ", 4:"พฤหัส", 5:"ศุกร์", 6:"เสาร์", 0:"อาทิตย์" };
+  // ====== LogDate dropdown (current week) + (วันนี้) ======
+  const logDateEl = document.getElementById("logDate");
+  const weekdayHiddenEl = document.getElementById("weekdayHidden");
+  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
+
+  function buildLogDateOptions(){
     const nowBkk = nowInBangkok();
-    const todayTh = map[nowBkk.getDay()];
-    const sel = document.querySelector('select[name="weekday"]');
-    if (sel && !sel.value) sel.value = todayTh;
-  })();
+    const mon = mondayOfWeek(nowBkk);
+    const todayISO = toISODate(nowBkk);
 
-  // ========= SUBMIT =========
+    logDateEl.innerHTML = "";
+    for (let i=0; i<7; i++){
+      const d = new Date(mon); d.setDate(mon.getDate() + i);
+      const iso = toISODate(d);
+      const base = `${TH_DOW[i]} ${thaiDateLabel(d)}`;
+      const label = (iso === todayISO) ? `${base} (วันนี้)` : base;
+
+      const opt = document.createElement("option");
+      opt.value = iso;
+      opt.textContent = label;
+      opt.dataset.dow = TH_DOW[i];
+      logDateEl.appendChild(opt);
+    }
+
+    logDateEl.value = todayISO;
+    weekdayHiddenEl.value = logDateEl.selectedOptions[0].dataset.dow;
+  }
+
+  logDateEl.addEventListener("change", () => {
+    const sel = logDateEl.selectedOptions[0];
+    weekdayHiddenEl.value = sel?.dataset?.dow || "";
+  });
+
+  buildLogDateOptions();
+
+  // ====== SUBMIT ======
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
@@ -211,13 +231,8 @@
         msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
         form.reset();
 
-        // หลัง reset ให้ตั้ง weekday เป็นวันนี้อีกครั้ง
-        const map = { 1:"จันทร์", 2:"อังคาร", 3:"พุธ", 4:"พฤหัส", 5:"ศุกร์", 6:"เสาร์", 0:"อาทิตย์" };
-        const nowBkk = nowInBangkok();
-        const todayTh = map[nowBkk.getDay()];
-        const sel = document.querySelector('select[name="weekday"]');
-        if (sel) sel.value = todayTh;
-
+        // หลัง reset: สร้าง logDate ใหม่ให้กลับมาเป็นวันนี้
+        buildLogDateOptions();
       } else {
         msg.className = "msg bad";
         msg.textContent = "บันทึกไม่สำเร็จ ❌ " + (out.error || "unknown_error");
