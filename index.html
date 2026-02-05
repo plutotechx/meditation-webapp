@@ -33,15 +33,25 @@
     .msg.bad{color:var(--danger)}
     .small{font-size:12px;color:var(--muted);margin-top:10px}
     a.linkbtn{display:block;text-decoration:none}
-    a.linkbtn button{margin-top:10px;background:rgba(255,255,255,.10);color:var(--text);border:1px solid rgba(255,255,255,.14)}
+    a.linkbtn button{
+      margin-top:10px;
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.14)
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="card">
       <h1>Update Daily Meditation</h1>
       <p class="muted">บันทึกข้อมูลการนั่งสมาธิ</p>
-      <p class="muted" id="weekHeader" style="margin-top:-10px;margin-bottom:12px;"></p>
+
+      <!-- สำคัญ: บรรทัดนี้ต้องมี เพื่อให้โชว์ช่วงสัปดาห์ -->
+      <p class="muted" id="weekHeader" style="margin-top:-10px;margin-bottom:12px;">
+        กำลังคำนวณช่วงสัปดาห์...
+      </p>
 
       <form id="f">
         <label>ชื่อ - ชื่อเล่น</label>
@@ -133,8 +143,7 @@
   </div>
 
 <script>
-  // ====== WEEK HEADER (Bangkok) ======
-  const weekHeaderEl = document.getElementById("weekHeader");
+  // ========= WEEK HEADER (Bangkok) =========
   function nowInBangkok() {
     const s = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
     return new Date(s);
@@ -153,15 +162,18 @@
     m.setHours(0,0,0,0);
     return m;
   }
-  function showWeekHeader(){
+  (function showWeekHeaderSafe(){
+    const weekHeaderEl = document.getElementById("weekHeader");
+    if (!weekHeaderEl) return;
+
     const nowBkk = nowInBangkok();
     const mon = mondayOfWeek(nowBkk);
     const sun = new Date(mon);
     sun.setDate(mon.getDate() + 6);
+
     weekHeaderEl.textContent =
       `สัปดาห์นี้: จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
-  }
-  showWeekHeader();
+  })();
 
   // (optional) auto-select weekday = today (Bangkok) if user hasn't picked
   (function autoSelectWeekday(){
@@ -172,7 +184,7 @@
     if (sel && !sel.value) sel.value = todayTh;
   })();
 
-  // ====== SUBMIT ======
+  // ========= SUBMIT =========
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
@@ -198,14 +210,14 @@
         msg.className = "msg ok";
         msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
         form.reset();
-        // re-apply weekday after reset
-        (function autoSelectWeekdayAfterReset(){
-          const map = { 1:"จันทร์", 2:"อังคาร", 3:"พุธ", 4:"พฤหัส", 5:"ศุกร์", 6:"เสาร์", 0:"อาทิตย์" };
-          const nowBkk = nowInBangkok();
-          const todayTh = map[nowBkk.getDay()];
-          const sel = document.querySelector('select[name="weekday"]');
-          if (sel) sel.value = todayTh;
-        })();
+
+        // หลัง reset ให้ตั้ง weekday เป็นวันนี้อีกครั้ง
+        const map = { 1:"จันทร์", 2:"อังคาร", 3:"พุธ", 4:"พฤหัส", 5:"ศุกร์", 6:"เสาร์", 0:"อาทิตย์" };
+        const nowBkk = nowInBangkok();
+        const todayTh = map[nowBkk.getDay()];
+        const sel = document.querySelector('select[name="weekday"]');
+        if (sel) sel.value = todayTh;
+
       } else {
         msg.className = "msg bad";
         msg.textContent = "บันทึกไม่สำเร็จ ❌ " + (out.error || "unknown_error");
