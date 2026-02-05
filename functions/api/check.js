@@ -1,38 +1,31 @@
-export async function onRequest(context) {
+export async function onRequestPost({ request, env }) {
   try {
-    if (context.request.method !== "POST") {
-      return new Response(JSON.stringify({ ok: false, error: "method_not_allowed" }), {
-        status: 405,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    const body = await request.json().catch(() => ({}));
 
-    const { APPS_SCRIPT_URL, SECRET } = context.env;
-    if (!APPS_SCRIPT_URL || !SECRET) {
-      return new Response(JSON.stringify({ ok: false, error: "missing_env" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    const payload = {
+      action: "check",
+      secret: env.SECRET,
+      ...body,
+    };
 
-    const body = await context.request.json();
-    const payload = { ...body, secret: SECRET, action: "check" };
-
-    const resp = await fetch(APPS_SCRIPT_URL, {
+    const res = await fetch(env.APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    const text = await resp.text();
+    const text = await res.text();
     return new Response(text, {
-      status: resp.status,
-      headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+      status: res.status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+      },
     });
-  } catch (err) {
-    return new Response(JSON.stringify({ ok: false, error: String(err) }), {
+  } catch (e) {
+    return new Response(JSON.stringify({ ok: false, error: String(e) }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json; charset=utf-8" },
     });
   }
 }
