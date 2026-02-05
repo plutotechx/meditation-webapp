@@ -41,8 +41,7 @@
     <div class="card">
       <h1>Update Daily Meditation</h1>
       <p class="muted">บันทึกข้อมูลการนั่งสมาธิ</p>
-      <p class="muted" id="weekHeader" style="margin-top:-8px;"></p>
-
+      <p class="muted" id="weekHeader" style="margin-top:-10px;margin-bottom:12px;"></p>
 
       <form id="f">
         <label>ชื่อ - ชื่อเล่น</label>
@@ -122,7 +121,7 @@
 
         <button id="btn" type="submit">บันทึกข้อมูล</button>
 
-        <!-- ปุ่มไปหน้าตรวจสอบสถานะ (FINAL) -->
+        <!-- ปุ่มไปหน้าตรวจสอบสถานะ -->
         <a class="linkbtn" href="/status.html">
           <button type="button">ตรวจสอบสถานะรายวัน</button>
         </a>
@@ -134,6 +133,46 @@
   </div>
 
 <script>
+  // ====== WEEK HEADER (Bangkok) ======
+  const weekHeaderEl = document.getElementById("weekHeader");
+  function nowInBangkok() {
+    const s = new Date().toLocaleString("en-US", { timeZone: "Asia/Bangkok" });
+    return new Date(s);
+  }
+  function thaiDateLabel(d){
+    return d.toLocaleDateString("th-TH", {
+      day:"numeric", month:"short", year:"2-digit",
+      timeZone:"Asia/Bangkok"
+    });
+  }
+  function mondayOfWeek(d){
+    const day = d.getDay(); // Sun=0
+    const diff = (day === 0) ? -6 : (1 - day);
+    const m = new Date(d);
+    m.setDate(d.getDate() + diff);
+    m.setHours(0,0,0,0);
+    return m;
+  }
+  function showWeekHeader(){
+    const nowBkk = nowInBangkok();
+    const mon = mondayOfWeek(nowBkk);
+    const sun = new Date(mon);
+    sun.setDate(mon.getDate() + 6);
+    weekHeaderEl.textContent =
+      `สัปดาห์นี้: จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
+  }
+  showWeekHeader();
+
+  // (optional) auto-select weekday = today (Bangkok) if user hasn't picked
+  (function autoSelectWeekday(){
+    const map = { 1:"จันทร์", 2:"อังคาร", 3:"พุธ", 4:"พฤหัส", 5:"ศุกร์", 6:"เสาร์", 0:"อาทิตย์" };
+    const nowBkk = nowInBangkok();
+    const todayTh = map[nowBkk.getDay()];
+    const sel = document.querySelector('select[name="weekday"]');
+    if (sel && !sel.value) sel.value = todayTh;
+  })();
+
+  // ====== SUBMIT ======
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
@@ -159,6 +198,14 @@
         msg.className = "msg ok";
         msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
         form.reset();
+        // re-apply weekday after reset
+        (function autoSelectWeekdayAfterReset(){
+          const map = { 1:"จันทร์", 2:"อังคาร", 3:"พุธ", 4:"พฤหัส", 5:"ศุกร์", 6:"เสาร์", 0:"อาทิตย์" };
+          const nowBkk = nowInBangkok();
+          const todayTh = map[nowBkk.getDay()];
+          const sel = document.querySelector('select[name="weekday"]');
+          if (sel) sel.value = todayTh;
+        })();
       } else {
         msg.className = "msg bad";
         msg.textContent = "บันทึกไม่สำเร็จ ❌ " + (out.error || "unknown_error");
