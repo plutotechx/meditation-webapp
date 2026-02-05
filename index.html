@@ -396,8 +396,8 @@
         const out = await res.json().catch(() => ({}));
 
         if (res.ok && out.ok) {
-          // ✅ Popup โชว์ 3–4 วิ (เลือกเอา)
-          const POPUP_MS = 3500; // <- เปลี่ยนเป็น 3000 ได้
+          // ✅ Popup โชว์ 2-3 วิ (เลือกเอา)
+          const POPUP_MS = 2500; // <- เปลี่ยนเป็น 3000 ได้
 
           window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย", POPUP_MS);
 
