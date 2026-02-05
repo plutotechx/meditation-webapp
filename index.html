@@ -106,6 +106,9 @@
 
             <!-- ส่ง weekday ให้ระบบเดิม (แต่ Code.gs จะคำนวณจาก logDate อีกทีเพื่อความชัวร์) -->
             <input type="hidden" id="weekdayHidden" name="weekday" value="">
+
+            <!-- ✅ เพิ่ม: ส่ง timezone ของเครื่องตอนบันทึก -->
+            <input type="hidden" id="tzOffset" name="tzOffset" value="">
           </div>
 
           <div>
@@ -139,20 +142,29 @@
   </div>
 
 <script>
-  // ====== Time helpers (Bangkok) ======
-  const TIMEZONE = "Asia/Bangkok";
+  // ====== Time helpers (LOCAL MACHINE TIMEZONE) ======
+  // ✅ ตามที่ตกลง: ให้ยึด timezone ของ "เครื่องผู้ใช้" ไม่ fix Bangkok
   const weekHeaderEl = document.getElementById("weekHeader");
+  const logDateEl = document.getElementById("logDate");
+  const weekdayHiddenEl = document.getElementById("weekdayHidden");
+  const tzOffsetEl = document.getElementById("tzOffset");
 
-  function nowInBangkok() {
-    const s = new Date().toLocaleString("en-US", { timeZone: TIMEZONE });
-    return new Date(s);
-  }
+  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
+
   function pad2(n){ return String(n).padStart(2,"0"); }
-  function toISODate(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-  function thaiDateLabel(d){
-    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit", timeZone: TIMEZONE });
+
+  // วันที่แบบ local -> yyyy-MM-dd
+  function toISODateLocal(d){
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
   }
-  function mondayOfWeek(d){
+
+  // label ไทยตาม local time
+  function thaiDateLabelLocal(d){
+    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
+  }
+
+  // หา Monday ของสัปดาห์ (ตาม local)
+  function mondayOfWeekLocal(d){
     const day = d.getDay(); // Sun=0
     const diff = (day === 0) ? -6 : (1 - day);
     const m = new Date(d);
@@ -161,29 +173,32 @@
     return m;
   }
 
-  // ====== Week header ======
+  // ✅ เก็บ tzOffset ของเครื่อง (นาที)
+  // JS: ไทย = -420, LA(PST) = 480
+  function setTzOffset(){
+    tzOffsetEl.value = String(new Date().getTimezoneOffset());
+  }
+
+  // ====== Week header (LOCAL) ======
   (function showWeekHeader(){
-    const nowBkk = nowInBangkok();
-    const mon = mondayOfWeek(nowBkk);
+    const nowLocal = new Date();
+    const mon = mondayOfWeekLocal(nowLocal);
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-    weekHeaderEl.textContent = `จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
+    // ใช้ข้อความเดิมของตั้มเป็นหลัก
+    weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
   })();
 
-  // ====== LogDate dropdown (current week) + (วันนี้) ======
-  const logDateEl = document.getElementById("logDate");
-  const weekdayHiddenEl = document.getElementById("weekdayHidden");
-  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
-
+  // ====== LogDate dropdown (current week LOCAL) + (วันนี้) ======
   function buildLogDateOptions(){
-    const nowBkk = nowInBangkok();
-    const mon = mondayOfWeek(nowBkk);
-    const todayISO = toISODate(nowBkk);
+    const nowLocal = new Date();
+    const mon = mondayOfWeekLocal(nowLocal);
+    const todayISO = toISODateLocal(nowLocal);
 
     logDateEl.innerHTML = "";
     for (let i=0; i<7; i++){
       const d = new Date(mon); d.setDate(mon.getDate() + i);
-      const iso = toISODate(d);
-      const base = `${TH_DOW[i]} ${thaiDateLabel(d)}`;
+      const iso = toISODateLocal(d);
+      const base = `${TH_DOW[i]} ${thaiDateLabelLocal(d)}`;
       const label = (iso === todayISO) ? `${base} (วันนี้)` : base;
 
       const opt = document.createElement("option");
@@ -202,6 +217,8 @@
     weekdayHiddenEl.value = sel?.dataset?.dow || "";
   });
 
+  // init
+  setTzOffset();
   buildLogDateOptions();
 
   // ====== SUBMIT ======
@@ -214,6 +231,9 @@
     btn.disabled = true;
     msg.className = "msg";
     msg.textContent = "กำลังบันทึกข้อมูล...";
+
+    // ✅ อัปเดต tzOffset ตอนกดส่ง (เผื่อ user เปลี่ยน timezone ระหว่างเปิดหน้า)
+    setTzOffset();
 
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
@@ -231,7 +251,8 @@
         msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
         form.reset();
 
-        // หลัง reset: สร้าง logDate ใหม่ให้กลับมาเป็นวันนี้
+        // หลัง reset: ต้อง set tzOffset + สร้าง logDate ใหม่ให้กลับมาเป็นวันนี้
+        setTzOffset();
         buildLogDateOptions();
       } else {
         msg.className = "msg bad";
