@@ -44,7 +44,7 @@
   <div class="wrap">
     <div class="card">
       <h1>Update Daily Meditation</h1>
-      <p class="muted">บันทึกข้อมูลการนั่งสมาธิ</p>
+      <p class="muted">บันทึกข้อมูลการทำสมาธิ</p>
 
       <p class="muted" id="weekHeader" style="margin-top:-10px;margin-bottom:12px;">
         กำลังคำนวณช่วงสัปดาห์...
@@ -100,7 +100,7 @@
 
         <div class="grid">
           <div>
-            <label>วันที่บันทึก (เฉพาะสัปดาห์นี้)</label>
+            <label>วันที่บันทึก</label>
             <!-- ค่า “วันนี้” จะมี (วันนี้) เหมือนหน้า status -->
             <select id="logDate" name="logDate" required></select>
 
@@ -119,7 +119,7 @@
           </div>
         </div>
 
-        <label>ช่วงระยะเวลาในการทำสมาธิ (แต่ละครั้ง)</label>
+        <label>ระยะเวลาในการทำสมาธิ(แต่ละครั้ง)</label>
         <select name="duration" required>
           <option value="">— เลือกระยะเวลา —</option>
           <option>3-5 นาที</option>
@@ -129,7 +129,7 @@
         <button id="btn" type="submit">บันทึกข้อมูล</button>
 
         <a class="linkbtn" href="/status.html">
-          <button type="button">ตรวจสอบสถานะรายวัน</button>
+          <button type="button">ตรวจสอบสถานะการทำสมาธิ</button>
         </a>
 
         <div class="msg" id="msg"></div>
@@ -166,7 +166,7 @@
     const nowBkk = nowInBangkok();
     const mon = mondayOfWeek(nowBkk);
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-    weekHeaderEl.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
+    weekHeaderEl.textContent = `จันทร์ ${thaiDateLabel(mon)} – อาทิตย์ ${thaiDateLabel(sun)}`;
   })();
 
   // ====== LogDate dropdown (current week) + (วันนี้) ======
