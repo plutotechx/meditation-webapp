@@ -102,7 +102,7 @@
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-    weekHeaderEl.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
+    weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
   }
 
   function buildDateOptions(){
