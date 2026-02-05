@@ -37,6 +37,62 @@
       margin-top:10px;background:rgba(255,255,255,.10);
       color:var(--text);border:1px solid rgba(255,255,255,.14)
     }
+
+    /* ===== Popup Toast (Center) ===== */
+    .toast-backdrop{
+      position:fixed; inset:0;
+      display:none; align-items:center; justify-content:center;
+      background:rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+      z-index:9999;
+    }
+    .toast{
+      width:min(520px, 86vw);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(15,20,30,.86);
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      padding:18px 18px 16px;
+      transform: translateY(8px) scale(.98);
+      opacity:0;
+      transition: all .18s ease;
+    }
+    .toast.show{
+      transform: translateY(0) scale(1);
+      opacity:1;
+    }
+    .toast .row{
+      display:flex; align-items:center; gap:14px;
+    }
+    .toast .icon{
+      width:56px; height:56px; border-radius:999px;
+      display:grid; place-items:center;
+      flex:0 0 auto;
+    }
+    .toast .icon.ok{ background:rgba(101,255,179,.16); border:1px solid rgba(101,255,179,.35); }
+    .toast .icon.bad{ background:rgba(255,106,106,.14); border:1px solid rgba(255,106,106,.35); }
+    .toast .title{
+      font-weight:900; font-size:20px; line-height:1.2;
+    }
+    .toast .desc{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .toast .hint{
+      margin-top:12px;
+      font-size:12px;
+      color:rgba(234,240,255,.65);
+    }
+    .toast .close{
+      margin-left:auto;
+      width:36px; height:36px; border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      cursor:pointer;
+    }
+    .toast .close:hover{ background:rgba(255,255,255,.10); }
   </style>
 </head>
 
@@ -101,13 +157,9 @@
         <div class="grid">
           <div>
             <label>วันที่บันทึก</label>
-            <!-- ค่า “วันนี้” จะมี (วันนี้) เหมือนหน้า status -->
             <select id="logDate" name="logDate" required></select>
 
-            <!-- ส่ง weekday ให้ระบบเดิม (แต่ Code.gs จะคำนวณจาก logDate อีกทีเพื่อความชัวร์) -->
             <input type="hidden" id="weekdayHidden" name="weekday" value="">
-
-            <!-- ✅ เพิ่ม: ส่ง timezone ของเครื่องตอนบันทึก -->
             <input type="hidden" id="tzOffset" name="tzOffset" value="">
           </div>
 
@@ -141,9 +193,29 @@
     </div>
   </div>
 
+  <!-- ===== Popup Toast ===== -->
+  <div class="toast-backdrop" id="toastBackdrop" aria-hidden="true">
+    <div class="toast" id="toastBox" role="status" aria-live="polite">
+      <div class="row">
+        <div class="icon ok" id="toastIcon">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20 6L9 17l-5-5" stroke="#65ffb3" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <div>
+          <div class="title" id="toastTitle">บันทึกข้อมูลเรียบร้อย</div>
+          <div class="desc" id="toastDesc">ระบบบันทึกข้อมูลลงชีตเรียบร้อยแล้ว</div>
+        </div>
+
+        <button class="close" type="button" id="toastClose" aria-label="ปิด">✕</button>
+      </div>
+      <div class="hint" id="toastHint">หน้าต่างนี้จะหายไปเองในไม่กี่วินาที</div>
+    </div>
+  </div>
+
 <script>
   // ====== Time helpers (LOCAL MACHINE TIMEZONE) ======
-  // ✅ ตามที่ตกลง: ให้ยึด timezone ของ "เครื่องผู้ใช้" ไม่ fix Bangkok
   const weekHeaderEl = document.getElementById("weekHeader");
   const logDateEl = document.getElementById("logDate");
   const weekdayHiddenEl = document.getElementById("weekdayHidden");
@@ -152,18 +224,12 @@
   const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
 
   function pad2(n){ return String(n).padStart(2,"0"); }
-
-  // วันที่แบบ local -> yyyy-MM-dd
   function toISODateLocal(d){
     return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
   }
-
-  // label ไทยตาม local time
   function thaiDateLabelLocal(d){
     return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
   }
-
-  // หา Monday ของสัปดาห์ (ตาม local)
   function mondayOfWeekLocal(d){
     const day = d.getDay(); // Sun=0
     const diff = (day === 0) ? -6 : (1 - day);
@@ -172,9 +238,6 @@
     m.setHours(0,0,0,0);
     return m;
   }
-
-  // ✅ เก็บ tzOffset ของเครื่อง (นาที)
-  // JS: ไทย = -420, LA(PST) = 480
   function setTzOffset(){
     tzOffsetEl.value = String(new Date().getTimezoneOffset());
   }
@@ -184,7 +247,6 @@
     const nowLocal = new Date();
     const mon = mondayOfWeekLocal(nowLocal);
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-    // ใช้ข้อความเดิมของตั้มเป็นหลัก
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
   })();
 
@@ -221,6 +283,54 @@
   setTzOffset();
   buildLogDateOptions();
 
+  // ===== Popup helpers =====
+  const toastBackdrop = document.getElementById("toastBackdrop");
+  const toastBox      = document.getElementById("toastBox");
+  const toastIcon     = document.getElementById("toastIcon");
+  const toastTitle    = document.getElementById("toastTitle");
+  const toastDesc     = document.getElementById("toastDesc");
+  const toastClose    = document.getElementById("toastClose");
+
+  let toastTimer = null;
+
+  function showToast({ type="ok", title="เรียบร้อย", desc="", ms=3500 } = {}) {
+    if (toastTimer) clearTimeout(toastTimer);
+
+    const isOk = type === "ok";
+    toastIcon.className = "icon " + (isOk ? "ok" : "bad");
+
+    toastIcon.innerHTML = isOk
+      ? `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+           <path d="M20 6L9 17l-5-5" stroke="#65ffb3" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+         </svg>`
+      : `<svg width="30" height="30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+           <path d="M18 6L6 18M6 6l12 12" stroke="#ff6a6a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+         </svg>`;
+
+    toastTitle.textContent = title;
+    toastDesc.textContent  = desc || (isOk ? "ระบบบันทึกข้อมูลลงชีตเรียบร้อยแล้ว" : "กรุณาลองใหม่อีกครั้ง");
+
+    toastBackdrop.style.display = "flex";
+    toastBackdrop.setAttribute("aria-hidden", "false");
+    requestAnimationFrame(() => toastBox.classList.add("show"));
+
+    toastTimer = setTimeout(hideToast, ms);
+  }
+
+  function hideToast() {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = null;
+
+    toastBox.classList.remove("show");
+    toastBackdrop.setAttribute("aria-hidden", "true");
+    setTimeout(() => { toastBackdrop.style.display = "none"; }, 180);
+  }
+
+  toastClose.addEventListener("click", hideToast);
+  toastBackdrop.addEventListener("click", (e) => {
+    if (e.target === toastBackdrop) hideToast;
+  });
+
   // ====== SUBMIT ======
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
@@ -229,11 +339,11 @@
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     btn.disabled = true;
+
     msg.className = "msg";
     msg.textContent = "กำลังบันทึกข้อมูล...";
 
-    // ✅ อัปเดต tzOffset ตอนกดส่ง (เผื่อ user เปลี่ยน timezone ระหว่างเปิดหน้า)
-    setTzOffset();
+    setTzOffset(); // อัปเดต timezone ตอนกดส่ง
 
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
@@ -249,18 +359,38 @@
       if (res.ok && out.ok) {
         msg.className = "msg ok";
         msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
-        form.reset();
 
-        // หลัง reset: ต้อง set tzOffset + สร้าง logDate ใหม่ให้กลับมาเป็นวันนี้
+        showToast({
+          type: "ok",
+          title: "บันทึกข้อมูลเรียบร้อย",
+          desc: "ระบบบันทึกข้อมูลลงชีตเรียบร้อยแล้ว",
+          ms: 3500,
+        });
+
+        form.reset();
         setTzOffset();
         buildLogDateOptions();
       } else {
         msg.className = "msg bad";
         msg.textContent = "บันทึกไม่สำเร็จ ❌ " + (out.error || "unknown_error");
+
+        showToast({
+          type: "bad",
+          title: "บันทึกไม่สำเร็จ",
+          desc: (out.error || "unknown_error"),
+          ms: 4000,
+        });
       }
     } catch (e) {
       msg.className = "msg bad";
       msg.textContent = "บันทึกไม่สำเร็จ ❌ " + e;
+
+      showToast({
+        type: "bad",
+        title: "บันทึกไม่สำเร็จ",
+        desc: String(e),
+        ms: 4000,
+      });
     } finally {
       btn.disabled = false;
     }
