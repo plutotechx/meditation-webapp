@@ -37,7 +37,6 @@
     button:disabled{opacity:.6;cursor:not-allowed}
 
     .msg{margin-top:12px;min-height:22px;white-space:pre-line}
-    .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
     .small{font-size:12px;color:var(--muted);margin-top:10px}
 
@@ -276,9 +275,8 @@
       const textEl  = document.getElementById('successText');
       let autoTimer = null;
 
-      window.showSuccessPopup = function(message = 'บันทึกข้อมูลเรียบร้อย', autoCloseMs = 3500){
+      window.showSuccessPopup = function(message = 'บันทึกข้อมูลเรียบร้อย', autoCloseMs = 2500){
         textEl.textContent = message;
-
         overlay.classList.add('is-open');
         overlay.setAttribute('aria-hidden', 'false');
 
@@ -291,8 +289,7 @@
         overlay.setAttribute('aria-hidden', 'true');
       };
 
-      // ✅ ตัด event “คลิกพื้นหลังเพื่อปิด” ออก (ห้ามคลิกพื้นหลังปิดเอง)
-      // overlay.addEventListener('click', ... )  // removed
+      // ✅ ห้ามคลิกพื้นหลังปิดเอง: ไม่ใส่ event click overlay
 
       // ESC เพื่อปิด (ยังคงไว้)
       document.addEventListener('keydown', (e) => {
@@ -335,28 +332,52 @@
       weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
     })();
 
-    // ====== LogDate dropdown (current week LOCAL) + (วันนี้) ======
+    // ====== LogDate dropdown (7 วัน) + ห้ามอนาคต + ย้อนหลังได้ 1 วัน ======
     function buildLogDateOptions(){
       const nowLocal = new Date();
       const mon = mondayOfWeekLocal(nowLocal);
-      const todayISO = toISODateLocal(nowLocal);
+
+      const today = new Date(nowLocal);
+      today.setHours(0,0,0,0);
+      const todayISO = toISODateLocal(today);
+
+      const minAllowed = new Date(today);
+      minAllowed.setDate(today.getDate() - 1);
+      minAllowed.setHours(0,0,0,0);
 
       logDateEl.innerHTML = "";
+
       for (let i=0; i<7; i++){
-        const d = new Date(mon); d.setDate(mon.getDate() + i);
+        const d = new Date(mon);
+        d.setDate(mon.getDate() + i);
+        d.setHours(0,0,0,0);
+
         const iso = toISODateLocal(d);
         const base = `${TH_DOW[i]} ${thaiDateLabelLocal(d)}`;
         const label = (iso === todayISO) ? `${base} (วันนี้)` : base;
+
+        const isFuture = d.getTime() > today.getTime();
+        const isTooOld = d.getTime() < minAllowed.getTime();
 
         const opt = document.createElement("option");
         opt.value = iso;
         opt.textContent = label;
         opt.dataset.dow = TH_DOW[i];
+
+        if (isFuture || isTooOld) opt.disabled = true;
+
         logDateEl.appendChild(opt);
       }
 
-      logDateEl.value = todayISO;
-      weekdayHiddenEl.value = logDateEl.selectedOptions[0].dataset.dow;
+      const todayOpt = Array.from(logDateEl.options).find(o => o.value === todayISO && !o.disabled);
+      if (todayOpt) {
+        logDateEl.value = todayISO;
+      } else {
+        const enabled = Array.from(logDateEl.options).filter(o => !o.disabled);
+        if (enabled.length) logDateEl.value = enabled[enabled.length - 1].value;
+      }
+
+      weekdayHiddenEl.value = logDateEl.selectedOptions[0]?.dataset?.dow || "";
     }
 
     logDateEl.addEventListener("change", () => {
@@ -396,19 +417,16 @@
         const out = await res.json().catch(() => ({}));
 
         if (res.ok && out.ok) {
-          // ✅ Popup โชว์ 2-3 วิ (เลือกเอา)
-          const POPUP_MS = 2000; // <- เปลี่ยนเป็น 3000 ได้
-
+          const POPUP_MS = 2500; // ✅ ตามที่ต้องการ
           window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย", POPUP_MS);
 
           form.reset();
-          msg.textContent = "";     // ไม่ให้ค้าง
+          msg.textContent = "";
           msg.className = "msg";
 
           setTzOffset();
           buildLogDateOptions();
 
-          // ✅ รีเฟรชหลัง popup หาย + 2 วิ
           if (reloadTimer) clearTimeout(reloadTimer);
           reloadTimer = setTimeout(() => {
             location.reload();
