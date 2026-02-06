@@ -1,25 +1,20 @@
-export async function onRequest({ env }) {
+export async function onRequestGet({ env }) {
   try {
-    if (!env.GAS_URL || !env.SECRET) {
-      return new Response(JSON.stringify({ ok:false, error:"missing_env(GAS_URL/SECRET)" }), {
-        headers: { "Content-Type":"application/json" }, status: 500
-      });
-    }
-
     const url = new URL(env.GAS_URL);
     url.searchParams.set("action", "dashboard");
     url.searchParams.set("secret", env.SECRET);
 
-    const r = await fetch(url.toString(), { method: "GET" });
-    const text = await r.text();
+    const res = await fetch(url.toString(), { method: "GET" });
+    const out = await res.json().catch(() => ({}));
 
-    return new Response(text, {
-      headers: { "Content-Type":"application/json" },
-      status: r.status
+    return new Response(JSON.stringify(out), {
+      status: res.status,
+      headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ ok:false, error:String(e) }), {
-      headers: { "Content-Type":"application/json" }, status: 500
+    return new Response(JSON.stringify({ ok: false, error: String(e) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
     });
   }
 }
