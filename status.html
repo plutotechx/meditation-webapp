@@ -19,7 +19,7 @@
       --ok:#65ffb3;
       --radius:18px;
 
-      /* ✅ box tint */
+      /* box tint */
       --tint-ok: rgba(101,255,179,.14);
       --tint-bad: rgba(255,106,106,.14);
       --tint-border-ok: rgba(101,255,179,.28);
@@ -70,7 +70,7 @@
       border:1px solid rgba(255,255,255,.14)
     }
 
-    /* ===== Result Header ===== */
+    /* Result Header */
     .resultHeader{
       margin-top:14px;
       padding:12px 12px;
@@ -78,15 +78,15 @@
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.18);
       line-height:1.6;
-      font-weight:1000;
-      text-align:center;           /* ✅ center */
+      font-weight:1100;
+      text-align:center;
     }
     .resultHeader .line{
       font-size:16px;
       letter-spacing:.2px;
     }
 
-    /* ===== 4 Boxes ===== */
+    /* 4 Boxes */
     .boxes{
       margin-top:12px;
       display:grid;
@@ -101,7 +101,7 @@
       border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.18);
-      padding:12px 12px 12px;
+      padding:12px;
       min-height:104px;
       display:flex;
       flex-direction:column;
@@ -109,7 +109,6 @@
       box-shadow:0 14px 40px rgba(0,0,0,.25);
     }
 
-    /* ✅ tint background by status */
     .box.ok{
       background:linear-gradient(180deg, var(--tint-ok), rgba(0,0,0,.16));
       border-color:var(--tint-border-ok);
@@ -121,6 +120,11 @@
     .box.sum{
       background:rgba(0,0,0,.18);
       border-color:rgba(255,255,255,.12);
+      /* ✅ center summary content */
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      gap:8px;
     }
 
     .boxTitle{
@@ -168,12 +172,11 @@
       background:rgba(255,106,106,.12);
     }
 
-    /* Summary box: แค่ 1/3 */
     .sumBig{
       font-size:34px;
       font-weight:1200;
       line-height:1;
-      margin-top:6px;
+      margin:0;
       color:var(--ok);
     }
   </style>
@@ -214,9 +217,12 @@
 
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-  function thaiDateLabelLocal(d){
-    return d.toLocaleDateString("th-TH", { day:"2-digit", month:"2-digit", year:"numeric" });
+
+  // สำหรับหัวสัปดาห์/ดรอปดาวน์: dd mmm yy แบบเดิมยังโอเค
+  function thaiDateLabelLocalShort(d){
+    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
   }
+
   function mondayOfWeekLocal(d){
     const x = new Date(d); x.setHours(0,0,0,0);
     const day = x.getDay(); // Sun=0
@@ -225,12 +231,11 @@
     return x;
   }
 
-  // ช่วงสัปดาห์: จันทร์-อาทิตย์ (Local)
   function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
     const sun = new Date(mon); sun.setDate(mon.getDate()+6);
-    weekHeaderEl.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
+    weekHeaderEl.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateLabelLocalShort(mon)} – อาทิตย์ ${thaiDateLabelLocalShort(sun)}`;
   }
 
   function buildDateOptions(){
@@ -242,7 +247,7 @@
     for (let i=0;i<7;i++){
       const d = new Date(mon); d.setDate(mon.getDate()+i);
       const iso = toISODateLocal(d);
-      const label = `${TH_DOW[i]} ${thaiDateLabelLocal(d)}${iso===todayISO ? " (วันนี้)" : ""}`;
+      const label = `${TH_DOW[i]} ${thaiDateLabelLocalShort(d)}${iso===todayISO ? " (วันนี้)" : ""}`;
       const opt = document.createElement("option");
       opt.value = iso;
       opt.textContent = label;
@@ -257,11 +262,11 @@
     }[m]));
   }
 
-  // format header date: วัน-เดือน-ปี (จาก YYYY-MM-DD)
-  function formatISOToDMY(iso){
+  // ✅ Header date: "7 ก.พ. 2569"
+  function formatISOToThaiLong(iso){
     const [y,m,d] = iso.split("-").map(Number);
     const dt = new Date(y, m-1, d);
-    return thaiDateLabelLocal(dt); // dd/mm/yyyy
+    return dt.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"numeric" });
   }
 
   function normalizeSession(v){
@@ -301,7 +306,7 @@
 
     const dateISO = (data.logDate || "").toString();
     const name = (data.name || "").toString();
-    const headerLine = `${formatISOToDMY(dateISO)} | ${name}`;
+    const headerLine = `${formatISOToThaiLong(dateISO)} | ${name}`;
 
     const headerHtml = `
       <div class="resultHeader">
@@ -372,7 +377,7 @@
     out.textContent = "กำลังตรวจสอบ...";
 
     const name = (nameSel.value || "").trim();
-    const logDate = (dateSel.value || "").trim(); // YYYY-MM-DD
+    const logDate = (dateSel.value || "").trim();
 
     if (!name || !logDate) {
       out.className = "msg bad";
