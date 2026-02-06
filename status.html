@@ -1,10 +1,130 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Status - Daily Meditation</title>
+  <style>
+    :root{
+      --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.12);
+      --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
+      --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
+    }
+    body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
+    .wrap{max-width:820px;margin:0 auto;padding:24px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+    h1{margin:0 0 6px;font-size:22px}
+    .muted{color:var(--muted);margin:0 0 16px;line-height:1.55}
+    label{display:block;margin:12px 0 6px}
+    select{
+      width:100%;box-sizing:border-box;border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background:var(--input);color:#fff;padding:12px 12px;outline:none
+    }
+    button{
+      margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;
+      background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer
+    }
+    .msg{margin-top:12px;min-height:22px;white-space:pre-line}
+    .msg.ok{color:var(--ok)}
+    .msg.bad{color:var(--danger)}
+    .topline{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    a.btnlink{flex:1;text-decoration:none}
+    a.btnlink button{width:100%;background:rgba(255,255,255,.10);color:var(--text);border:1px solid rgba(255,255,255,.14)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>ตรวจสอบสถานะ</h1>
+      <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
+
+      <label>รายชื่อ</label>
+      <select id="nameSel">
+        <option value="">กำลังโหลดรายชื่อ...</option>
+      </select>
+
+      <label>วันที่ต้องการตรวจสอบ</label>
+      <select id="dateSel"></select>
+
+      <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
+      <div class="msg" id="out"></div>
+
+      <div class="topline">
+        <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
+        <a class="btnlink" href="/dashboard.html"><button type="button">ไป Dashboard</button></a>
+      </div>
+    </div>
+  </div>
+
 <script>
+  const weekHeaderEl = document.getElementById("weekHeader");
   const nameSel = document.getElementById("nameSel");
   const dateSel = document.getElementById("dateSel");
   const btn = document.getElementById("checkBtn");
   const out = document.getElementById("out");
 
-  function esc(s){
+  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
+
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+  function thaiDateLabelLocal(d){ return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" }); }
+  function mondayOfWeekLocal(d){
+    const x = new Date(d); x.setHours(0,0,0,0);
+    const day = x.getDay(); // Sun=0
+    const diff = (day===0) ? -6 : (1-day);
+    x.setDate(x.getDate()+diff);
+    return x;
+  }
+
+  function showWeekHeader(){
+    const now = new Date();
+    const mon = mondayOfWeekLocal(now);
+    const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+    weekHeaderEl.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
+  }
+
+  function buildDateOptions(){
+    const now = new Date();
+    const mon = mondayOfWeekLocal(now);
+    const todayISO = toISODateLocal(now);
+
+    dateSel.innerHTML = "";
+    for (let i=0;i<7;i++){
+      const d = new Date(mon); d.setDate(mon.getDate()+i);
+      const iso = toISODateLocal(d);
+      const label = `${TH_DOW[i]} ${thaiDateLabelLocal(d)}${iso===todayISO ? " (วันนี้)" : ""}`;
+      const opt = document.createElement("option");
+      opt.value = iso;
+      opt.textContent = label;
+      dateSel.appendChild(opt);
+    }
+    dateSel.value = todayISO;
+  }
+
+  async function loadNames(){
+    nameSel.innerHTML = `<option value="">กำลังโหลดรายชื่อ...</option>`;
+    try {
+      const res = await fetch("/api/names");
+      const data = await res.json().catch(()=>({}));
+
+      if (!res.ok || !data.ok) {
+        nameSel.innerHTML = `<option value="">โหลดรายชื่อไม่สำเร็จ</option>`;
+        out.className = "msg bad";
+        out.textContent = `โหลดรายชื่อไม่สำเร็จ: ${data.error || "unknown_error"}`;
+        return;
+      }
+
+      const names = Array.isArray(data.names) ? data.names : [];
+      nameSel.innerHTML = `<option value="">— เลือกชื่อ —</option>` + names.map(n => `<option>${escapeHtml(n)}</option>`).join("");
+    } catch (e) {
+      nameSel.innerHTML = `<option value="">โหลดรายชื่อไม่สำเร็จ</option>`;
+      out.className = "msg bad";
+      out.textContent = `โหลดรายชื่อไม่สำเร็จ: ${e}`;
+    }
+  }
+
+  function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, m => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[m]));
@@ -15,7 +135,7 @@
     out.textContent = "กำลังตรวจสอบ...";
 
     const name = (nameSel.value || "").trim();
-    const logDate = (dateSel.value || "").trim(); // ต้องเป็น YYYY-MM-DD
+    const logDate = (dateSel.value || "").trim();
 
     if (!name || !logDate) {
       out.className = "msg bad";
@@ -25,7 +145,7 @@
 
     try {
       const q = new URLSearchParams({ name, logDate });
-      const res = await fetch(`/api/checkStatus?${q.toString()}`, { method:"GET" });
+      const res = await fetch(`/api/checkStatus?${q.toString()}`);
       const data = await res.json().catch(()=>({}));
 
       if (!res.ok || !data.ok) {
@@ -34,18 +154,22 @@
         return;
       }
 
-      // ✅ ตัวอย่างการแสดงผล (ปรับได้)
-      // คาดว่า GAS ส่งกลับ {ok:true, name, logDate, doneCount, sessions:{s1:"...",s2:"...",s3:"..."}}
       out.className = "msg ok";
-      out.innerHTML =
-        `วันที่ ${esc(data.logDate)} | ${esc(data.name)}\n` +
-        `สถานะ: ทำแล้ว ${esc(data.doneCount || 0)}/3\n` +
-        `ครั้งที่ 1: ${esc(data.sessions?.s1 || "—")}\n` +
-        `ครั้งที่ 2: ${esc(data.sessions?.s2 || "—")}\n` +
-        `ครั้งที่ 3: ${esc(data.sessions?.s3 || "—")}`;
+      out.textContent =
+        `วันที่ ${data.logDate} | ${data.name}\n` +
+        `สถานะ: ทำแล้ว ${data.doneCount}/3\n` +
+        `ครั้งที่ 1: ${data.sessions?.s1 || "—"}\n` +
+        `ครั้งที่ 2: ${data.sessions?.s2 || "—"}\n` +
+        `ครั้งที่ 3: ${data.sessions?.s3 || "—"}`;
     } catch (e) {
       out.className = "msg bad";
       out.textContent = `ตรวจสอบไม่สำเร็จ: ${e}`;
     }
   });
+
+  showWeekHeader();
+  buildDateOptions();
+  loadNames();
 </script>
+</body>
+</html>
