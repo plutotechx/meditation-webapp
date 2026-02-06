@@ -1,206 +1,51 @@
-<!doctype html>
-<html lang="th">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ตรวจสอบสถานะการทำสมาธิ</title>
-  <style>
-    :root{
-      --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.12);
-      --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
-      --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
-    }
-    body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
-    .wrap{max-width:820px;margin:0 auto;padding:24px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
-    h1{margin:0 0 6px;font-size:22px}
-    .muted{color:var(--muted);margin:0 0 14px;line-height:1.55}
-    label{display:block;margin:12px 0 6px}
-    select{
-      width:100%;box-sizing:border-box;border-radius:14px;
-      border:1px solid rgba(255,255,255,.18);
-      background:var(--input);color:#fff;padding:12px 12px;outline:none
-    }
-    button{
-      margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;
-      background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer
-    }
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .msg{margin-top:12px;min-height:22px;white-space:pre-line}
-    .msg.ok{color:var(--ok)}
-    .msg.bad{color:var(--danger)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-    .pill{flex:1;min-width:160px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.18)}
-    .pill b{display:block;margin-bottom:3px}
-    a.linkbtn{display:block;text-decoration:none;margin-top:10px}
-    a.linkbtn button{
-      background:rgba(255,255,255,.10);
-      color:var(--text);border:1px solid rgba(255,255,255,.14)
-    }
-  </style>
-</head>
-
-<body>
-  <div class="wrap">
-    <div class="card">
-      <h1>ตรวจสอบสถานะการทำสมาธิ</h1>
-      <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
-
-      <label>รายชื่อ</label>
-      <select id="name" required>
-        <option value="">กำลังโหลดรายชื่อ...</option>
-      </select>
-
-      <label>วันที่ต้องการตรวจสอบ</label>
-      <select id="date" required></select>
-
-      <button id="btn">ตรวจสอบสถานะ</button>
-
-      <div class="row" id="resultRow" style="display:none;">
-        <div class="pill"><b>ครั้งที่ 1</b><span id="s1">—</span></div>
-        <div class="pill"><b>ครั้งที่ 2</b><span id="s2">—</span></div>
-        <div class="pill"><b>ครั้งที่ 3</b><span id="s3">—</span></div>
-        <div class="pill"><b>สรุป</b><span id="sum">—</span></div>
-      </div>
-
-      <div class="msg" id="msg"></div>
-
-      <a class="linkbtn" href="/index.html">
-        <button type="button">กลับไปหน้าบันทึกข้อมูล</button>
-      </a>
-    </div>
-  </div>
-
 <script>
-  const weekHeaderEl = document.getElementById("weekHeader");
-  const nameEl = document.getElementById("name");
-  const dateEl = document.getElementById("date");
-  const btn = document.getElementById("btn");
-  const msg = document.getElementById("msg");
-  const row = document.getElementById("resultRow");
-  const s1 = document.getElementById("s1");
-  const s2 = document.getElementById("s2");
-  const s3 = document.getElementById("s3");
-  const sum = document.getElementById("sum");
+  const nameSel = document.getElementById("nameSel");
+  const dateSel = document.getElementById("dateSel");
+  const btn = document.getElementById("checkBtn");
+  const out = document.getElementById("out");
 
-  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
-
-  function pad2(n){ return String(n).padStart(2,"0"); }
-  function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-  function thaiDateLabelLocal(d){ return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" }); }
-
-  function mondayOfWeekLocal(d){
-    const day = d.getDay(); // Sun=0
-    const diff = (day === 0) ? -6 : (1 - day);
-    const m = new Date(d);
-    m.setDate(d.getDate() + diff);
-    m.setHours(0,0,0,0);
-    return m;
-  }
-
-  function showWeekHeader(){
-    const now = new Date();
-    const mon = mondayOfWeekLocal(now);
-    const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
-    weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
-  }
-
-  function buildDateOptions(){
-    const now = new Date();
-    const mon = mondayOfWeekLocal(now);
-    const todayISO = toISODateLocal(now);
-
-    dateEl.innerHTML = "";
-    for (let i=0; i<7; i++){
-      const d = new Date(mon); d.setDate(mon.getDate() + i);
-      const iso = toISODateLocal(d);
-      const base = `${TH_DOW[i]} ${thaiDateLabelLocal(d)}`;
-      const label = (iso === todayISO) ? `${base} (วันนี้)` : base;
-
-      const opt = document.createElement("option");
-      opt.value = iso;
-      opt.textContent = label;
-      dateEl.appendChild(opt);
-    }
-    dateEl.value = todayISO;
-  }
-
-  async function loadNames(){
-    nameEl.innerHTML = `<option value="">กำลังโหลด...</option>`;
-    const res = await fetch("/api/names");
-    const out = await res.json().catch(() => ({}));
-
-    if (!res.ok || !out.ok) {
-      nameEl.innerHTML = `<option value="">โหลดรายชื่อไม่สำเร็จ</option>`;
-      msg.className = "msg bad";
-      msg.textContent = "โหลดรายชื่อไม่สำเร็จ: " + (out.error || res.status);
-      return;
-    }
-
-    const names = Array.isArray(out.names) ? out.names : [];
-    nameEl.innerHTML = `<option value="">— เลือกชื่อ —</option>` +
-      names.map(n => `<option>${escapeHtml(n)}</option>`).join("");
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
   }
 
   btn.addEventListener("click", async () => {
-    const name = nameEl.value.trim();
-    const date = dateEl.value.trim();
+    out.className = "msg";
+    out.textContent = "กำลังตรวจสอบ...";
 
-    row.style.display = "none";
-    msg.className = "msg";
-    msg.textContent = "กำลังตรวจสอบ...";
+    const name = (nameSel.value || "").trim();
+    const logDate = (dateSel.value || "").trim(); // ต้องเป็น YYYY-MM-DD
 
-    if (!name || !date) {
-      msg.className = "msg bad";
-      msg.textContent = "กรุณาเลือกชื่อและวันที่";
+    if (!name || !logDate) {
+      out.className = "msg bad";
+      out.textContent = "กรุณาเลือกรายชื่อ และ วันที่ต้องการตรวจสอบ";
       return;
     }
 
-    btn.disabled = true;
     try {
-      const res = await fetch("/api/check", {
-        method: "POST",
-        headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ name, date }),
-      });
+      const q = new URLSearchParams({ name, logDate });
+      const res = await fetch(`/api/checkStatus?${q.toString()}`, { method:"GET" });
+      const data = await res.json().catch(()=>({}));
 
-      const out = await res.json().catch(() => ({}));
-
-      if (!res.ok || !out.ok) {
-        msg.className = "msg bad";
-        msg.textContent = "ตรวจสอบไม่สำเร็จ: " + (out.error || res.status);
+      if (!res.ok || !data.ok) {
+        out.className = "msg bad";
+        out.textContent = `ตรวจสอบไม่สำเร็จ: ${data.error || "unknown_error"}`;
         return;
       }
 
-      const hit = out.sessions || { s1:"", s2:"", s3:"" };
-      s1.textContent = hit.s1 || "—";
-      s2.textContent = hit.s2 || "—";
-      s3.textContent = hit.s3 || "—";
-
-      const count = Number(out.count || 0);
-      const completed = !!out.completed;
-
-      sum.textContent = completed ? "✅ ครบ 3/3" : `⏳ ${count}/3`;
-      row.style.display = "flex";
-
-      msg.className = completed ? "msg ok" : "msg";
-      msg.textContent = completed ? "สถานะ: ครบแล้ว" : "สถานะ: ยังไม่ครบ";
+      // ✅ ตัวอย่างการแสดงผล (ปรับได้)
+      // คาดว่า GAS ส่งกลับ {ok:true, name, logDate, doneCount, sessions:{s1:"...",s2:"...",s3:"..."}}
+      out.className = "msg ok";
+      out.innerHTML =
+        `วันที่ ${esc(data.logDate)} | ${esc(data.name)}\n` +
+        `สถานะ: ทำแล้ว ${esc(data.doneCount || 0)}/3\n` +
+        `ครั้งที่ 1: ${esc(data.sessions?.s1 || "—")}\n` +
+        `ครั้งที่ 2: ${esc(data.sessions?.s2 || "—")}\n` +
+        `ครั้งที่ 3: ${esc(data.sessions?.s3 || "—")}`;
     } catch (e) {
-      msg.className = "msg bad";
-      msg.textContent = "ตรวจสอบไม่สำเร็จ: " + e;
-    } finally {
-      btn.disabled = false;
+      out.className = "msg bad";
+      out.textContent = `ตรวจสอบไม่สำเร็จ: ${e}`;
     }
   });
-
-  // init
-  showWeekHeader();
-  buildDateOptions();
-  loadNames();
 </script>
-</body>
-</html>
