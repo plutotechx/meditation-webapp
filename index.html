@@ -11,10 +11,16 @@
       --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
       --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
 
+      /* NEW: ปุ่มตรวจสอบสถานะ (โทน teal/greenish) */
+      --statusBtnBg: rgba(101, 255, 179, .14);
+      --statusBtnBgHover: rgba(101, 255, 179, .18);
+      --statusBtnBorder: rgba(101, 255, 179, .28);
+
       --overlay: rgba(0,0,0,.55);
       --card-border: rgba(255,255,255,.28);
       --green: #21b14b;
     }
+
     body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
     .wrap{max-width:820px;margin:0 auto;padding:24px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
@@ -28,19 +34,39 @@
     }
     .grid{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
+
     button{
       margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;
       background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer
     }
     button:disabled{opacity:.6;cursor:not-allowed}
+
     .msg{margin-top:12px;min-height:22px;white-space:pre-line}
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
     .small{font-size:12px;color:var(--muted);margin-top:10px}
+
     a.linkbtn{display:block;text-decoration:none}
+
+    /* ปุ่มลิงก์รอง (พื้นฐาน) */
     a.linkbtn button{
-      margin-top:10px;background:rgba(255,255,255,.10);
-      color:var(--text);border:1px solid rgba(255,255,255,.14)
+      margin-top:10px;
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.14)
+    }
+    a.linkbtn button:hover{
+      background:rgba(255,255,255,.12);
+    }
+
+    /* NEW: ปุ่ม “ตรวจสอบสถานะการทำสมาธิ” ให้เป็นสีใหม่ */
+    a.linkbtn button.status-btn{
+      background: var(--statusBtnBg);
+      border: 1px solid var(--statusBtnBorder);
+      color: var(--text);
+    }
+    a.linkbtn button.status-btn:hover{
+      background: var(--statusBtnBgHover);
     }
 
     /* ===== Success Popup ===== */
@@ -86,7 +112,7 @@
     .success-card::after{
       content:""; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%);
       width:210px; height:20px;
-      background: radial-gradient(closest-side, rgba(135,200,255,.85), rgba(135,200,255,.25) 55%, rgba(135,200,255,0) 78%);
+      background: radial-gradient(closest-side, rgba(135, 200, 255, .85), rgba(135, 200, 255, .25) 55%, rgba(135, 200, 255, 0) 78%);
       filter: blur(1.4px); opacity:.85; pointer-events:none;
     }
 
@@ -103,6 +129,7 @@
       text-shadow: 0 2px 18px rgba(0,0,0,.45);
       margin: 0;
     }
+
     option[disabled]{ color: rgba(255,255,255,.35); }
   </style>
 </head>
@@ -194,12 +221,9 @@
 
         <button id="btn" type="submit">บันทึกข้อมูล</button>
 
+        <!-- ปุ่มตรวจสอบสถานะ: สีใหม่ -->
         <a class="linkbtn" href="/status.html">
-          <button type="button">ตรวจสอบสถานะการทำสมาธิ</button>
-        </a>
-
-        <a class="linkbtn" href="/dashboard.html">
-          <button type="button">Dashboard (สัปดาห์นี้)</button>
+          <button type="button" class="status-btn">ตรวจสอบสถานะการทำสมาธิ</button>
         </a>
 
         <div class="msg" id="msg"></div>
@@ -223,7 +247,7 @@
   </div>
 
 <script>
-  const POPUP_MS = 2500; // ตามที่ตั้มสั่ง
+  const POPUP_MS = 2500;
   const AFTER_POPUP_RELOAD_MS = POPUP_MS + 2000;
 
   const weekHeaderEl = document.getElementById("weekHeader");
@@ -254,7 +278,6 @@
     return map[d.getDay()];
   }
 
-  // ====== Week header (ตาม timezone ของเครื่องผู้ใช้) ======
   function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
@@ -262,13 +285,11 @@
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
   }
 
-  // ====== LogDate dropdown: โชว์ครบ 7 วัน แต่ "ล็อก" อนาคต + ย้อนหลังได้แค่ 1 วัน ======
   function buildLogDateOptions(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
     const todayISO = toISODateLocal(now);
 
-    // rule: ย้อนหลังได้ 1 วันเท่านั้น
     const yesterday = new Date(now);
     yesterday.setDate(now.getDate() - 1);
     const minISO = toISODateLocal(yesterday);
@@ -287,7 +308,6 @@
       opt.textContent = label;
       opt.dataset.dow = dowTHFromDateLocal(d);
 
-      // disable future OR too old (ก่อน yesterday)
       const isFuture = iso > todayISO;
       const tooOld = iso < minISO;
       if (isFuture || tooOld) opt.disabled = true;
@@ -295,7 +315,6 @@
       logDateEl.appendChild(opt);
     }
 
-    // default select: today (ถ้า today ถูก disable ก็เลือกค่าแรกที่ไม่ disabled)
     const todayOpt = Array.from(logDateEl.options).find(o => o.value === todayISO && !o.disabled);
     if (todayOpt) logDateEl.value = todayISO;
     else {
@@ -311,9 +330,8 @@
     weekdayHiddenEl.value = sel?.dataset?.dow || "";
   });
 
-  // init hidden audit fields
   function setClientAuditFields(){
-    tzOffsetEl.value = String(new Date().getTimezoneOffset()); // นาที
+    tzOffsetEl.value = String(new Date().getTimezoneOffset());
     clientNowEl.value = new Date().toISOString();
   }
 
@@ -321,7 +339,6 @@
   buildLogDateOptions();
   setClientAuditFields();
 
-  // ====== Popup ======
   const overlay = document.getElementById('successOverlay');
   const textEl  = document.getElementById('successText');
 
@@ -336,7 +353,6 @@
     }, autoCloseMs);
   }
 
-  // ====== SUBMIT ======
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
@@ -348,7 +364,6 @@
     msg.className = "msg";
     msg.textContent = "กำลังบันทึกข้อมูล...";
 
-    // update audit fields at click time (สำคัญ)
     setClientAuditFields();
 
     const fd = new FormData(form);
@@ -367,8 +382,6 @@
         msg.textContent = "";
 
         showSuccessPopup("บันทึกข้อมูลเรียบร้อย", POPUP_MS);
-
-        // รีเฟรชหน้าให้กลับมาพร้อมกรอกใหม่
         setTimeout(() => location.reload(), AFTER_POPUP_RELOAD_MS);
       } else {
         msg.className = "msg bad";
