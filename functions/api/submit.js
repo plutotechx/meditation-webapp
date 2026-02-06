@@ -1,31 +1,23 @@
 export async function onRequestPost({ request, env }) {
   try {
     const body = await request.json().catch(() => ({}));
+    const payload = { ...body, secret: env.SECRET };
 
-    const payload = {
-      action: "submit",
-      secret: env.SECRET,
-      ...body,
-    };
-
-    const res = await fetch(env.APPS_SCRIPT_URL, {
+    const res = await fetch(env.GAS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    const text = await res.text();
-    return new Response(text, {
+    const out = await res.json().catch(() => ({}));
+    return new Response(JSON.stringify(out), {
       status: res.status,
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-        "Access-Control-Allow-Origin": "*",
-      },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: String(e) }), {
       status: 500,
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json" },
     });
   }
 }
