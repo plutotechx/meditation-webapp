@@ -1,16 +1,16 @@
-import { getEnv, withAction, json } from "./_util";
+export async function onRequestGet({ env }) {
+  const url = new URL(env.GAS_URL);
+  url.searchParams.set("action", "names");
+  url.searchParams.set("secret", env.SECRET);
 
-export async function onRequestGet(ctx) {
-  try {
-    const GAS_URL = getEnv(ctx, "GAS_URL");
-    const SECRET = getEnv(ctx, "SECRET");
+  const res = await fetch(url.toString(), { method: "GET" });
+  const out = await res.json().catch(() => ({}));
+  return json(out, res.ok ? 200 : 500);
+}
 
-    const url = withAction(GAS_URL, "names", SECRET);
-    const res = await fetch(url, { method: "GET" });
-    const out = await res.json().catch(() => ({}));
-
-    return json(out, res.ok ? 200 : 500);
-  } catch (e) {
-    return json({ ok: false, error: String(e) }, 500);
-  }
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
 }
