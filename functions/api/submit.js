@@ -1,23 +1,23 @@
-export async function onRequestPost({ request, env }) {
-  try {
-    const body = await request.json().catch(() => ({}));
-    const payload = { ...body, secret: env.SECRET };
+import { getEnv, json } from "./_util";
 
-    const res = await fetch(env.GAS_URL, {
+export async function onRequestPost(ctx) {
+  try {
+    const GAS_URL = getEnv(ctx, "GAS_URL");
+    const SECRET = getEnv(ctx, "SECRET");
+
+    const body = await ctx.request.json().catch(() => ({}));
+    // ส่งไป doPost ของ GAS (submit)
+    const payload = { ...body, secret: SECRET };
+
+    const res = await fetch(GAS_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     const out = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify(out), {
-      status: res.status,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json(out, res.ok ? 200 : 500);
   } catch (e) {
-    return new Response(JSON.stringify({ ok: false, error: String(e) }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ ok: false, error: String(e) }, 500);
   }
 }
