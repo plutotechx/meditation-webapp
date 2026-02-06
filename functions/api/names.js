@@ -1,20 +1,16 @@
-export async function onRequestGet({ env }) {
-  try {
-    const url = new URL(env.GAS_URL);
-    url.searchParams.set("action", "names");
-    url.searchParams.set("secret", env.SECRET);
+import { getEnv, withAction, json } from "./_util";
 
-    const res = await fetch(url.toString(), { method: "GET" });
+export async function onRequestGet(ctx) {
+  try {
+    const GAS_URL = getEnv(ctx, "GAS_URL");
+    const SECRET = getEnv(ctx, "SECRET");
+
+    const url = withAction(GAS_URL, "names", SECRET);
+    const res = await fetch(url, { method: "GET" });
     const out = await res.json().catch(() => ({}));
 
-    return new Response(JSON.stringify(out), {
-      status: res.status,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json(out, res.ok ? 200 : 500);
   } catch (e) {
-    return new Response(JSON.stringify({ ok: false, error: String(e) }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ ok: false, error: String(e) }, 500);
   }
 }
