@@ -240,7 +240,7 @@
     const weekStartISO = toISODateLocal(mon);
     const weekEndISO = toISODateLocal(sun);
 
-    elWeek.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
+    elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
 
     const q = new URLSearchParams({ weekStartISO, weekEndISO });
     const res = await fetch(`/api/dashboard?${q.toString()}`);
