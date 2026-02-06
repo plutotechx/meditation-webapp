@@ -1,16 +1,24 @@
-import { getEnv, withAction, json } from "./_util";
+export async function onRequestGet({ request, env }) {
+  const u = new URL(request.url);
+  const weekStartISO = (u.searchParams.get("weekStartISO") || "").trim();
+  const weekEndISO = (u.searchParams.get("weekEndISO") || "").trim();
 
-export async function onRequestGet(ctx) {
-  try {
-    const GAS_URL = getEnv(ctx, "GAS_URL");
-    const SECRET = getEnv(ctx, "SECRET");
+  const url = new URL(env.GAS_URL);
+  url.searchParams.set("action", "dashboard");
+  url.searchParams.set("secret", env.SECRET);
 
-    const url = withAction(GAS_URL, "dashboard", SECRET);
-    const res = await fetch(url, { method: "GET" });
-    const out = await res.json().catch(() => ({}));
+  // ส่งช่วงสัปดาห์ที่ “คำนวณจากเครื่องผู้ดู dashboard”
+  if (weekStartISO) url.searchParams.set("weekStartISO", weekStartISO);
+  if (weekEndISO) url.searchParams.set("weekEndISO", weekEndISO);
 
-    return json(out, res.ok ? 200 : 500);
-  } catch (e) {
-    return json({ ok: false, error: String(e) }, 500);
-  }
+  const res = await fetch(url.toString(), { method: "GET" });
+  const out = await res.json().catch(() => ({}));
+  return json(out, res.ok ? 200 : 500);
+}
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8" },
+  });
 }
