@@ -19,11 +19,10 @@
       --ok:#65ffb3;
       --radius:18px;
 
-      /* box tint */
-      --tint-ok: rgba(101,255,179,.14);
-      --tint-bad: rgba(255,106,106,.14);
-      --tint-border-ok: rgba(101,255,179,.28);
-      --tint-border-bad: rgba(255,106,106,.28);
+      --tint-ok: rgba(101,255,179,.16);
+      --tint-bad: rgba(255,106,106,.16);
+      --tint-border-ok: rgba(101,255,179,.34);
+      --tint-border-bad: rgba(255,106,106,.34);
     }
 
     *{box-sizing:border-box}
@@ -41,7 +40,7 @@
       padding:18px
     }
 
-    /* ✅ HEADER: ล็อกให้อยู่กลางแบบ "เป๊ะ" */
+    /* ===== Header center ===== */
     .headerBlock{
       width:100%;
       display:flex;
@@ -54,10 +53,8 @@
     h1{
       margin:0 0 6px;
       font-size:22px;
-      font-weight:900;
+      font-weight:950;
       letter-spacing:.2px;
-
-      /* ✅ บังคับให้ตัวอักษรอยู่กลางจริง */
       width:100%;
       display:flex;
       justify-content:center;
@@ -70,8 +67,6 @@
       line-height:1.55;
       font-weight:900;
       letter-spacing:.2px;
-
-      /* ✅ บังคับให้อยู่กลางจริง */
       width:100%;
       display:flex;
       justify-content:center;
@@ -115,7 +110,7 @@
       border:1px solid rgba(255,255,255,.14)
     }
 
-    /* Result Header */
+    /* ===== Result header ===== */
     .resultHeader{
       margin-top:14px;
       padding:12px 12px;
@@ -123,7 +118,7 @@
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.18);
       line-height:1.6;
-      font-weight:900;
+      font-weight:950;
       text-align:center;
     }
     .resultHeader .line{
@@ -131,27 +126,34 @@
       letter-spacing:.2px;
     }
 
-    /* 4 Boxes */
+    /* ===== 4 Boxes ===== */
     .boxes{
       margin-top:12px;
       display:grid;
       grid-template-columns:repeat(4, minmax(0,1fr));
-      gap:10px;
+      gap:12px;
     }
     @media (max-width:760px){
       .boxes{grid-template-columns:repeat(2, minmax(0,1fr))}
     }
 
     .box{
-      border-radius:14px;
+      border-radius:16px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.18);
-      padding:12px;
-      min-height:104px;
+      padding:14px 12px;
+      min-height:122px;
+
       display:flex;
       flex-direction:column;
-      justify-content:space-between;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      text-align:center;
+
       box-shadow:0 14px 40px rgba(0,0,0,.25);
+      position:relative;
+      overflow:hidden;
     }
 
     .box.ok{
@@ -165,60 +167,93 @@
     .box.sum{
       background:rgba(0,0,0,.18);
       border-color:rgba(255,255,255,.12);
-      justify-content:center;
-      align-items:center;
-      text-align:center;
-      gap:8px;
     }
 
+    /* title */
     .boxTitle{
-      font-weight:900;
-      color:rgba(234,240,255,.92);
-      font-size:13px;
+      font-weight:1000;
+      color:rgba(234,240,255,.96);
+      font-size:20px;
       letter-spacing:.2px;
+      line-height:1.1;
     }
 
-    .statusRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-top:8px;
-      font-weight:900;
+    /* divider (UI MODE 2) */
+    .divider{
+      width:76%;
+      height:1px;
+      background:rgba(255,255,255,.14);
+      margin-top:2px;
+      display:none;
     }
+    .mode2 .divider{ display:block; }
 
-    .time{
-      font-weight:900;
-      font-size:18px;
-      letter-spacing:.2px;
-    }
-    .time.muted{
-      color:rgba(234,240,255,.55);
-      font-weight:800
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width:36px;height:36px;
+    /* icon variants */
+    .badgeCorner{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:34px;height:34px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(255,255,255,.06);
-      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .badge.ok{
-      border-color:rgba(101,255,179,.40);
-      background:rgba(101,255,179,.12);
+    .badgeCorner.ok{
+      border-color:rgba(101,255,179,.44);
+      background:rgba(101,255,179,.14);
     }
-    .badge.bad{
-      border-color:rgba(255,106,106,.40);
-      background:rgba(255,106,106,.12);
+    .badgeCorner.bad{
+      border-color:rgba(255,106,106,.44);
+      background:rgba(255,106,106,.14);
     }
+    .mode1 .badgeCorner{ display:flex; }
+    .mode2 .badgeCorner{ display:none; }
 
-    .sumBig{
-      font-size:34px;
+    .titleRowInline{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      width:100%;
+      display:none;
+    }
+    .badgeInline{
+      width:34px;height:34px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.06);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .badgeInline.ok{ border-color:rgba(101,255,179,.44); background:rgba(101,255,179,.14); }
+    .badgeInline.bad{ border-color:rgba(255,106,106,.44); background:rgba(255,106,106,.14); }
+    .mode2 .titleRowInline{ display:flex; }  /* MODE 2: inline badge */
+
+    /* time */
+    .time{
+      font-weight:1100;
+      font-size:26px;     /* ✅ ใหญ่ขึ้น */
+      letter-spacing:.2px;
+      line-height:1;
+    }
+    .time.muted{
+      color:rgba(234,240,255,.55);
+      font-weight:900;
+    }
+    .mode2 .time{ font-size:28px; } /* MODE 2 ใหญ่ขึ้นอีกนิด */
+
+    /* Summary box */
+    .sumLabel{
       font-weight:1000;
+      font-size:20px;
+      letter-spacing:.2px;
+      color:rgba(234,240,255,.92);
+      line-height:1.1;
+    }
+    .sumBig{
+      font-size:48px;
+      font-weight:1100;
       line-height:1;
       margin:0;
       color:var(--ok);
@@ -255,6 +290,13 @@
   </div>
 
 <script>
+  // =========================
+  // UI MODE:
+  // 1 = icon มุมขวาบน (modern)
+  // 2 = เวลาใหญ่ + เส้นคั่น + badge อยู่แถวเดียวกับหัวข้อ
+  // =========================
+  const UI_MODE = 1;
+
   const weekHeaderEl = document.getElementById("weekHeader");
   const nameSel = document.getElementById("nameSel");
   const dateSel = document.getElementById("dateSel");
@@ -265,11 +307,9 @@
 
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-
   function thaiDateLabelLocalShort(d){
     return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
   }
-
   function mondayOfWeekLocal(d){
     const x = new Date(d); x.setHours(0,0,0,0);
     const day = x.getDay(); // Sun=0
@@ -278,7 +318,6 @@
     return x;
   }
 
-  // ✅ ตัด "สัปดาห์นี้:" ออกแล้ว
   function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
@@ -316,7 +355,7 @@
     return dt.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"numeric" });
   }
 
-  // รองรับ sessions เป็น string หรือ object {done,time}
+  // sessions from API: {done:boolean, time:"HH:mm"}
   function normalizeSession(v){
     if (v && typeof v === "object") {
       const done = !!v.done;
@@ -324,6 +363,7 @@
       const timeText = time ? `${time} น.` : "—";
       return { done, timeText };
     }
+    // fallback old format
     const s = (v ?? "").toString().trim();
     if (!s || s === "—" || s === "-") return { done:false, timeText:"—" };
     const m = s.match(/(\d{1,2}:\d{2})/);
@@ -362,23 +402,41 @@
       </div>
     `;
 
-    const boxHtml = (title, st) => {
+    function boxHtml(title, st){
       const cls = st.done ? "ok" : "bad";
       const timeCls = (st.timeText === "—") ? "time muted" : "time";
-      return `
-        <div class="box ${cls}">
+
+      // MODE 1: icon corner
+      const corner = `
+        <div class="badgeCorner ${cls}">${iconSvg(cls)}</div>
+      `;
+
+      // MODE 2: inline badge beside title
+      const inline = `
+        <div class="titleRowInline">
           <div class="boxTitle">${escapeHtml(title)}</div>
-          <div class="statusRow">
-            <div class="${timeCls}">${escapeHtml(st.timeText)}</div>
-            <div class="badge ${cls}">${iconSvg(cls)}</div>
-          </div>
+          <div class="badgeInline ${cls}">${iconSvg(cls)}</div>
         </div>
       `;
-    };
+
+      const titleOnly = `<div class="boxTitle">${escapeHtml(title)}</div>`;
+      const divider = `<div class="divider"></div>`;
+
+      const modeClass = (UI_MODE === 1) ? "mode1" : "mode2";
+
+      return `
+        <div class="box ${cls} ${modeClass}">
+          ${UI_MODE === 1 ? corner : ""}
+          ${UI_MODE === 2 ? inline : titleOnly}
+          ${divider}
+          <div class="${timeCls}">${escapeHtml(st.timeText)}</div>
+        </div>
+      `;
+    }
 
     const sumBox = `
       <div class="box sum">
-        <div class="boxTitle">สรุป</div>
+        <div class="sumLabel">สรุป</div>
         <div class="sumBig">${doneCount}/3</div>
       </div>
     `;
