@@ -40,30 +40,53 @@
       border-radius:var(--radius);
       padding:18px
     }
-    h1{margin:0 0 6px;font-size:22px}
 
-    /* ✅ จัดหัวสัปดาห์ให้อยู่กลาง */
+    /* ✅ ทำหัวให้อยู่กลางแน่นอน */
+    .headerBlock{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      margin-bottom:8px;
+    }
+    h1{
+      margin:0 0 6px;
+      font-size:22px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      text-align:center;
+      width:100%;
+    }
     .muted{
       color:var(--muted);
-      margin:0 0 16px;
+      margin:0 0 10px;
       line-height:1.55;
       text-align:center;
       font-weight:900;
       letter-spacing:.2px;
+      width:100%;
     }
 
     label{display:block;margin:12px 0 6px}
     select{
-      width:100%;box-sizing:border-box;border-radius:14px;
+      width:100%;
+      border-radius:14px;
       border:1px solid rgba(255,255,255,.18);
-      background:var(--input);color:#fff;
-      padding:12px 12px;outline:none
+      background:var(--input);
+      color:#fff;
+      padding:12px 12px;
+      outline:none
     }
     button{
-      margin-top:14px;width:100%;
-      padding:12px 14px;border:0;border-radius:14px;
-      background:var(--btn);color:var(--btnText);
-      font-weight:900;cursor:pointer
+      margin-top:14px;
+      width:100%;
+      padding:12px 14px;
+      border:0;
+      border-radius:14px;
+      background:var(--btn);
+      color:var(--btnText);
+      font-weight:900;
+      cursor:pointer
     }
     button:disabled{opacity:.6;cursor:not-allowed}
 
@@ -130,7 +153,6 @@
     .box.sum{
       background:rgba(0,0,0,.18);
       border-color:rgba(255,255,255,.12);
-      /* ✅ center summary content */
       justify-content:center;
       align-items:center;
       text-align:center;
@@ -195,8 +217,11 @@
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>ตรวจสอบสถานะ</h1>
-      <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
+
+      <div class="headerBlock">
+        <h1>ตรวจสอบสถานะ</h1>
+        <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
+      </div>
 
       <label>รายชื่อ</label>
       <select id="nameSel">
@@ -213,6 +238,7 @@
       <div class="topline">
         <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
       </div>
+
     </div>
   </div>
 
@@ -240,7 +266,7 @@
     return x;
   }
 
-  // ✅ ตัด "สัปดาห์นี้:" ออก และจัดให้อยู่กลางด้วย CSS .muted
+  // ✅ ตัด "สัปดาห์นี้:" ออกแล้ว
   function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
@@ -278,6 +304,7 @@
     return dt.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"numeric" });
   }
 
+  // รองรับ sessions เป็น string หรือ object {done,time}
   function normalizeSession(v){
     if (v && typeof v === "object") {
       const done = !!v.done;
