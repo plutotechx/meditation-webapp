@@ -9,13 +9,15 @@
     :root{
       --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.12);
       --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
-      --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
 
-      /* NEW: ปุ่มตรวจสอบสถานะ (โทน teal/greenish) */
-      --statusBtnBg: rgba(101, 255, 179, .14);
-      --statusBtnBgHover: rgba(101, 255, 179, .18);
-      --statusBtnBorder: rgba(101, 255, 179, .28);
+      /* primary / secondary buttons */
+      --btn:#6aa9ff;         --btnText:#081122;      /* ปุ่มหลัก: บันทึก */
+      --btn2:rgba(101,255,179,.18); --btn2Border:rgba(101,255,179,.34); /* ปุ่มรอง: ตรวจสอบสถานะ */
+      --btn2Text:#eaf0ff;
 
+      --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
+
+      /* popup */
       --overlay: rgba(0,0,0,.55);
       --card-border: rgba(255,255,255,.28);
       --green: #21b14b;
@@ -27,11 +29,13 @@
     h1{margin:0 0 6px;font-size:22px}
     .muted{color:var(--muted);margin:0 0 16px;line-height:1.55}
     label{display:block;margin:12px 0 6px}
+
     select,input{
       width:100%;box-sizing:border-box;border-radius:14px;
       border:1px solid rgba(255,255,255,.18);
       background:var(--input);color:#fff;padding:12px 12px;outline:none
     }
+
     .grid{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
 
@@ -41,33 +45,23 @@
     }
     button:disabled{opacity:.6;cursor:not-allowed}
 
+    /* ปุ่มรอง */
+    .btn-secondary{
+      background:var(--btn2);
+      color:var(--btn2Text);
+      border:1px solid var(--btn2Border);
+    }
+    .btn-secondary:hover{
+      filter:brightness(1.08);
+    }
+
     .msg{margin-top:12px;min-height:22px;white-space:pre-line}
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
     .small{font-size:12px;color:var(--muted);margin-top:10px}
-
     a.linkbtn{display:block;text-decoration:none}
 
-    /* ปุ่มลิงก์รอง (พื้นฐาน) */
-    a.linkbtn button{
-      margin-top:10px;
-      background:rgba(255,255,255,.10);
-      color:var(--text);
-      border:1px solid rgba(255,255,255,.14)
-    }
-    a.linkbtn button:hover{
-      background:rgba(255,255,255,.12);
-    }
-
-    /* NEW: ปุ่ม “ตรวจสอบสถานะการทำสมาธิ” ให้เป็นสีใหม่ */
-    a.linkbtn button.status-btn{
-      background: var(--statusBtnBg);
-      border: 1px solid var(--statusBtnBorder);
-      color: var(--text);
-    }
-    a.linkbtn button.status-btn:hover{
-      background: var(--statusBtnBgHover);
-    }
+    option[disabled]{ color: rgba(255,255,255,.35); }
 
     /* ===== Success Popup ===== */
     .success-overlay{
@@ -112,7 +106,7 @@
     .success-card::after{
       content:""; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%);
       width:210px; height:20px;
-      background: radial-gradient(closest-side, rgba(135, 200, 255, .85), rgba(135, 200, 255, .25) 55%, rgba(135, 200, 255, 0) 78%);
+      background: radial-gradient(closest-side, rgba(135,200,255,.85), rgba(135,200,255,.25) 55%, rgba(135,200,255,0) 78%);
       filter: blur(1.4px); opacity:.85; pointer-events:none;
     }
 
@@ -129,8 +123,6 @@
       text-shadow: 0 2px 18px rgba(0,0,0,.45);
       margin: 0;
     }
-
-    option[disabled]{ color: rgba(255,255,255,.35); }
   </style>
 </head>
 
@@ -221,9 +213,8 @@
 
         <button id="btn" type="submit">บันทึกข้อมูล</button>
 
-        <!-- ปุ่มตรวจสอบสถานะ: สีใหม่ -->
         <a class="linkbtn" href="/status.html">
-          <button type="button" class="status-btn">ตรวจสอบสถานะการทำสมาธิ</button>
+          <button class="btn-secondary" type="button">ตรวจสอบสถานะการทำสมาธิ</button>
         </a>
 
         <div class="msg" id="msg"></div>
@@ -285,6 +276,7 @@
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
   }
 
+  // โชว์ครบ 7 วัน แต่ "ล็อก" อนาคต + ย้อนหลังได้แค่ 1 วัน
   function buildLogDateOptions(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
@@ -339,6 +331,7 @@
   buildLogDateOptions();
   setClientAuditFields();
 
+  // Popup
   const overlay = document.getElementById('successOverlay');
   const textEl  = document.getElementById('successText');
 
@@ -353,6 +346,7 @@
     }, autoCloseMs);
   }
 
+  // SUBMIT
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
@@ -382,6 +376,7 @@
         msg.textContent = "";
 
         showSuccessPopup("บันทึกข้อมูลเรียบร้อย", POPUP_MS);
+
         setTimeout(() => location.reload(), AFTER_POPUP_RELOAD_MS);
       } else {
         msg.className = "msg bad";
