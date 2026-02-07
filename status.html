@@ -41,30 +41,42 @@
       padding:18px
     }
 
-    /* ✅ ทำหัวให้อยู่กลางแน่นอน */
+    /* ✅ HEADER: ล็อกให้อยู่กลางแบบ "เป๊ะ" */
     .headerBlock{
+      width:100%;
       display:flex;
       flex-direction:column;
       align-items:center;
+      justify-content:center;
       text-align:center;
       margin-bottom:8px;
     }
     h1{
       margin:0 0 6px;
       font-size:22px;
-      font-weight:1000;
+      font-weight:900;
       letter-spacing:.2px;
-      text-align:center;
+
+      /* ✅ บังคับให้ตัวอักษรอยู่กลางจริง */
       width:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
     }
     .muted{
       color:var(--muted);
       margin:0 0 10px;
       line-height:1.55;
-      text-align:center;
       font-weight:900;
       letter-spacing:.2px;
+
+      /* ✅ บังคับให้อยู่กลางจริง */
       width:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
     }
 
     label{display:block;margin:12px 0 6px}
@@ -111,7 +123,7 @@
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.18);
       line-height:1.6;
-      font-weight:1100;
+      font-weight:900;
       text-align:center;
     }
     .resultHeader .line{
@@ -160,7 +172,7 @@
     }
 
     .boxTitle{
-      font-weight:1100;
+      font-weight:900;
       color:rgba(234,240,255,.92);
       font-size:13px;
       letter-spacing:.2px;
@@ -172,17 +184,17 @@
       justify-content:space-between;
       gap:10px;
       margin-top:8px;
-      font-weight:1100;
+      font-weight:900;
     }
 
     .time{
-      font-weight:1100;
+      font-weight:900;
       font-size:18px;
       letter-spacing:.2px;
     }
     .time.muted{
       color:rgba(234,240,255,.55);
-      font-weight:900
+      font-weight:800
     }
 
     .badge{
@@ -206,7 +218,7 @@
 
     .sumBig{
       font-size:34px;
-      font-weight:1200;
+      font-weight:1000;
       line-height:1;
       margin:0;
       color:var(--ok);
