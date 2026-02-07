@@ -41,7 +41,17 @@
       padding:18px
     }
     h1{margin:0 0 6px;font-size:22px}
-    .muted{color:var(--muted);margin:0 0 16px;line-height:1.55}
+
+    /* ✅ จัดหัวสัปดาห์ให้อยู่กลาง */
+    .muted{
+      color:var(--muted);
+      margin:0 0 16px;
+      line-height:1.55;
+      text-align:center;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
     label{display:block;margin:12px 0 6px}
     select{
       width:100%;box-sizing:border-box;border-radius:14px;
@@ -218,7 +228,6 @@
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
 
-  // สำหรับหัวสัปดาห์/ดรอปดาวน์: dd mmm yy แบบเดิมยังโอเค
   function thaiDateLabelLocalShort(d){
     return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
   }
@@ -231,11 +240,12 @@
     return x;
   }
 
+  // ✅ ตัด "สัปดาห์นี้:" ออก และจัดให้อยู่กลางด้วย CSS .muted
   function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
     const sun = new Date(mon); sun.setDate(mon.getDate()+6);
-    weekHeaderEl.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateLabelLocalShort(mon)} – อาทิตย์ ${thaiDateLabelLocalShort(sun)}`;
+    weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocalShort(mon)} – อาทิตย์ ${thaiDateLabelLocalShort(sun)}`;
   }
 
   function buildDateOptions(){
@@ -262,7 +272,6 @@
     }[m]));
   }
 
-  // ✅ Header date: "7 ก.พ. 2569"
   function formatISOToThaiLong(iso){
     const [y,m,d] = iso.split("-").map(Number);
     const dt = new Date(y, m-1, d);
