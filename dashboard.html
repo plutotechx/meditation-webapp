@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
+
   <style>
     :root{
       --bg:#0a1322;
@@ -11,11 +12,14 @@
       --border:rgba(255,255,255,.10);
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.72);
-      --good:#30d16a;
-      --mid:#f3c43a;
-      --bad:#ff4d4d;
+
+      --good:#30d16a;   /* เขียว */
+      --mid:#f3c43a;    /* เหลือง */
+      --bad:#ff4d4d;    /* แดง */
+
       --radius:18px;
     }
+
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -27,24 +31,36 @@
       color:var(--text);
       min-height:100vh;
     }
-    .wrap{max-width:1180px;margin:0 auto;padding:26px 18px 30px}
-    h1{margin:0 0 10px;font-size:26px;font-weight:800}
 
-    /* top right meta (auto refresh status) */
+    .wrap{max-width:1180px;margin:0 auto;padding:26px 18px 30px}
+
+    /* ===== Header ===== */
     .topMeta{
-      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
       margin:0 0 8px;
       flex-wrap:wrap;
     }
+    h1{margin:0;font-size:26px;font-weight:800;letter-spacing:.2px}
+
     .metaRight{
-      display:flex;gap:10px;align-items:center;justify-content:flex-end;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
       color:rgba(234,240,255,.72);
       font-size:12px;
       font-weight:800;
+      flex-wrap:wrap;
     }
     .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.18);
       white-space:nowrap;
@@ -74,13 +90,16 @@
       font-weight:900;
       font-size:12px;
     }
-    .btnMini:hover{ background:rgba(255,255,255,.10) }
+    .btnMini:hover{background:rgba(255,255,255,.10)}
 
     .weekTitle{font-size:20px;font-weight:900;margin:12px 0 12px}
 
+    /* ===== KPI cards ===== */
     .kpis{
-      display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:14px;margin:6px 0 16px;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin:6px 0 16px;
     }
     @media (max-width:900px){ .kpis{grid-template-columns:1fr;}}
 
@@ -90,15 +109,24 @@
       border-radius:18px;
       padding:16px 16px 14px;
       box-shadow:0 18px 50px rgba(0,0,0,.35);
-      position:relative;overflow:hidden;
+      position:relative;
+      overflow:hidden;
+    }
+    .kpi:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:radial-gradient(closest-side at 65% 0%, rgba(120,200,255,.25), transparent 70%);
+      pointer-events:none;
     }
     .kpi .label{font-size:14px;color:var(--muted);font-weight:800}
     .kpi .value{font-size:44px;font-weight:900;line-height:1;margin-top:10px}
-    .value.good{color:var(--good)}
-    .value.bad{color:var(--bad)}
-    .value.mid{color:var(--mid)}
-    .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
+    .kpi .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
 
+    .value.good{color:var(--good)}
+    .value.mid{color:var(--mid)}
+    .value.bad{color:var(--bad)}
+
+    /* ===== pie ===== */
     .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
     .pie{
       width:110px;height:110px;border-radius:999px;
@@ -108,33 +136,43 @@
       position:relative;
     }
     .pie:after{
-      content:"";position:absolute;inset:12px;
+      content:"";
+      position:absolute; inset:12px;
       background:rgba(10,19,34,.85);
-      border-radius:999px;border:1px solid rgba(255,255,255,.08);
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
     }
 
+    /* ===== Table ===== */
     .table{
       width:100%;
-      border-collapse:separate;border-spacing:0;
-      overflow:hidden;border-radius:18px;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.04);
       box-shadow:0 18px 60px rgba(0,0,0,.35);
     }
     .table thead th{
-      text-align:left;font-size:14px;font-weight:900;
+      text-align:left;
+      font-size:14px;
+      font-weight:900;
       color:rgba(234,240,255,.82);
-      padding:14px 14px;background:rgba(0,0,0,.20);
+      padding:14px 14px;
+      background:rgba(0,0,0,.20);
       border-bottom:1px solid rgba(255,255,255,.10);
       white-space:nowrap;
     }
     .table tbody td{
-      padding:14px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+      padding:14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
       vertical-align:top;
     }
     .table tbody tr:last-child td{border-bottom:none}
     .name{font-size:16px;font-weight:900}
 
+    /* percent cell */
     .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .chip{
       display:inline-flex;align-items:center;gap:8px;
@@ -152,20 +190,26 @@
     .chip.bad .dot{background:var(--bad)}
 
     .progress{
-      width:min(280px, 100%);height:10px;border-radius:999px;
-      background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.10);
+      width:min(280px, 100%);
+      height:10px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
       overflow:hidden;
     }
     .progress > i{
-      display:block;height:100%;width:0%;
+      display:block;height:100%;
+      width:0%;
       background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.55));
     }
     .progress.mid > i{ background:linear-gradient(90deg, rgba(243,196,58,.95), rgba(243,196,58,.55)); }
     .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
 
+    /* 7 day boxes */
     .days{
-      display:grid;grid-template-columns:repeat(7, minmax(0, 1fr));
-      gap:8px;min-width:520px;
+      display:grid;
+      grid-template-columns:repeat(7, minmax(0, 1fr));
+      gap:8px;
+      min-width:520px;
     }
     @media (max-width:1100px){ .days{min-width:420px} }
     @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
@@ -176,9 +220,18 @@
       background:rgba(0,0,0,.20);
       user-select:none;
     }
-    .daybox.good{background:linear-gradient(180deg, rgba(48,209,106,.35), rgba(48,209,106,.18));border-color:rgba(48,209,106,.35);}
-    .daybox.mid{background:linear-gradient(180deg, rgba(243,196,58,.30), rgba(243,196,58,.16));border-color:rgba(243,196,58,.35);}
-    .daybox.bad{background:linear-gradient(180deg, rgba(255,77,77,.30), rgba(255,77,77,.15));border-color:rgba(255,77,77,.35);}
+    .daybox.good{
+      background:linear-gradient(180deg, rgba(48,209,106,.35), rgba(48,209,106,.18));
+      border-color:rgba(48,209,106,.35);
+    }
+    .daybox.mid{
+      background:linear-gradient(180deg, rgba(243,196,58,.30), rgba(243,196,58,.16));
+      border-color:rgba(243,196,58,.35);
+    }
+    .daybox.bad{
+      background:linear-gradient(180deg, rgba(255,77,77,.30), rgba(255,77,77,.15));
+      border-color:rgba(255,77,77,.35);
+    }
 
     .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
     .btn{
@@ -188,18 +241,20 @@
       padding:10px 14px;border-radius:12px;
       font-weight:900;
     }
+    .btn:hover{background:rgba(255,255,255,.10)}
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="topMeta">
-      <h1 style="margin:0">Dashboard</h1>
+      <h1>Dashboard</h1>
 
       <div class="metaRight">
+        <!-- Auto Refresh pill (ข้อความจะแสดงตาม REFRESH_MS) -->
         <span class="pill" title="รีเฟรชอัตโนมัติ">
           <span id="liveDot" class="dotLive"></span>
-          Auto Refresh
+          <span id="autoRefreshLabel">Auto Refresh</span>
         </span>
 
         <span class="pill" id="lastUpdated">อัปเดตล่าสุด: -</span>
@@ -209,23 +264,30 @@
     </div>
 
     <div class="kpis">
+      <!-- LEFT: Pie -->
       <div class="kpi">
         <div class="label">สัดส่วนทำครบ 21/21 (สัปดาห์นี้)</div>
+
         <div class="pieWrap">
           <div class="pie" id="pie"></div>
+
           <div style="display:grid;gap:8px">
             <div style="font-weight:900;font-size:22px" id="piePct">-</div>
             <div style="color:rgba(234,240,255,.72)" id="pieText">กำลังคำนวณ...</div>
           </div>
         </div>
+
+        <div class="sub">วงกลม = สัดส่วน “ครบ 21/21” เทียบทั้งหมด</div>
       </div>
 
+      <!-- MID: Complete -->
       <div class="kpi">
         <div class="label">ทำครบ 21/21</div>
         <div id="kpiComplete" class="value good">-</div>
         <div class="sub">จำนวนคนที่ครบทุกวันทุกเวลา</div>
       </div>
 
+      <!-- RIGHT: Incomplete -->
       <div class="kpi">
         <div class="label">ทำไม่ครบ</div>
         <div id="kpiIncomplete" class="value bad">-</div>
@@ -257,31 +319,36 @@
 
 <script>
   // ====== AUTO REFRESH CONFIG ======
-  // แนะนำ: 60000 (60 วิ) หรือ 120000 (120 วิ)
-  const REFRESH_MS = 60000;
+  // แนะนำสำหรับของตั้ม: 120000 (2 นาที) หรือ 60000 (1 นาที)
+  const REFRESH_MS = 120000;
 
   const elWeek = document.getElementById("weekHeader");
   const tbody  = document.getElementById("tbody");
+
   const pie = document.getElementById("pie");
   const piePct = document.getElementById("piePct");
   const pieText = document.getElementById("pieText");
+
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
   const liveDot = document.getElementById("liveDot");
+  const autoRefreshLabel = document.getElementById("autoRefreshLabel");
   const lastUpdated = document.getElementById("lastUpdated");
   const btnRefresh = document.getElementById("btnRefresh");
 
   let timer = null;
   let isLoading = false;
 
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-  function thaiDateFromISO(iso){
-    const [y,m,d] = iso.split("-").map(Number);
-    const dt = new Date(y, m-1, d);
-    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
-  }
+
   function mondayOfWeekLocal(d){
     const x = new Date(d); x.setHours(0,0,0,0);
     const day = x.getDay(); // Sun=0
@@ -290,6 +357,13 @@
     return x;
   }
 
+  function thaiDateFromISO(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
+  }
+
+  // เกณฑ์สี % (ปรับได้)
   function gradeByPercent(p){
     if (p >= 90) return "good";
     if (p >= 70) return "mid";
@@ -300,15 +374,9 @@
     if (count === 2) return "mid";
     return "bad";
   }
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
 
   function setLastUpdated(ts){
     const t = ts || new Date();
-    // แสดงเวลาตามเครื่องผู้ดู (ท้องถิ่น)
     const s = t.toLocaleString("th-TH", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
     lastUpdated.textContent = `อัปเดตล่าสุด: ${s}`;
   }
@@ -317,6 +385,18 @@
     liveDot.classList.toggle("on", !!on);
   }
 
+  // ====== Auto label from REFRESH_MS ======
+  function formatEvery(ms){
+    const s = Math.round(ms / 1000);
+    if (s < 60) return `ทุก ${s} วินาที`;
+    const m = Math.round(s / 60);
+    return `ทุก ${m} นาที`;
+  }
+  function updateAutoRefreshLabel(){
+    autoRefreshLabel.textContent = `Auto Refresh: ${formatEvery(REFRESH_MS)}`;
+  }
+  updateAutoRefreshLabel();
+
   async function load(){
     if (isLoading) return; // กันยิงซ้อน
     isLoading = true;
@@ -324,25 +404,24 @@
     try {
       tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
 
-      // คำนวณสัปดาห์นี้ตาม timezone ของ “เครื่องผู้ดู”
+      // สัปดาห์นี้ตาม timezone ของเครื่องผู้ดู
       const now = new Date();
       const mon = mondayOfWeekLocal(now);
       const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+
       const weekStartISO = toISODateLocal(mon);
-      const weekEndISO = toISODateLocal(sun);
+      const weekEndISO   = toISODateLocal(sun);
 
       elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
 
       const q = new URLSearchParams({ weekStartISO, weekEndISO });
+      q.set("_t", String(Date.now())); // กัน cache
 
-      // กันแคช: ใส่ timestamp query
-      q.set("_t", String(Date.now()));
-
-      const res = await fetch(`/api/dashboard?${q.toString()}`, { method: "GET" });
+      const res = await fetch(`/api/dashboard?${q.toString()}`, { method:"GET" });
       const out = await res.json().catch(()=>({}));
 
       if (!res.ok || !out.ok){
-        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(out.error || "unknown_error")}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
         return;
       }
 
@@ -359,6 +438,7 @@
       kpiComplete.textContent = `${completePeople} คน`;
       kpiIncomplete.textContent = `${incompletePeople} คน`;
 
+      // table
       const rows = Array.isArray(out.people) ? out.people : [];
       rows.sort((a,b)=> (b.percent||0)-(a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
 
@@ -409,8 +489,8 @@
   function startAutoRefresh(){
     stopAutoRefresh();
     setAutoRefreshUI(true);
+
     timer = setInterval(() => {
-      // โหลดเฉพาะตอนแท็บ active (ลด request)
       if (document.visibilityState === "visible") load();
     }, REFRESH_MS);
   }
@@ -421,14 +501,14 @@
     timer = null;
   }
 
-  // กดปุ่มรีเฟรชทันที
+  // manual refresh
   btnRefresh.addEventListener("click", () => load());
 
-  // ถ้า user สลับแท็บ: หยุด/เริ่มอัตโนมัติ
+  // pause/resume when tab not visible
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
       startAutoRefresh();
-      load(); // กลับมาหน้าเดิมแล้วโหลดใหม่ทันที
+      load();
     } else {
       stopAutoRefresh();
     }
