@@ -33,74 +33,30 @@
       min-height:100vh;
     }
 
-    .wrap{max-width:1180px;margin:0 auto;padding:26px 18px 30px}
-    h1{margin:0 0 12px;font-size:26px;font-weight:800;letter-spacing:.2px}
+    .wrap{max-width:1180px;margin:0 auto;padding:20px 14px 30px}
+
+    /* ===== Topbar ===== */
+    .topbar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    h1{margin:0;font-size:26px;font-weight:900;letter-spacing:.2px}
     .muted{color:var(--muted)}
     .weekTitle{font-size:20px;font-weight:900;margin:12px 0 12px}
 
-    /* ===== KPI cards ===== */
-    .kpis{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:14px;
-      margin:6px 0 16px;
-      align-items:stretch;
-    }
-    @media (max-width:900px){ .kpis{grid-template-columns:1fr;}}
-
-    .kpi{
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:16px 16px 14px;
-      box-shadow:0 18px 50px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
-      min-height:170px; /* กัน box กระตุกเวลาเปิด/ปิด Auto refresh */
-    }
-    .kpi:before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:radial-gradient(closest-side at 65% 0%, rgba(120,200,255,.25), transparent 70%);
-      pointer-events:none;
-    }
-    .kpi .label{font-size:14px;color:var(--muted);font-weight:800}
-    .kpi .value{font-size:44px;font-weight:900;line-height:1;margin-top:10px}
-    .kpi .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
-
-    .value.good{color:var(--good)}
-    .value.mid{color:var(--mid)}
-    .value.bad{color:var(--bad)}
-
-    /* ===== pie ===== */
-    .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
-    .pie{
-      width:110px;height:110px;border-radius:999px;
-      background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 16px 45px rgba(0,0,0,.35);
-      position:relative;
-      flex:0 0 auto;
-    }
-    .pie:after{
-      content:"";
-      position:absolute; inset:12px;
-      background:rgba(10,19,34,.85);
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    /* ===== Auto refresh box (top-right inside KPI right) ===== */
+    /* ===== Auto refresh box (TOP) ===== */
     .autoBox{
-      position:absolute;
-      top:12px;
-      right:12px;
-      width:240px;
-      height:72px;            /* fix height กันกระตุก */
+      width:320px;
+      max-width:100%;
+      height:74px;           /* fix height กันกระตุก */
       padding:10px 12px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.20);
+      background:rgba(0,0,0,.22);
       box-shadow:0 14px 38px rgba(0,0,0,.28);
       display:grid;
       grid-template-columns:1fr auto;
@@ -112,8 +68,9 @@
     }
     .autoTop{
       display:flex;align-items:center;gap:8px;
-      font-weight:900;font-size:13px;color:rgba(234,240,255,.90);
+      font-weight:900;font-size:13px;color:rgba(234,240,255,.92);
       white-space:nowrap;
+      min-width:0;
     }
     .dotLive{
       width:10px;height:10px;border-radius:999px;
@@ -174,16 +131,75 @@
     }
     .switch input:checked + .slider:before{ transform:translate(20px,-50%); }
 
-    /* ===== Table ===== */
+    /* ===== KPI cards ===== */
+    .kpis{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+      margin:6px 0 16px;
+      align-items:stretch;
+    }
+    @media (max-width:900px){ .kpis{grid-template-columns:1fr;}}
+
+    .kpi{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:16px 16px 14px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+      min-height:170px;
+    }
+    .kpi:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:radial-gradient(closest-side at 65% 0%, rgba(120,200,255,.25), transparent 70%);
+      pointer-events:none;
+    }
+    .kpi .label{font-size:14px;color:var(--muted);font-weight:800}
+    .kpi .value{font-size:44px;font-weight:900;line-height:1;margin-top:10px}
+    .kpi .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
+    .value.good{color:var(--good)}
+    .value.mid{color:var(--mid)}
+    .value.bad{color:var(--bad)}
+
+    /* pie */
+    .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
+    .pie{
+      width:110px;height:110px;border-radius:999px;
+      background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 16px 45px rgba(0,0,0,.35);
+      position:relative;
+      flex:0 0 auto;
+    }
+    .pie:after{
+      content:"";
+      position:absolute; inset:12px;
+      background:rgba(10,19,34,.85);
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    /* ===== Table wrap (mobile scroll) ===== */
+    .tableWrap{
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+    }
+
     .table{
       width:100%;
+      min-width:980px;  /* สำคัญ: กันตารางบีบจนอ่านไม่ได้บนมือถือ */
       border-collapse:separate;
       border-spacing:0;
       overflow:hidden;
       border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-      box-shadow:var(--shadow);
+      background:transparent;
     }
     .table thead th{
       text-align:left;
@@ -243,8 +259,6 @@
       gap:8px;
       min-width:560px;
     }
-    @media (max-width:1100px){ .days{min-width:460px} }
-    @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
 
     .daybox{
       border-radius:12px;
@@ -289,16 +303,16 @@
     .dayNum{opacity:.9}
     .dayCount{font-size:20px;letter-spacing:.3px}
 
-    /* ===== Custom tooltip (fixed width + within viewport) ===== */
+    /* ===== Tooltip: compact + minimal ===== */
     .tt{
       position:fixed;
       z-index:9999;
       display:none;
-      width:min(380px, calc(100vw - 32px));
-      max-height:min(240px, calc(100vh - 40px));
+      width:min(300px, calc(100vw - 24px)); /* แคบลง */
+      max-height:min(220px, calc(100vh - 32px));
       overflow:auto;
-      padding:12px 12px 10px;
-      border-radius:16px;
+      padding:10px 10px 8px;
+      border-radius:14px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(10,19,34,.92);
       box-shadow:0 22px 70px rgba(0,0,0,.55);
@@ -307,8 +321,8 @@
     }
     .ttHead{
       font-weight:900;
-      font-size:14px;
-      margin-bottom:10px;
+      font-size:13px; /* เล็กลง */
+      margin-bottom:8px;
       color:rgba(234,240,255,.95);
       white-space:nowrap;
       overflow:hidden;
@@ -318,35 +332,37 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      padding:10px 12px;
-      border-radius:14px;
+      gap:8px;
+      padding:8px 10px; /* ลด padding */
+      border-radius:12px;
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.08);
-      margin-bottom:8px;
+      margin-bottom:6px;
     }
     .ttRow:last-child{margin-bottom:0}
-    .ttL{display:flex;align-items:center;gap:10px;font-weight:900}
+    .ttL{display:flex;align-items:center;gap:8px;font-weight:900;font-size:13px}
     .ic{
-      width:22px;height:22px;border-radius:999px;
+      width:20px;height:20px;border-radius:999px;
       display:grid;place-items:center;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(0,0,0,.18);
-      font-size:13px;
+      font-size:12px;
       flex:0 0 auto;
     }
     .ic.ok{background:rgba(48,209,106,.18); border-color:rgba(48,209,106,.35); color:#dfffe9}
     .ic.no{background:rgba(255,77,77,.16); border-color:rgba(255,77,77,.35); color:#ffd9d9}
     .ttTime{
       font-weight:900;
+      font-size:13px;
       color:rgba(234,240,255,.90);
       white-space:nowrap;
       margin-left:auto;
     }
     .ttTime.miss{color:rgba(234,240,255,.45)}
+
     .ttArrow{
       position:fixed;
-      width:12px;height:12px;
+      width:10px;height:10px; /* เล็กลง */
       background:rgba(10,19,34,.92);
       border-left:1px solid rgba(255,255,255,.14);
       border-top:1px solid rgba(255,255,255,.14);
@@ -364,12 +380,41 @@
       font-weight:900;
     }
     .btn:hover{background:rgba(255,255,255,.10)}
+
+    /* ===== Mobile tweaks ===== */
+    @media (max-width:520px){
+      h1{font-size:22px}
+      .wrap{padding:16px 12px 26px}
+      .autoBox{width:100%}       /* AutoBox เต็มความกว้างบนมือถือ */
+      .autoSub{font-size:11px}
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <h1>Dashboard</h1>
+
+    <!-- TOPBAR: Title + Auto Refresh -->
+    <div class="topbar">
+      <h1>Dashboard</h1>
+
+      <div class="autoBox" id="autoBox">
+        <div class="autoTop">
+          <span class="dotLive" id="autoDot"></span>
+          <span id="autoLabel">Auto Refresh</span>
+        </div>
+
+        <label class="switch" title="เปิด/ปิด Auto Refresh">
+          <input type="checkbox" id="autoToggle" />
+          <span class="slider"></span>
+        </label>
+
+        <div class="autoSub">
+          <span id="autoEvery">ทุก 1 นาที</span>
+          <span class="count">รีเฟรชใน <b id="autoCountdown">--</b>s</span>
+        </div>
+      </div>
+    </div>
 
     <div class="kpis">
       <!-- LEFT: Pie -->
@@ -395,25 +440,8 @@
         <div class="sub">จำนวนคนที่ครบทุกวันทุกเวลา</div>
       </div>
 
-      <!-- RIGHT: Incomplete + Auto refresh box -->
+      <!-- RIGHT: Incomplete -->
       <div class="kpi">
-        <div class="autoBox" id="autoBox">
-          <div class="autoTop">
-            <span class="dotLive" id="autoDot"></span>
-            <span id="autoLabel">Auto Refresh</span>
-          </div>
-
-          <label class="switch" title="เปิด/ปิด Auto Refresh">
-            <input type="checkbox" id="autoToggle" />
-            <span class="slider"></span>
-          </label>
-
-          <div class="autoSub">
-            <span id="autoEvery">ทุก 1 นาที</span>
-            <span class="count">รีเฟรชใน <b id="autoCountdown">--</b>s</span>
-          </div>
-        </div>
-
         <div class="label">ทำไม่ครบ</div>
         <div id="kpiIncomplete" class="value bad">-</div>
         <div class="sub">จำนวนคนที่ยังไม่ครบ 21/21</div>
@@ -422,19 +450,22 @@
 
     <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
 
-    <table class="table">
-      <thead>
-        <tr>
-          <th style="width:26%">ชื่อ</th>
-          <th style="width:30%">% สัปดาห์</th>
-          <th style="width:10%">ครบทั้งวัน</th>
-          <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
-      </tbody>
-    </table>
+    <!-- Table wrapper for mobile -->
+    <div class="tableWrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width:26%">ชื่อ</th>
+            <th style="width:30%">% สัปดาห์</th>
+            <th style="width:10%">ครบทั้งวัน</th>
+            <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <div class="btns">
       <a class="btn" href="/">กลับหน้าบันทึกข้อมูล</a>
@@ -473,9 +504,9 @@
   let ttActiveEl = null;
 
   function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
+    return String(s).replace(/[&<>"']/g, (m)=>( {
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
+    }[m] ));
   }
 
   function thaiDateFromISO(iso){
@@ -494,7 +525,6 @@
     return Number(iso.split("-")[2]) || "";
   }
 
-  // เกณฑ์สี % (ปรับได้)
   function gradeByPercent(p){
     if (p >= 90) return "good";
     if (p >= 70) return "mid";
@@ -546,8 +576,6 @@
     clearInterval(tickTimer);
     tickTimer = setInterval(() => {
       if (!autoEnabled) return;
-
-      // ถ้าแท็บไม่ active -> หยุดนับ/ไม่ยิง
       if (document.hidden) return;
 
       const leftMs = Math.max(0, nextRefreshAt - Date.now());
@@ -576,10 +604,8 @@
     if (!autoEnabled) return;
 
     if (document.hidden) {
-      // พอซ่อนแท็บ: ไม่ยิง + ไม่อัพเดต countdown
       clearTimeout(refreshTimer);
     } else {
-      // กลับมา: รีเซ็ตรอบใหม่ให้แน่นอน + กันยิงรัวตอนกลับมา
       nextRefreshAt = Date.now() + REFRESH_MS;
       scheduleRefresh();
     }
@@ -594,7 +620,6 @@
     try { data = JSON.parse(payload); } catch { data = null; }
     if (!data) return;
 
-    // content
     const head = escapeHtml(data.head || "");
     const rows = Array.isArray(data.rows) ? data.rows : [];
 
@@ -620,33 +645,29 @@
       }).join("")}
     `;
 
-    // position near element, but keep inside viewport
+    // position: keep inside viewport
     const rect = el.getBoundingClientRect();
     tt.style.display = "block";
     ttArrow.style.display = "block";
 
-    // measure tooltip after display
     const ttRect = tt.getBoundingClientRect();
 
     let left = rect.left + rect.width/2 - ttRect.width/2;
     let top  = rect.bottom + 10;
 
-    // clamp to viewport
-    left = Math.max(12, Math.min(left, window.innerWidth - ttRect.width - 12));
+    left = Math.max(10, Math.min(left, window.innerWidth - ttRect.width - 10));
 
-    // if overflow bottom, show above
-    if (top + ttRect.height > window.innerHeight - 12){
+    if (top + ttRect.height > window.innerHeight - 10){
       top = rect.top - ttRect.height - 10;
     }
-    top = Math.max(12, Math.min(top, window.innerHeight - ttRect.height - 12));
+    top = Math.max(10, Math.min(top, window.innerHeight - ttRect.height - 10));
 
     tt.style.left = left + "px";
     tt.style.top  = top + "px";
 
-    // arrow
-    const arrowSize = 12;
-    const arrowLeft = Math.max(left + 18, Math.min(rect.left + rect.width/2 - arrowSize/2, left + ttRect.width - 30));
-    let arrowTop = (top > rect.top) ? (rect.bottom + 4) : (rect.top - 8);
+    const arrowSize = 10;
+    const arrowLeft = Math.max(left + 16, Math.min(rect.left + rect.width/2 - arrowSize/2, left + ttRect.width - 24));
+    const arrowTop  = (top > rect.top) ? (rect.bottom + 4) : (rect.top - 8);
 
     ttArrow.style.left = arrowLeft + "px";
     ttArrow.style.top  = arrowTop + "px";
@@ -701,12 +722,10 @@
         const dayShort = thaiDayShortFromISO(iso);
         const dayNum = dayNumFromISO(iso);
 
-        // รองรับหลายรูปแบบของเวลา (ถ้ามีใน API)
         const t1 = (d.times && d.times.s1) || d.t1 || "";
         const t2 = (d.times && d.times.s2) || d.t2 || "";
         const t3 = (d.times && d.times.s3) || d.t3 || "";
 
-        // ok flag: ถ้ามีเวลา ถือว่าทำแล้ว / ถ้าไม่มีเวลาแต่ count>=N ก็ถือว่าทำแล้ว (fallback)
         const ok1 = !!t1 || cnt >= 1;
         const ok2 = !!t2 || cnt >= 2;
         const ok3 = !!t3 || cnt >= 3;
@@ -766,7 +785,16 @@
     boxes.forEach(el => {
       el.addEventListener("mouseenter", () => showTooltipFor(el));
       el.addEventListener("mouseleave", () => hideTooltip());
+      // มือถือ: แตะเพื่อเปิด/ปิด tooltip
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (ttActiveEl === el) hideTooltip();
+        else showTooltipFor(el);
+      });
     });
+
+    document.addEventListener("click", () => hideTooltip());
   }
 
   async function load(isAuto = false){
