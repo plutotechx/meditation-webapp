@@ -15,6 +15,8 @@
       --bad:#ff4d4d;
 
       --shadow:0 18px 60px rgba(0,0,0,.35);
+      --card:rgba(255,255,255,.06);
+      --border:rgba(255,255,255,.10);
     }
 
     *{box-sizing:border-box}
@@ -148,7 +150,7 @@
       border:1px solid rgba(255,255,255,.08);
     }
 
-    /* ===== Table wrap (mobile scroll) ===== */
+    /* ===== Table wrap (desktop/tablet) ===== */
     .tableWrap{
       width:100%;
       overflow-x:auto;
@@ -189,28 +191,6 @@
     }
     .table tbody tr:last-child td{border-bottom:none}
 
-    /* ==== IMPORTANT: Sticky "ชื่อ" แบบชั้นใน (แก้ iOS ที่ sticky td เพี้ยน) ==== */
-    .nameCell{
-      padding:0 !important; /* เอา padding ไปใส่ใน inner แทน */
-      width:26%;
-      min-width:210px; /* กันชื่อแคบจนอ่านยาก */
-    }
-    .stickyName{
-      position:sticky;
-      left:0;
-      z-index:6;
-      padding:14px 14px;
-      background:rgba(10,19,34,.94);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-right:1px solid rgba(255,255,255,.10);
-      box-shadow: 10px 0 18px rgba(0,0,0,.25); /* เงาแบ่งคอลัมน์ให้เห็นชัด */
-    }
-    thead .stickyName{
-      z-index:10;
-      background:rgba(0,0,0,.35);
-    }
-
     .name{font-size:16px;font-weight:900}
 
     /* percent cell */
@@ -246,7 +226,7 @@
     .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
     .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
 
-    /* 7 day boxes */
+    /* 7 day boxes (used both table & cards) */
     .days{
       display:grid;
       grid-template-columns:repeat(7, minmax(0, 1fr));
@@ -255,7 +235,7 @@
     }
     @media (max-width:1100px){ .days{min-width:460px} }
     @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
-    @media (max-width:520px){ .days{grid-template-columns:repeat(3, minmax(0, 1fr));} }
+    @media (max-width:520px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr));} }
 
     .daybox{
       border-radius:12px;
@@ -299,6 +279,87 @@
     }
     .dayNum{opacity:.9}
     .dayCount{font-size:20px;letter-spacing:.3px}
+
+    /* ===== MOBILE CARDS ===== */
+    .cards{
+      display:none;
+      gap:12px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:12px 12px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      background:rgba(0,0,0,.16);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .cardName{
+      font-weight:1000;
+      font-size:16px;
+      line-height:1.2;
+    }
+    .cardMeta{
+      display:grid;
+      gap:6px;
+      align-items:end;
+      text-align:right;
+      flex:0 0 auto;
+    }
+    .miniChip{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      font-weight:1000;
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .miniChip.good{color:#dfffe9}
+    .miniChip.mid{color:#fff5d0}
+    .miniChip.bad{color:#ffd9d9}
+
+    .cardBody{
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .cardRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      color:rgba(234,240,255,.78);
+      font-weight:900;
+      font-size:12px;
+    }
+    .cardRow b{color:rgba(234,240,255,.92)}
+    .cardDays{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:8px;
+    }
+    @media (max-width:420px){
+      .cardDays{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+    }
+
+    /* Desktop/tablet show table, mobile show cards */
+    @media (max-width:820px){
+      .tableWrap{display:none}
+      .cards{display:grid}
+      .weekTitle{font-size:18px}
+      h1{font-size:24px}
+    }
 
     /* ===== Tooltip (small) ===== */
     .tt{
@@ -437,11 +498,12 @@
 
     <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
 
+    <!-- Desktop/Table -->
     <div class="tableWrap">
       <table class="table">
         <thead>
           <tr>
-            <th class="nameCell"><div class="stickyName">ชื่อ</div></th>
+            <th style="width:26%">ชื่อ</th>
             <th style="width:30%">% สัปดาห์</th>
             <th style="width:10%">ครบทั้งวัน</th>
             <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
@@ -451,6 +513,11 @@
           <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Mobile/Cards -->
+    <div class="cards" id="cards">
+      <!-- render by JS -->
     </div>
 
     <div class="btns">
@@ -468,6 +535,7 @@
 
   const elWeek = document.getElementById("weekHeader");
   const tbody  = document.getElementById("tbody");
+  const cards  = document.getElementById("cards");
 
   const pie = document.getElementById("pie");
   const piePct = document.getElementById("piePct");
@@ -525,6 +593,17 @@
     return `${mm}:${ss} นาที`;
   }
 
+  // ✅ แก้ “น.” ซ้อน: ลบ น./น/ช่องว่างท้าย แล้วค่อยเติม น. ทีเดียว
+  function cleanTime(t){
+    let s = String(t || "").trim();
+    if (!s) return "";
+    // ตัด "น." หรือ "น" ท้าย ๆ (รวมช่องว่าง)
+    s = s.replace(/\s*น\.?\s*$/u, "");
+    // กันเคสมีจุด/ช่องท้ายแปลก ๆ
+    s = s.replace(/\s+$/u, "");
+    return s;
+  }
+
   // ===== Tooltip =====
   function showTooltipFor(el){
     const payload = el.getAttribute("data-tt");
@@ -544,9 +623,9 @@
         const icon = ok ? "✓" : "✕";
         const cls = ok ? "ok" : "no";
         const label = escapeHtml(r.label || "");
-        const time = r.time ? escapeHtml(r.time) : "";
-        const right = time
-          ? `<span class="ttTimeInline">${time} น.</span>`
+        const raw = cleanTime(r.time || "");
+        const right = raw
+          ? `<span class="ttTimeInline">${escapeHtml(raw)} น.</span>`
           : `<span class="ttDash">—</span>`;
         return `
           <div class="ttRow">
@@ -619,7 +698,46 @@
     }
   }
 
-  // ===== Render =====
+  // ===== Render blocks =====
+  function buildDayBoxes(perDay){
+    return (perDay || []).map((d)=>{
+      const cnt = Number(d.count || 0);
+      const dg = dayGrade(cnt);
+      const iso = String(d.dateISO || "");
+      const dayShort = thaiDayShortFromISO(iso);
+      const dayNum = dayNumFromISO(iso);
+
+      const t1 = (d.times && d.times.s1) || d.t1 || "";
+      const t2 = (d.times && d.times.s2) || d.t2 || "";
+      const t3 = (d.times && d.times.s3) || d.t3 || "";
+
+      const ok1 = !!t1 || cnt >= 1;
+      const ok2 = !!t2 || cnt >= 2;
+      const ok3 = !!t3 || cnt >= 3;
+
+      const ttPayload = {
+        head: `${dayShort} ${dayNum}`,
+        rows: [
+          { label:"ครั้งที่ 1", ok: ok1, time: t1 || "" },
+          { label:"ครั้งที่ 2", ok: ok2, time: t2 || "" },
+          { label:"ครั้งที่ 3", ok: ok3, time: t3 || "" },
+        ]
+      };
+
+      const payloadEsc = escapeHtml(JSON.stringify(ttPayload));
+
+      return `
+        <div class="daybox ${dg}" data-tt="${payloadEsc}">
+          <div class="dayTop">
+            <span class="dayPill">${dayShort}</span>
+            <span class="dayNum">${dayNum}</span>
+          </div>
+          <div class="dayCount">${cnt}/3</div>
+        </div>
+      `;
+    }).join("");
+  }
+
   function render(out){
     const w = out.week;
     elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
@@ -640,58 +758,19 @@
     const rows = out.people || [];
     rows.sort((a,b)=> (b.percent||0) - (a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
 
+    // -------- Table (desktop) --------
     tbody.innerHTML = "";
-
     for (const p of rows){
       const pct = Number(p.percent || 0);
       const g = gradeByPercent(pct);
       const chipText = (pct === 100) ? "ครบ 100%" : `${pct}%`;
       const doneDays = Number(p.doneDays || 0);
 
-      const dayBoxes = (p.perDay || []).map((d)=>{
-        const cnt = Number(d.count || 0);
-        const dg = dayGrade(cnt);
-        const iso = String(d.dateISO || "");
-        const dayShort = thaiDayShortFromISO(iso);
-        const dayNum = dayNumFromISO(iso);
-
-        const t1 = (d.times && d.times.s1) || d.t1 || "";
-        const t2 = (d.times && d.times.s2) || d.t2 || "";
-        const t3 = (d.times && d.times.s3) || d.t3 || "";
-
-        const ok1 = !!t1 || cnt >= 1;
-        const ok2 = !!t2 || cnt >= 2;
-        const ok3 = !!t3 || cnt >= 3;
-
-        const ttPayload = {
-          head: `${dayShort} ${dayNum} ${thaiDateFromISO(iso).split(" ").slice(1).join(" ")}`.trim(),
-          rows: [
-            { label:"ครั้งที่ 1", ok: ok1, time: t1 || "" },
-            { label:"ครั้งที่ 2", ok: ok2, time: t2 || "" },
-            { label:"ครั้งที่ 3", ok: ok3, time: t3 || "" },
-          ]
-        };
-
-        const payloadEsc = escapeHtml(JSON.stringify(ttPayload));
-
-        return `
-          <div class="daybox ${dg}" data-tt="${payloadEsc}">
-            <div class="dayTop">
-              <span class="dayPill">${dayShort}</span>
-              <span class="dayNum">${dayNum}</span>
-            </div>
-            <div class="dayCount">${cnt}/3</div>
-          </div>
-        `;
-      }).join("");
+      const dayBoxes = buildDayBoxes(p.perDay);
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="nameCell">
-          <div class="stickyName">
-            <div class="name">${escapeHtml(p.name||"")}</div>
-          </div>
-        </td>
+        <td class="name">${escapeHtml(p.name||"")}</td>
         <td>
           <div class="pctRow">
             <span class="chip ${g}">
@@ -714,6 +793,37 @@
       tbody.innerHTML = `<tr><td colspan="4" class="muted">ไม่พบข้อมูล</td></tr>`;
     }
 
+    // -------- Cards (mobile) --------
+    cards.innerHTML = "";
+    for (const p of rows){
+      const pct = Number(p.percent || 0);
+      const g = gradeByPercent(pct);
+      const doneDays = Number(p.doneDays || 0);
+      const dayBoxes = buildDayBoxes(p.perDay);
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="cardHead">
+          <div>
+            <div class="cardName">${escapeHtml(p.name||"")}</div>
+          </div>
+          <div class="cardMeta">
+            <div class="miniChip ${g}">${pct}%</div>
+            <div class="muted" style="font-weight:900;font-size:12px">${doneDays}/7 วัน</div>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="cardRow">
+            <span>รวม</span>
+            <b>${p.totalDone}/${p.totalSlots} ครั้ง</b>
+          </div>
+          <div class="cardDays">${dayBoxes}</div>
+        </div>
+      `;
+      cards.appendChild(card);
+    }
+
     bindTooltips_();
   }
 
@@ -734,6 +844,7 @@
 
       if (!res.ok || !out.ok){
         tbody.innerHTML = `<tr><td colspan="4" class="muted">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
+        cards.innerHTML = `<div class="muted" style="padding:12px">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</div>`;
         return;
       }
       render(out);
@@ -742,7 +853,7 @@
     }
   }
 
-  // ===== Auto Refresh (กลับมาแน่นอนทุก 1 นาที) =====
+  // ===== Auto Refresh (ทุก 1 นาที) =====
   let nextRefreshAt = Date.now() + REFRESH_MS;
   let tickTimer = null;
   let refreshInterval = null;
@@ -759,17 +870,14 @@
   }
 
   function startAutoRefresh(){
-    // กันซ้อน
     if (tickTimer) clearInterval(tickTimer);
     if (refreshInterval) clearInterval(refreshInterval);
 
     nextRefreshAt = Date.now() + REFRESH_MS;
     updateRefreshUI();
 
-    // อัปเดต countdown ทุกวินาที
     tickTimer = setInterval(updateRefreshUI, 1000);
 
-    // ยิง refresh ทุก 1 นาที (เฉพาะตอนแท็บ active)
     refreshInterval = setInterval(async ()=>{
       if (document.hidden) return;
       await load(true);
@@ -780,7 +888,6 @@
 
   document.addEventListener("visibilitychange", ()=>{
     if (!document.hidden){
-      // กลับมา: reset รอบใหม่ให้ชัวร์
       nextRefreshAt = Date.now() + REFRESH_MS;
       updateRefreshUI();
     } else {
