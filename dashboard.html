@@ -45,7 +45,7 @@
     }
     h1{margin:0;font-size:26px;font-weight:800;letter-spacing:.2px}
 
-    /* ====== Auto box (clean) ====== */
+    /* ====== Auto box (fixed height / no jitter) ====== */
     .autoBox{
       display:flex;
       align-items:center;
@@ -55,11 +55,20 @@
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
       box-shadow:0 12px 40px rgba(0,0,0,.25);
+
       min-width:360px;
       justify-content:space-between;
+
+      /* IMPORTANT: lock size */
+      min-height:74px;             /* กันยุบ/ขยายตอนข้อความเปลี่ยน */
+      flex:0 0 auto;               /* ไม่ให้ยืด/หดแปลกๆจากพื้นที่ว่าง */
     }
     @media (max-width:520px){
-      .autoBox{min-width:unset;width:100%}
+      .autoBox{
+        min-width:unset;
+        width:100%;
+        min-height:86px;           /* มือถือให้สูงขึ้นนิดนึง */
+      }
     }
 
     .autoLeft{
@@ -67,6 +76,9 @@
       flex-direction:column;
       gap:6px;
       min-width:0;
+
+      /* lock left section so right doesn't shift */
+      flex: 1 1 auto;
     }
 
     .autoHead{
@@ -74,6 +86,7 @@
       align-items:center;
       gap:10px;
       min-width:0;
+      height:28px;                 /* กันหัวแถวกระตุก */
     }
 
     /* ===== status LED ===== */
@@ -119,6 +132,11 @@
       background:rgba(0,0,0,.20);
       color:rgba(234,240,255,.85);
       white-space:nowrap;
+
+      /* IMPORTANT: fix width to avoid jitter */
+      width:76px;
+      text-align:center;
+      flex:0 0 auto;
     }
     .badge.paused{
       border-color:rgba(255,77,77,.35);
@@ -130,13 +148,21 @@
       font-weight:850;
       font-size:12px;
       color:rgba(234,240,255,.70);
+
+      /* IMPORTANT: keep one-line height stable */
+      height:18px;                 /* ความสูง 1 บรรทัด */
+      line-height:18px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width:260px;
+
+      max-width:340px;
     }
     @media (max-width:520px){
-      .autoLine{max-width:unset;white-space:normal}
+      .autoLine{
+        max-width:unset;
+        white-space:nowrap;        /* ยังล็อก 1 บรรทัดเพื่อกันกระตุก */
+      }
     }
 
     /* ===== toggle ===== */
@@ -145,6 +171,7 @@
       align-items:center;
       gap:10px;
       flex:0 0 auto;
+      height:50px;                 /* กันสวิตช์กระตุกตอนซ้ายเปลี่ยน */
     }
 
     .toggle{
@@ -554,7 +581,7 @@
   }
 
   // =========================
-  // Auto refresh controller (no duplicate text + stable countdown)
+  // Auto refresh controller
   // =========================
   let refreshTimer = null;
   let tickTimer = null;
@@ -629,17 +656,17 @@
 
     setIndicatorState("active");
 
-    // ทำให้ countdown ไม่หาย: set nextAt ก่อน แล้วค่อยโหลด
+    // ตั้ง nextAt ก่อน กันตัวนับหาย
     nextAt = Date.now() + REFRESH_MS;
     renderAutoLine();
 
-    // โหลดทันที แล้ว reset รอบใหม่ให้แม่น
+    // โหลดทันที แล้ว sync รอบใหม่
     refreshNowAndScheduleNext();
 
     // tick ทุก 1 วิ เพื่อแสดง countdown
     tickTimer = setInterval(renderAutoLine, 1000);
 
-    // refresh ทุก REFRESH_MS (แต่จะ re-align ด้วย refreshNowAndScheduleNext)
+    // refresh ทุก REFRESH_MS
     refreshTimer = setInterval(async ()=>{
       if (!toggleAuto.checked) return;
       if (document.hidden) return;
@@ -647,9 +674,8 @@
     }, REFRESH_MS);
   }
 
-  // toggle events (ให้คลิกได้ทั้งแถบ switch + input)
+  // toggle events
   switchEl.addEventListener("click", (e)=>{
-    // คลิกที่ input จะเกิด change เองอยู่แล้ว ให้เลี่ยงการสลับซ้ำ
     if (e.target === toggleAuto) return;
     toggleAuto.checked = !toggleAuto.checked;
     setSwitchUI(toggleAuto.checked);
@@ -663,7 +689,6 @@
     startAutoEngine();
   });
 
-  // pause/resume on tab visibility
   document.addEventListener("visibilitychange", ()=>{
     if (!toggleAuto.checked){
       setIndicatorState("off");
@@ -677,23 +702,20 @@
       setIndicatorState("paused");
       renderAutoLine();
     } else {
-      // กลับมา active: โหลดทันที + เริ่มนับใหม่
       startAutoEngine();
     }
   });
 
-  // =========================
   // init
-  // =========================
   (function init(){
     const saved = localStorage.getItem(LS_KEY);
     const enabled = (saved === null) ? true : (saved === "1");
     setSwitchUI(enabled);
 
-    // โหลดครั้งแรกทันทีเพื่อให้เห็นข้อมูลไว (ไม่ต้องรอ auto)
+    // โหลดครั้งแรกทันที
     load();
 
-    // เริ่ม auto engine (ถ้าเปิดอยู่)
+    // เริ่ม auto
     startAutoEngine();
   })();
 </script>
