@@ -28,8 +28,56 @@
       min-height:100vh;
     }
     .wrap{max-width:1180px;margin:0 auto;padding:26px 18px 30px}
-    h1{margin:0 0 12px;font-size:26px;font-weight:800}
+    h1{margin:0 0 10px;font-size:26px;font-weight:800}
+
+    /* top right meta (auto refresh status) */
+    .topMeta{
+      display:flex;gap:10px;align-items:center;justify-content:space-between;
+      margin:0 0 8px;
+      flex-wrap:wrap;
+    }
+    .metaRight{
+      display:flex;gap:10px;align-items:center;justify-content:flex-end;
+      color:rgba(234,240,255,.72);
+      font-size:12px;
+      font-weight:800;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18);
+      white-space:nowrap;
+    }
+    .dotLive{
+      width:10px;height:10px;border-radius:999px;
+      background:rgba(255,255,255,.25);
+      box-shadow:0 0 0 rgba(48,209,106,0);
+    }
+    .dotLive.on{
+      background:var(--good);
+      box-shadow:0 0 18px rgba(48,209,106,.55);
+      animation:pulse 1.2s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%{ transform:scale(1); opacity:.75 }
+      50%{ transform:scale(1.18); opacity:1 }
+      100%{ transform:scale(1); opacity:.75 }
+    }
+    .btnMini{
+      cursor:pointer;
+      border-radius:12px;
+      padding:8px 10px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      font-weight:900;
+      font-size:12px;
+    }
+    .btnMini:hover{ background:rgba(255,255,255,.10) }
+
     .weekTitle{font-size:20px;font-weight:900;margin:12px 0 12px}
+
     .kpis{
       display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
       gap:14px;margin:6px 0 16px;
@@ -145,7 +193,20 @@
 
 <body>
   <div class="wrap">
-    <h1>Dashboard</h1>
+    <div class="topMeta">
+      <h1 style="margin:0">Dashboard</h1>
+
+      <div class="metaRight">
+        <span class="pill" title="รีเฟรชอัตโนมัติ">
+          <span id="liveDot" class="dotLive"></span>
+          Auto Refresh
+        </span>
+
+        <span class="pill" id="lastUpdated">อัปเดตล่าสุด: -</span>
+
+        <button class="btnMini" id="btnRefresh" type="button">รีเฟรชตอนนี้</button>
+      </div>
+    </div>
 
     <div class="kpis">
       <div class="kpi">
@@ -195,6 +256,10 @@
   </div>
 
 <script>
+  // ====== AUTO REFRESH CONFIG ======
+  // แนะนำ: 60000 (60 วิ) หรือ 120000 (120 วิ)
+  const REFRESH_MS = 60000;
+
   const elWeek = document.getElementById("weekHeader");
   const tbody  = document.getElementById("tbody");
   const pie = document.getElementById("pie");
@@ -202,6 +267,13 @@
   const pieText = document.getElementById("pieText");
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
+
+  const liveDot = document.getElementById("liveDot");
+  const lastUpdated = document.getElementById("lastUpdated");
+  const btnRefresh = document.getElementById("btnRefresh");
+
+  let timer = null;
+  let isLoading = false;
 
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
@@ -228,89 +300,143 @@
     if (count === 2) return "mid";
     return "bad";
   }
-
-  async function load(){
-    tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
-
-    // คำนวณสัปดาห์นี้ตาม timezone ของ “เครื่องผู้ดู”
-    const now = new Date();
-    const mon = mondayOfWeekLocal(now);
-    const sun = new Date(mon); sun.setDate(mon.getDate()+6);
-    const weekStartISO = toISODateLocal(mon);
-    const weekEndISO = toISODateLocal(sun);
-
-    elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
-
-    const q = new URLSearchParams({ weekStartISO, weekEndISO });
-    const res = await fetch(`/api/dashboard?${q.toString()}`);
-    const out = await res.json().catch(()=>({}));
-
-    if (!res.ok || !out.ok){
-      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${out.error || "unknown_error"}</td></tr>`;
-      return;
-    }
-
-    const thisW = out.summary?.thisWeek || {};
-    const peopleTotal = Number(thisW.peopleTotal || 0);
-    const completePeople = Number(thisW.completePeople || 0);
-    const incompletePeople = Number(thisW.incompletePeople || 0);
-    const completeRate = Number(thisW.completeRate || 0);
-
-    pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
-    piePct.textContent = `${completeRate}%`;
-    pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
-
-    kpiComplete.textContent = `${completePeople} คน`;
-    kpiIncomplete.textContent = `${incompletePeople} คน`;
-
-    const rows = Array.isArray(out.people) ? out.people : [];
-    rows.sort((a,b)=> (b.percent||0)-(a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
-
-    tbody.innerHTML = "";
-    for (const p of rows){
-      const pct = Number(p.percent || 0);
-      const g = gradeByPercent(pct);
-      const doneDays = Number(p.doneDays || 0);
-
-      const dayBoxes = (p.perDay || []).map((d)=>{
-        const cnt = Number(d.count || 0);
-        const dg = dayGrade(cnt);
-        return `<div class="daybox ${dg}">${cnt}/3</div>`;
-      }).join("");
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="name">${escapeHtml(p.name||"")}</td>
-        <td>
-          <div class="pctRow">
-            <span class="chip ${g}">
-              <span class="dot"></span>
-              <span>${pct}%</span>
-            </span>
-            <div class="progress ${g}">
-              <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
-            </div>
-          </div>
-          <div style="margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
-        </td>
-        <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
-        <td><div class="days" title="จันทร์→อาทิตย์">${dayBoxes}</div></td>
-      `;
-      tbody.appendChild(tr);
-    }
-
-    if (!rows.length){
-      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">ไม่พบข้อมูล</td></tr>`;
-    }
-  }
-
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[m]));
   }
 
+  function setLastUpdated(ts){
+    const t = ts || new Date();
+    // แสดงเวลาตามเครื่องผู้ดู (ท้องถิ่น)
+    const s = t.toLocaleString("th-TH", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
+    lastUpdated.textContent = `อัปเดตล่าสุด: ${s}`;
+  }
+
+  function setAutoRefreshUI(on){
+    liveDot.classList.toggle("on", !!on);
+  }
+
+  async function load(){
+    if (isLoading) return; // กันยิงซ้อน
+    isLoading = true;
+
+    try {
+      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
+
+      // คำนวณสัปดาห์นี้ตาม timezone ของ “เครื่องผู้ดู”
+      const now = new Date();
+      const mon = mondayOfWeekLocal(now);
+      const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+      const weekStartISO = toISODateLocal(mon);
+      const weekEndISO = toISODateLocal(sun);
+
+      elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
+
+      const q = new URLSearchParams({ weekStartISO, weekEndISO });
+
+      // กันแคช: ใส่ timestamp query
+      q.set("_t", String(Date.now()));
+
+      const res = await fetch(`/api/dashboard?${q.toString()}`, { method: "GET" });
+      const out = await res.json().catch(()=>({}));
+
+      if (!res.ok || !out.ok){
+        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(out.error || "unknown_error")}</td></tr>`;
+        return;
+      }
+
+      const thisW = out.summary?.thisWeek || {};
+      const peopleTotal = Number(thisW.peopleTotal || 0);
+      const completePeople = Number(thisW.completePeople || 0);
+      const incompletePeople = Number(thisW.incompletePeople || 0);
+      const completeRate = Number(thisW.completeRate || 0);
+
+      pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
+      piePct.textContent = `${completeRate}%`;
+      pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
+
+      kpiComplete.textContent = `${completePeople} คน`;
+      kpiIncomplete.textContent = `${incompletePeople} คน`;
+
+      const rows = Array.isArray(out.people) ? out.people : [];
+      rows.sort((a,b)=> (b.percent||0)-(a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
+
+      tbody.innerHTML = "";
+
+      for (const p of rows){
+        const pct = Number(p.percent || 0);
+        const g = gradeByPercent(pct);
+        const doneDays = Number(p.doneDays || 0);
+
+        const dayBoxes = (p.perDay || []).map((d)=>{
+          const cnt = Number(d.count || 0);
+          const dg = dayGrade(cnt);
+          return `<div class="daybox ${dg}">${cnt}/3</div>`;
+        }).join("");
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="name">${escapeHtml(p.name||"")}</td>
+          <td>
+            <div class="pctRow">
+              <span class="chip ${g}">
+                <span class="dot"></span>
+                <span>${pct}%</span>
+              </span>
+              <div class="progress ${g}">
+                <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
+              </div>
+            </div>
+            <div style="margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
+          </td>
+          <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
+          <td><div class="days" title="จันทร์→อาทิตย์">${dayBoxes}</div></td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      if (!rows.length){
+        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">ไม่พบข้อมูล</td></tr>`;
+      }
+
+      setLastUpdated(new Date());
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function startAutoRefresh(){
+    stopAutoRefresh();
+    setAutoRefreshUI(true);
+    timer = setInterval(() => {
+      // โหลดเฉพาะตอนแท็บ active (ลด request)
+      if (document.visibilityState === "visible") load();
+    }, REFRESH_MS);
+  }
+
+  function stopAutoRefresh(){
+    setAutoRefreshUI(false);
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+
+  // กดปุ่มรีเฟรชทันที
+  btnRefresh.addEventListener("click", () => load());
+
+  // ถ้า user สลับแท็บ: หยุด/เริ่มอัตโนมัติ
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      startAutoRefresh();
+      load(); // กลับมาหน้าเดิมแล้วโหลดใหม่ทันที
+    } else {
+      stopAutoRefresh();
+    }
+  });
+
+  // init
   load();
+  startAutoRefresh();
 </script>
 </body>
 </html>
