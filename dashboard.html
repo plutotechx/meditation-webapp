@@ -34,63 +34,62 @@
 
     .wrap{max-width:1180px;margin:0 auto;padding:26px 18px 30px}
 
-    /* ===== Header ===== */
-    .topMeta{
+    /* ====== header row ====== */
+    .topbar{
       display:flex;
-      gap:10px;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
-      margin:0 0 8px;
+      gap:12px;
       flex-wrap:wrap;
+      margin-bottom:12px;
     }
     h1{margin:0;font-size:26px;font-weight:800;letter-spacing:.2px}
 
-    .metaRight{
+    .autoBox{
       display:flex;
+      align-items:center;
       gap:10px;
-      align-items:center;
-      justify-content:flex-end;
-      color:rgba(234,240,255,.72);
-      font-size:12px;
-      font-weight:800;
-      flex-wrap:wrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.18);
+      box-shadow:0 12px 40px rgba(0,0,0,.25);
+      min-width:260px;
+      justify-content:space-between;
+    }
+    .autoLeft{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      line-height:1.2;
+    }
+    .autoTitle{
+      font-weight:950;
+      font-size:12px;
+      color:rgba(234,240,255,.85);
+      letter-spacing:.2px;
+    }
+    .autoSub{
+      font-weight:850;
+      font-size:12px;
+      color:rgba(234,240,255,.65);
       white-space:nowrap;
     }
-    .dotLive{
-      width:10px;height:10px;border-radius:999px;
-      background:rgba(255,255,255,.25);
-      box-shadow:0 0 0 rgba(48,209,106,0);
-    }
-    .dotLive.on{
-      background:var(--good);
-      box-shadow:0 0 18px rgba(48,209,106,.55);
-      animation:pulse 1.2s ease-in-out infinite;
-    }
-    @keyframes pulse{
-      0%{ transform:scale(1); opacity:.75 }
-      50%{ transform:scale(1.18); opacity:1 }
-      100%{ transform:scale(1); opacity:.75 }
-    }
-    .btnMini{
-      cursor:pointer;
-      border-radius:12px;
-      padding:8px 10px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      font-weight:900;
+    .autoBadge{
+      font-weight:950;
       font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.20);
+      color:rgba(234,240,255,.85);
+      white-space:nowrap;
     }
-    .btnMini:hover{background:rgba(255,255,255,.10)}
+    .autoBadge.paused{
+      border-color:rgba(255,77,77,.35);
+      background:rgba(255,77,77,.10);
+      color:rgba(255,220,220,.90);
+    }
 
     .weekTitle{font-size:20px;font-weight:900;margin:12px 0 12px}
 
@@ -203,6 +202,7 @@
     }
     .progress.mid > i{ background:linear-gradient(90deg, rgba(243,196,58,.95), rgba(243,196,58,.55)); }
     .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
+    .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
 
     /* 7 day boxes */
     .days{
@@ -247,19 +247,16 @@
 
 <body>
   <div class="wrap">
-    <div class="topMeta">
+    <div class="topbar">
       <h1>Dashboard</h1>
 
-      <div class="metaRight">
-        <!-- Auto Refresh pill (ข้อความจะแสดงตาม REFRESH_MS) -->
-        <span class="pill" title="รีเฟรชอัตโนมัติ">
-          <span id="liveDot" class="dotLive"></span>
-          <span id="autoRefreshLabel">Auto Refresh</span>
-        </span>
-
-        <span class="pill" id="lastUpdated">อัปเดตล่าสุด: -</span>
-
-        <button class="btnMini" id="btnRefresh" type="button">รีเฟรชตอนนี้</button>
+      <!-- Auto Refresh display -->
+      <div class="autoBox" aria-live="polite">
+        <div class="autoLeft">
+          <div class="autoTitle" id="autoTitle">Auto Refresh</div>
+          <div class="autoSub" id="autoSub">กำลังตั้งค่า...</div>
+        </div>
+        <div class="autoBadge" id="autoBadge">--</div>
       </div>
     </div>
 
@@ -276,8 +273,6 @@
             <div style="color:rgba(234,240,255,.72)" id="pieText">กำลังคำนวณ...</div>
           </div>
         </div>
-
-        <div class="sub">วงกลม = สัดส่วน “ครบ 21/21” เทียบทั้งหมด</div>
       </div>
 
       <!-- MID: Complete -->
@@ -318,9 +313,11 @@
   </div>
 
 <script>
-  // ====== AUTO REFRESH CONFIG ======
-  // แนะนำสำหรับของตั้ม: 120000 (2 นาที) หรือ 60000 (1 นาที)
-  const REFRESH_MS = 120000;
+  // =========================
+  // Auto Refresh settings
+  // =========================
+  // ตั้งเป็น 1 นาทีตามที่คุยกัน (แก้ตรงนี้จุดเดียวพอ)
+  const REFRESH_MS = 60_000;
 
   const elWeek = document.getElementById("weekHeader");
   const tbody  = document.getElementById("tbody");
@@ -332,23 +329,16 @@
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
-  const liveDot = document.getElementById("liveDot");
-  const autoRefreshLabel = document.getElementById("autoRefreshLabel");
-  const lastUpdated = document.getElementById("lastUpdated");
-  const btnRefresh = document.getElementById("btnRefresh");
-
-  let timer = null;
-  let isLoading = false;
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
+  const autoSub = document.getElementById("autoSub");
+  const autoBadge = document.getElementById("autoBadge");
 
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-
+  function thaiDateFromISO(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
+  }
   function mondayOfWeekLocal(d){
     const x = new Date(d); x.setHours(0,0,0,0);
     const day = x.getDay(); // Sun=0
@@ -357,13 +347,6 @@
     return x;
   }
 
-  function thaiDateFromISO(iso){
-    const [y,m,d] = iso.split("-").map(Number);
-    const dt = new Date(y, m-1, d);
-    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
-  }
-
-  // เกณฑ์สี % (ปรับได้)
   function gradeByPercent(p){
     if (p >= 90) return "good";
     if (p >= 70) return "mid";
@@ -375,148 +358,165 @@
     return "bad";
   }
 
-  function setLastUpdated(ts){
-    const t = ts || new Date();
-    const s = t.toLocaleString("th-TH", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
-    lastUpdated.textContent = `อัปเดตล่าสุด: ${s}`;
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
   }
-
-  function setAutoRefreshUI(on){
-    liveDot.classList.toggle("on", !!on);
-  }
-
-  // ====== Auto label from REFRESH_MS ======
-  function formatEvery(ms){
-    const s = Math.round(ms / 1000);
-    if (s < 60) return `ทุก ${s} วินาที`;
-    const m = Math.round(s / 60);
-    return `ทุก ${m} นาที`;
-  }
-  function updateAutoRefreshLabel(){
-    autoRefreshLabel.textContent = `Auto Refresh: ${formatEvery(REFRESH_MS)}`;
-  }
-  updateAutoRefreshLabel();
 
   async function load(){
-    if (isLoading) return; // กันยิงซ้อน
-    isLoading = true;
+    tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
 
-    try {
-      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
+    // คำนวณสัปดาห์นี้ตาม timezone ของ “เครื่องผู้ดู”
+    const now = new Date();
+    const mon = mondayOfWeekLocal(now);
+    const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+    const weekStartISO = toISODateLocal(mon);
+    const weekEndISO = toISODateLocal(sun);
 
-      // สัปดาห์นี้ตาม timezone ของเครื่องผู้ดู
-      const now = new Date();
-      const mon = mondayOfWeekLocal(now);
-      const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+    elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
 
-      const weekStartISO = toISODateLocal(mon);
-      const weekEndISO   = toISODateLocal(sun);
+    const q = new URLSearchParams({ weekStartISO, weekEndISO });
+    const res = await fetch(`/api/dashboard?${q.toString()}`);
+    const out = await res.json().catch(()=>({}));
 
-      elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
+    if (!res.ok || !out.ok){
+      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(out.error || "unknown_error")}</td></tr>`;
+      return;
+    }
 
-      const q = new URLSearchParams({ weekStartISO, weekEndISO });
-      q.set("_t", String(Date.now())); // กัน cache
+    const thisW = out.summary?.thisWeek || {};
+    const peopleTotal = Number(thisW.peopleTotal || 0);
+    const completePeople = Number(thisW.completePeople || 0);
+    const incompletePeople = Number(thisW.incompletePeople || 0);
+    const completeRate = Number(thisW.completeRate || 0);
 
-      const res = await fetch(`/api/dashboard?${q.toString()}`, { method:"GET" });
-      const out = await res.json().catch(()=>({}));
+    pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
+    piePct.textContent = `${completeRate}%`;
+    pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
 
-      if (!res.ok || !out.ok){
-        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
-        return;
-      }
+    kpiComplete.textContent = `${completePeople} คน`;
+    kpiIncomplete.textContent = `${incompletePeople} คน`;
 
-      const thisW = out.summary?.thisWeek || {};
-      const peopleTotal = Number(thisW.peopleTotal || 0);
-      const completePeople = Number(thisW.completePeople || 0);
-      const incompletePeople = Number(thisW.incompletePeople || 0);
-      const completeRate = Number(thisW.completeRate || 0);
+    const rows = Array.isArray(out.people) ? out.people : [];
+    rows.sort((a,b)=> (b.percent||0)-(a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
 
-      pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
-      piePct.textContent = `${completeRate}%`;
-      pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
+    tbody.innerHTML = "";
+    for (const p of rows){
+      const pct = Number(p.percent || 0);
+      const g = gradeByPercent(pct);
+      const doneDays = Number(p.doneDays || 0);
 
-      kpiComplete.textContent = `${completePeople} คน`;
-      kpiIncomplete.textContent = `${incompletePeople} คน`;
+      const dayBoxes = (p.perDay || []).map((d)=>{
+        const cnt = Number(d.count || 0);
+        const dg = dayGrade(cnt);
+        return `<div class="daybox ${dg}">${cnt}/3</div>`;
+      }).join("");
 
-      // table
-      const rows = Array.isArray(out.people) ? out.people : [];
-      rows.sort((a,b)=> (b.percent||0)-(a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
-
-      tbody.innerHTML = "";
-
-      for (const p of rows){
-        const pct = Number(p.percent || 0);
-        const g = gradeByPercent(pct);
-        const doneDays = Number(p.doneDays || 0);
-
-        const dayBoxes = (p.perDay || []).map((d)=>{
-          const cnt = Number(d.count || 0);
-          const dg = dayGrade(cnt);
-          return `<div class="daybox ${dg}">${cnt}/3</div>`;
-        }).join("");
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="name">${escapeHtml(p.name||"")}</td>
-          <td>
-            <div class="pctRow">
-              <span class="chip ${g}">
-                <span class="dot"></span>
-                <span>${pct}%</span>
-              </span>
-              <div class="progress ${g}">
-                <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
-              </div>
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="name">${escapeHtml(p.name||"")}</td>
+        <td>
+          <div class="pctRow">
+            <span class="chip ${g}">
+              <span class="dot"></span>
+              <span>${pct}%</span>
+            </span>
+            <div class="progress ${g}">
+              <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
             </div>
-            <div style="margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
-          </td>
-          <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
-          <td><div class="days" title="จันทร์→อาทิตย์">${dayBoxes}</div></td>
-        `;
-        tbody.appendChild(tr);
-      }
+          </div>
+          <div class="subline">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
+        </td>
+        <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
+        <td><div class="days" title="จันทร์→อาทิตย์">${dayBoxes}</div></td>
+      `;
+      tbody.appendChild(tr);
+    }
 
-      if (!rows.length){
-        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">ไม่พบข้อมูล</td></tr>`;
-      }
-
-      setLastUpdated(new Date());
-    } finally {
-      isLoading = false;
+    if (!rows.length){
+      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">ไม่พบข้อมูล</td></tr>`;
     }
   }
 
-  function startAutoRefresh(){
-    stopAutoRefresh();
-    setAutoRefreshUI(true);
+  // =========================
+  // Auto refresh (pause on hidden) + countdown
+  // =========================
+  let refreshTimer = null;
+  let tickTimer = null;
+  let nextAt = 0;
 
-    timer = setInterval(() => {
-      if (document.visibilityState === "visible") load();
+  function humanEveryText(ms){
+    const sec = Math.round(ms/1000);
+    if (sec % 60 === 0) {
+      const min = sec/60;
+      return `ทุก ${min} นาที`;
+    }
+    return `ทุก ${sec} วินาที`;
+  }
+
+  function setPausedUI(isPaused){
+    autoBadge.classList.toggle("paused", !!isPaused);
+    autoBadge.textContent = isPaused ? "Paused" : "Active";
+  }
+
+  function renderCountdown(){
+    if (!nextAt) return;
+    const remainMs = Math.max(0, nextAt - Date.now());
+    const remainSec = Math.ceil(remainMs / 1000);
+    autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • รีเฟรชในอีก ${remainSec} วิ`;
+  }
+
+  async function runOnceAndReset(){
+    await load();
+    nextAt = Date.now() + REFRESH_MS;
+    renderCountdown();
+  }
+
+  function startAuto(){
+    stopAuto();
+
+    if (document.hidden) {
+      setPausedUI(true);
+      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • (หยุดชั่วคราว เพราะแท็บไม่ active)`;
+      return;
+    }
+
+    setPausedUI(false);
+
+    // โหลดทันที + ตั้ง nextAt
+    runOnceAndReset();
+
+    // ตัวนับถอยหลัง (วิ่งทุก 1 วิ)
+    tickTimer = setInterval(renderCountdown, 1000);
+
+    // รีเฟรชตามรอบ
+    refreshTimer = setInterval(async ()=>{
+      if (document.hidden) return; // กันพลาด
+      await runOnceAndReset();
     }, REFRESH_MS);
   }
 
-  function stopAutoRefresh(){
-    setAutoRefreshUI(false);
-    if (timer) clearInterval(timer);
-    timer = null;
+  function stopAuto(){
+    if (refreshTimer) clearInterval(refreshTimer);
+    if (tickTimer) clearInterval(tickTimer);
+    refreshTimer = null;
+    tickTimer = null;
   }
 
-  // manual refresh
-  btnRefresh.addEventListener("click", () => load());
-
-  // pause/resume when tab not visible
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      startAutoRefresh();
-      load();
+  document.addEventListener("visibilitychange", ()=>{
+    if (document.hidden) {
+      stopAuto();
+      setPausedUI(true);
+      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • (หยุดชั่วคราว เพราะแท็บไม่ active)`;
     } else {
-      stopAutoRefresh();
+      startAuto();
     }
   });
 
-  // init
-  load();
-  startAutoRefresh();
+  // init text immediately
+  autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • กำลังเริ่ม...`;
+  startAuto();
 </script>
 </body>
 </html>
