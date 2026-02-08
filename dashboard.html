@@ -7,9 +7,6 @@
 
   <style>
     :root{
-      --bg:#0a1322;
-      --card:rgba(255,255,255,.07);
-      --border:rgba(255,255,255,.10);
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.72);
 
@@ -17,7 +14,6 @@
       --mid:#f3c43a;
       --bad:#ff4d4d;
 
-      --radius:18px;
       --shadow:0 18px 60px rgba(0,0,0,.35);
     }
 
@@ -152,12 +148,13 @@
       border:1px solid rgba(255,255,255,.08);
     }
 
-    /* ===== Table wrap (mobile) ===== */
+    /* ===== Table wrap (mobile scroll) ===== */
     .tableWrap{
       width:100%;
       overflow-x:auto;
       border-radius:18px;
       -webkit-overflow-scrolling: touch;
+      position:relative;
     }
 
     .table{
@@ -165,11 +162,11 @@
       min-width:980px;
       border-collapse:separate;
       border-spacing:0;
-      overflow:hidden;
       border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.04);
       box-shadow:var(--shadow);
+      overflow:hidden;
     }
 
     .table thead th{
@@ -181,7 +178,9 @@
       background:rgba(0,0,0,.20);
       border-bottom:1px solid rgba(255,255,255,.10);
       white-space:nowrap;
+      vertical-align:middle;
     }
+
     .table tbody td{
       padding:14px 14px;
       border-bottom:1px solid rgba(255,255,255,.08);
@@ -189,20 +188,30 @@
       background:transparent;
     }
     .table tbody tr:last-child td{border-bottom:none}
-    .name{font-size:16px;font-weight:900}
 
-    /* ===== Sticky first column (ชื่อ) for scroll ===== */
-    .table thead th:first-child,
-    .table tbody td:first-child{
+    /* ==== IMPORTANT: Sticky "ชื่อ" แบบชั้นใน (แก้ iOS ที่ sticky td เพี้ยน) ==== */
+    .nameCell{
+      padding:0 !important; /* เอา padding ไปใส่ใน inner แทน */
+      width:26%;
+      min-width:210px; /* กันชื่อแคบจนอ่านยาก */
+    }
+    .stickyName{
       position:sticky;
       left:0;
-      z-index:3;
-      background:rgba(10,19,34,.92);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-right:1px solid rgba(255,255,255,.08);
+      z-index:6;
+      padding:14px 14px;
+      background:rgba(10,19,34,.94);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-right:1px solid rgba(255,255,255,.10);
+      box-shadow: 10px 0 18px rgba(0,0,0,.25); /* เงาแบ่งคอลัมน์ให้เห็นชัด */
     }
-    .table thead th:first-child{ z-index:5; }
+    thead .stickyName{
+      z-index:10;
+      background:rgba(0,0,0,.35);
+    }
+
+    .name{font-size:16px;font-weight:900}
 
     /* percent cell */
     .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -291,16 +300,14 @@
     .dayNum{opacity:.9}
     .dayCount{font-size:20px;letter-spacing:.3px}
 
-    /* ===== Tooltip: smaller ~40% ===== */
+    /* ===== Tooltip (small) ===== */
     .tt{
       position:fixed;
       z-index:9999;
       display:none;
-
       width:auto;
       min-width:150px;
-      max-width:min(165px, calc(100vw - 18px)); /* ~40% smaller from 260 */
-
+      max-width:min(165px, calc(100vw - 18px));
       max-height:min(170px, calc(100vh - 24px));
       overflow:auto;
       padding:7px 7px 6px;
@@ -311,7 +318,6 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
-
     .ttHead{
       font-weight:900;
       font-size:11px;
@@ -321,7 +327,6 @@
       overflow:hidden;
       text-overflow:ellipsis;
     }
-
     .ttRow{
       display:flex;
       align-items:center;
@@ -334,7 +339,6 @@
       margin-bottom:5px;
     }
     .ttRow:last-child{margin-bottom:0}
-
     .ttL{
       display:flex;
       align-items:center;
@@ -343,7 +347,6 @@
       font-size:11px;
       min-width:0;
     }
-
     .ic{
       width:16px;height:16px;border-radius:999px;
       display:grid;place-items:center;
@@ -354,7 +357,6 @@
     }
     .ic.ok{background:rgba(48,209,106,.18); border-color:rgba(48,209,106,.35); color:#dfffe9}
     .ic.no{background:rgba(255,77,77,.16); border-color:rgba(255,77,77,.35); color:#ffd9d9}
-
     .ttTimeInline{
       margin-left:auto;
       font-weight:900;
@@ -362,7 +364,6 @@
       color:rgba(234,240,255,.90);
       white-space:nowrap;
     }
-
     .ttDash{
       margin-left:auto;
       font-weight:900;
@@ -370,7 +371,6 @@
       color:rgba(234,240,255,.45);
       white-space:nowrap;
     }
-
     .ttArrow{
       position:fixed;
       width:8px;height:8px;
@@ -403,7 +403,6 @@
         <div class="muted" style="font-size:12px">ข้อมูลจะอัปเดตอัตโนมัติ</div>
       </div>
 
-      <!-- Refresh box (TOP) -->
       <div class="refreshBox" aria-live="polite">
         <span id="refreshDot" class="refreshDot"></span>
         <span id="refreshLine" class="refreshText">รีเฟรชใน --</span>
@@ -442,7 +441,7 @@
       <table class="table">
         <thead>
           <tr>
-            <th style="width:26%">ชื่อ</th>
+            <th class="nameCell"><div class="stickyName">ชื่อ</div></th>
             <th style="width:30%">% สัปดาห์</th>
             <th style="width:10%">ครบทั้งวัน</th>
             <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
@@ -460,7 +459,6 @@
     </div>
   </div>
 
-  <!-- tooltip layer -->
   <div class="tt" id="tt"></div>
   <div class="ttArrow" id="ttArrow"></div>
 
@@ -487,11 +485,10 @@
   const ttArrow = document.getElementById("ttArrow");
   let ttActiveEl = null;
 
-  // ===== Helpers =====
   function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>( {
+    return String(s).replace(/[&<>"']/g, (m)=>({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m] ));
+    }[m]));
   }
 
   function thaiDateFromISO(iso){
@@ -499,14 +496,12 @@
     const dt = new Date(y, m-1, d);
     return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
   }
-
   function thaiDayShortFromISO(iso){
     const [y,m,d] = String(iso).split("-").map(Number);
     const dt = new Date(y, m-1, d);
     const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
     return th[dt.getDay()];
   }
-
   function dayNumFromISO(iso){
     return Number(String(iso).split("-")[2]) || "";
   }
@@ -550,11 +545,9 @@
         const cls = ok ? "ok" : "no";
         const label = escapeHtml(r.label || "");
         const time = r.time ? escapeHtml(r.time) : "";
-
         const right = time
           ? `<span class="ttTimeInline">${time} น.</span>`
           : `<span class="ttDash">—</span>`;
-
         return `
           <div class="ttRow">
             <div class="ttL">
@@ -604,11 +597,31 @@
   window.addEventListener("scroll", ()=>{ if (ttActiveEl) hideTooltip(); }, { passive:true });
   window.addEventListener("resize", ()=>{ if (ttActiveEl) hideTooltip(); });
 
+  function bindTooltips_(){
+    const isTouch = (matchMedia && matchMedia("(pointer: coarse)").matches) || ("ontouchstart" in window);
+    const boxes = document.querySelectorAll(".daybox[data-tt]");
+
+    boxes.forEach(el => {
+      if (isTouch){
+        el.addEventListener("click", (e)=>{
+          e.stopPropagation();
+          if (ttActiveEl === el) hideTooltip();
+          else showTooltipFor(el);
+        });
+      } else {
+        el.addEventListener("mouseenter", ()=> showTooltipFor(el));
+        el.addEventListener("mouseleave", ()=> hideTooltip());
+      }
+    });
+
+    if (isTouch){
+      document.addEventListener("click", ()=> hideTooltip());
+    }
+  }
+
   // ===== Render =====
   function render(out){
     const w = out.week;
-
-    // ลบคำว่า "สัปดาห์นี้:" ออก ตามที่ขอ
     elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
 
     const thisW = (out.summary && out.summary.thisWeek) ? out.summary.thisWeek : {};
@@ -674,7 +687,11 @@
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="name">${escapeHtml(p.name||"")}</td>
+        <td class="nameCell">
+          <div class="stickyName">
+            <div class="name">${escapeHtml(p.name||"")}</div>
+          </div>
+        </td>
         <td>
           <div class="pctRow">
             <span class="chip ${g}">
@@ -698,32 +715,6 @@
     }
 
     bindTooltips_();
-  }
-
-  function bindTooltips_(){
-    const isTouch = (matchMedia && matchMedia("(pointer: coarse)").matches) || ("ontouchstart" in window);
-    const boxes = document.querySelectorAll(".daybox[data-tt]");
-
-    boxes.forEach(el => {
-      el.onmouseenter = null;
-      el.onmouseleave = null;
-      el.onclick = null;
-
-      if (isTouch){
-        el.addEventListener("click", (e)=>{
-          e.stopPropagation();
-          if (ttActiveEl === el) hideTooltip();
-          else showTooltipFor(el);
-        });
-      } else {
-        el.addEventListener("mouseenter", ()=> showTooltipFor(el));
-        el.addEventListener("mouseleave", ()=> hideTooltip());
-      }
-    });
-
-    if (isTouch){
-      document.addEventListener("click", ()=> hideTooltip(), { once:true });
-    }
   }
 
   // ===== Load =====
@@ -751,12 +742,12 @@
     }
   }
 
-  // ===== Auto Refresh (always ON, no toggle) =====
+  // ===== Auto Refresh (กลับมาแน่นอนทุก 1 นาที) =====
   let nextRefreshAt = Date.now() + REFRESH_MS;
   let tickTimer = null;
-  let refreshTimer = null;
+  let refreshInterval = null;
 
-  function setRefreshUI(){
+  function updateRefreshUI(){
     if (document.hidden){
       refreshDot.classList.add("off");
       refreshLine.textContent = "รีเฟรชใน --";
@@ -767,48 +758,40 @@
     refreshLine.textContent = `รีเฟรชใน ${fmtCountdown(leftMs)}`;
   }
 
-  async function doRefreshNow(){
-    if (document.hidden) return;
-    await load(true);
-    nextRefreshAt = Date.now() + REFRESH_MS;
-    setRefreshUI();
-    scheduleRefresh();
-  }
-
-  function scheduleRefresh(){
-    if (document.hidden) return;
-    const msLeft = Math.max(0, nextRefreshAt - Date.now());
-    if (refreshTimer) clearTimeout(refreshTimer);
-    refreshTimer = setTimeout(doRefreshNow, msLeft);
-  }
-
-  function startAuto(){
+  function startAutoRefresh(){
+    // กันซ้อน
     if (tickTimer) clearInterval(tickTimer);
-    if (refreshTimer) clearTimeout(refreshTimer);
+    if (refreshInterval) clearInterval(refreshInterval);
 
     nextRefreshAt = Date.now() + REFRESH_MS;
-    tickTimer = setInterval(setRefreshUI, 1000);
-    scheduleRefresh();
-    setRefreshUI();
+    updateRefreshUI();
+
+    // อัปเดต countdown ทุกวินาที
+    tickTimer = setInterval(updateRefreshUI, 1000);
+
+    // ยิง refresh ทุก 1 นาที (เฉพาะตอนแท็บ active)
+    refreshInterval = setInterval(async ()=>{
+      if (document.hidden) return;
+      await load(true);
+      nextRefreshAt = Date.now() + REFRESH_MS;
+      updateRefreshUI();
+    }, REFRESH_MS);
   }
 
   document.addEventListener("visibilitychange", ()=>{
-    setRefreshUI();
-
     if (!document.hidden){
-      // กลับมา: รีเซ็ตรอบใหม่ ไม่ยิงถี่
-      if (refreshTimer) clearTimeout(refreshTimer);
+      // กลับมา: reset รอบใหม่ให้ชัวร์
       nextRefreshAt = Date.now() + REFRESH_MS;
-      scheduleRefresh();
+      updateRefreshUI();
     } else {
-      if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null; }
+      updateRefreshUI();
     }
   });
 
   // ===== init =====
   (async function init(){
     await load(false);
-    startAuto();
+    startAutoRefresh();
   })();
 </script>
 </body>
