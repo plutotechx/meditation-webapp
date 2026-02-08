@@ -59,15 +59,15 @@
       min-width:360px;
       justify-content:space-between;
 
-      /* IMPORTANT: lock size */
-      min-height:74px;             /* กันยุบ/ขยายตอนข้อความเปลี่ยน */
-      flex:0 0 auto;               /* ไม่ให้ยืด/หดแปลกๆจากพื้นที่ว่าง */
+      /* lock size */
+      min-height:74px;
+      flex:0 0 auto;
     }
     @media (max-width:520px){
       .autoBox{
         min-width:unset;
         width:100%;
-        min-height:86px;           /* มือถือให้สูงขึ้นนิดนึง */
+        min-height:86px;
       }
     }
 
@@ -76,8 +76,6 @@
       flex-direction:column;
       gap:6px;
       min-width:0;
-
-      /* lock left section so right doesn't shift */
       flex: 1 1 auto;
     }
 
@@ -86,7 +84,7 @@
       align-items:center;
       gap:10px;
       min-width:0;
-      height:28px;                 /* กันหัวแถวกระตุก */
+      height:28px;
     }
 
     /* ===== status LED ===== */
@@ -133,7 +131,7 @@
       color:rgba(234,240,255,.85);
       white-space:nowrap;
 
-      /* IMPORTANT: fix width to avoid jitter */
+      /* fix width */
       width:76px;
       text-align:center;
       flex:0 0 auto;
@@ -149,8 +147,8 @@
       font-size:12px;
       color:rgba(234,240,255,.70);
 
-      /* IMPORTANT: keep one-line height stable */
-      height:18px;                 /* ความสูง 1 บรรทัด */
+      /* keep one-line height stable */
+      height:18px;
       line-height:18px;
       white-space:nowrap;
       overflow:hidden;
@@ -159,10 +157,7 @@
       max-width:340px;
     }
     @media (max-width:520px){
-      .autoLine{
-        max-width:unset;
-        white-space:nowrap;        /* ยังล็อก 1 บรรทัดเพื่อกันกระตุก */
-      }
+      .autoLine{ max-width:unset; }
     }
 
     /* ===== toggle ===== */
@@ -171,7 +166,7 @@
       align-items:center;
       gap:10px;
       flex:0 0 auto;
-      height:50px;                 /* กันสวิตช์กระตุกตอนซ้ายเปลี่ยน */
+      height:50px;
     }
 
     .toggle{
@@ -185,7 +180,8 @@
       color:rgba(234,240,255,.80);
     }
 
-    .switch{
+    /* เปลี่ยนเป็น label เพื่อคลิกได้ทั้งก้อน + ใช้ event เดียว (change) */
+    label.switch{
       width:52px;height:30px;border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(0,0,0,.20);
@@ -193,8 +189,9 @@
       cursor:pointer;
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
       flex:0 0 auto;
+      display:inline-block;
     }
-    .switch input{
+    label.switch input{
       position:absolute; inset:0;
       opacity:0; cursor:pointer;
       margin:0;
@@ -206,15 +203,16 @@
       background:rgba(234,240,255,.92);
       box-shadow:0 8px 18px rgba(0,0,0,.35);
       transition: all .18s ease;
+      pointer-events:none; /* กันคลิกโดน knob แล้วบาง browser ยิง event แปลก */
     }
-    .switch.on{
+    label.switch.on{
       background:rgba(48,209,106,.20);
       border-color:rgba(48,209,106,.30);
       box-shadow:
         0 0 0 1px rgba(48,209,106,.08),
         inset 0 0 0 1px rgba(48,209,106,.08);
     }
-    .switch.on .knob{
+    label.switch.on .knob{
       left:25px;
       background:rgba(230,255,242,.95);
     }
@@ -387,10 +385,10 @@
         <div class="autoRight">
           <div class="toggle">
             <span>เปิด/ปิด</span>
-            <div class="switch" id="switch">
+            <label class="switch" id="switchLabel">
               <input id="toggleAuto" type="checkbox" aria-label="toggle auto refresh" />
               <div class="knob"></div>
-            </div>
+            </label>
           </div>
         </div>
       </div>
@@ -464,7 +462,7 @@
   const badge = document.getElementById("badge");
   const led = document.getElementById("led");
   const toggleAuto = document.getElementById("toggleAuto");
-  const switchEl = document.getElementById("switch");
+  const switchLabel = document.getElementById("switchLabel");
 
   const LS_KEY = "meditation_auto_refresh_enabled";
 
@@ -507,76 +505,80 @@
   }
 
   async function load(){
-    tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
+    try{
+      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
 
-    const now = new Date();
-    const mon = mondayOfWeekLocal(now);
-    const sun = new Date(mon); sun.setDate(mon.getDate()+6);
-    const weekStartISO = toISODateLocal(mon);
-    const weekEndISO = toISODateLocal(sun);
+      const now = new Date();
+      const mon = mondayOfWeekLocal(now);
+      const sun = new Date(mon); sun.setDate(mon.getDate()+6);
+      const weekStartISO = toISODateLocal(mon);
+      const weekEndISO = toISODateLocal(sun);
 
-    elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
+      elWeek.textContent = `จันทร์ ${thaiDateFromISO(weekStartISO)} – อาทิตย์ ${thaiDateFromISO(weekEndISO)}`;
 
-    const q = new URLSearchParams({ weekStartISO, weekEndISO });
-    const res = await fetch(`/api/dashboard?${q.toString()}`);
-    const out = await res.json().catch(()=>({}));
+      const q = new URLSearchParams({ weekStartISO, weekEndISO });
+      const res = await fetch(`/api/dashboard?${q.toString()}`, { method:"GET" });
+      const out = await res.json().catch(()=>({}));
 
-    if (!res.ok || !out.ok){
-      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(out.error || "unknown_error")}</td></tr>`;
-      return;
-    }
+      if (!res.ok || !out.ok){
+        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(out.error || "unknown_error")}</td></tr>`;
+        return;
+      }
 
-    const thisW = out.summary?.thisWeek || {};
-    const peopleTotal = Number(thisW.peopleTotal || 0);
-    const completePeople = Number(thisW.completePeople || 0);
-    const incompletePeople = Number(thisW.incompletePeople || 0);
-    const completeRate = Number(thisW.completeRate || 0);
+      const thisW = out.summary?.thisWeek || {};
+      const peopleTotal = Number(thisW.peopleTotal || 0);
+      const completePeople = Number(thisW.completePeople || 0);
+      const incompletePeople = Number(thisW.incompletePeople || 0);
+      const completeRate = Number(thisW.completeRate || 0);
 
-    pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
-    piePct.textContent = `${completeRate}%`;
-    pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
+      pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
+      piePct.textContent = `${completeRate}%`;
+      pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
 
-    kpiComplete.textContent = `${completePeople} คน`;
-    kpiIncomplete.textContent = `${incompletePeople} คน`;
+      kpiComplete.textContent = `${completePeople} คน`;
+      kpiIncomplete.textContent = `${incompletePeople} คน`;
 
-    const rows = Array.isArray(out.people) ? out.people : [];
-    rows.sort((a,b)=> (b.percent||0)-(a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
+      const rows = Array.isArray(out.people) ? out.people : [];
+      rows.sort((a,b)=> (b.percent||0)-(a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
 
-    tbody.innerHTML = "";
-    for (const p of rows){
-      const pct = Number(p.percent || 0);
-      const g = gradeByPercent(pct);
-      const doneDays = Number(p.doneDays || 0);
+      tbody.innerHTML = "";
+      for (const p of rows){
+        const pct = Number(p.percent || 0);
+        const g = gradeByPercent(pct);
+        const doneDays = Number(p.doneDays || 0);
 
-      const dayBoxes = (p.perDay || []).map((d)=>{
-        const cnt = Number(d.count || 0);
-        const dg = dayGrade(cnt);
-        return `<div class="daybox ${dg}">${cnt}/3</div>`;
-      }).join("");
+        const dayBoxes = (p.perDay || []).map((d)=>{
+          const cnt = Number(d.count || 0);
+          const dg = dayGrade(cnt);
+          return `<div class="daybox ${dg}">${cnt}/3</div>`;
+        }).join("");
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="name">${escapeHtml(p.name||"")}</td>
-        <td>
-          <div class="pctRow">
-            <span class="chip ${g}">
-              <span class="dot"></span>
-              <span>${pct}%</span>
-            </span>
-            <div class="progress ${g}">
-              <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="name">${escapeHtml(p.name||"")}</td>
+          <td>
+            <div class="pctRow">
+              <span class="chip ${g}">
+                <span class="dot"></span>
+                <span>${pct}%</span>
+              </span>
+              <div class="progress ${g}">
+                <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
+              </div>
             </div>
-          </div>
-          <div class="subline">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
-        </td>
-        <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
-        <td><div class="days" title="จันทร์→อาทิตย์">${dayBoxes}</div></td>
-      `;
-      tbody.appendChild(tr);
-    }
+            <div class="subline">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
+          </td>
+          <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
+          <td><div class="days" title="จันทร์→อาทิตย์">${dayBoxes}</div></td>
+        `;
+        tbody.appendChild(tr);
+      }
 
-    if (!rows.length){
-      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">ไม่พบข้อมูล</td></tr>`;
+      if (!rows.length){
+        tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">ไม่พบข้อมูล</td></tr>`;
+      }
+    } catch(err){
+      tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">โหลดไม่สำเร็จ: ${escapeHtml(String(err))}</td></tr>`;
     }
   }
 
@@ -589,11 +591,11 @@
 
   function setSwitchUI(on){
     toggleAuto.checked = !!on;
-    switchEl.classList.toggle("on", !!on);
+    switchLabel.classList.toggle("on", !!on);
   }
 
   function setIndicatorState(state){
-    // state: "active" | "paused" | "off"
+    // "active" | "paused" | "off"
     badge.classList.toggle("paused", state !== "active");
     badge.textContent = (state === "active") ? "Active" : (state === "paused" ? "Paused" : "Off");
 
@@ -656,7 +658,7 @@
 
     setIndicatorState("active");
 
-    // ตั้ง nextAt ก่อน กันตัวนับหาย
+    // ตั้ง nextAt ก่อนเพื่อให้ countdown โผล่ทันที
     nextAt = Date.now() + REFRESH_MS;
     renderAutoLine();
 
@@ -674,15 +676,7 @@
     }, REFRESH_MS);
   }
 
-  // toggle events
-  switchEl.addEventListener("click", (e)=>{
-    if (e.target === toggleAuto) return;
-    toggleAuto.checked = !toggleAuto.checked;
-    setSwitchUI(toggleAuto.checked);
-    localStorage.setItem(LS_KEY, toggleAuto.checked ? "1" : "0");
-    startAutoEngine();
-  });
-
+  // ใช้ event เดียว: change
   toggleAuto.addEventListener("change", ()=>{
     setSwitchUI(toggleAuto.checked);
     localStorage.setItem(LS_KEY, toggleAuto.checked ? "1" : "0");
