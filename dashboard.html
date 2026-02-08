@@ -702,16 +702,17 @@
 
   // init
   (function init(){
-    const saved = localStorage.getItem(LS_KEY);
-    const enabled = (saved === null) ? true : (saved === "1");
-    setSwitchUI(enabled);
+  // บังคับให้ ON ทุกครั้งที่เข้ามา (ไม่สนค่าเดิมใน localStorage)
+  const enabled = true;
+  localStorage.setItem(LS_KEY, "1"); // เขียนทับให้เป็น ON เสมอ
+  setSwitchUI(enabled);
 
-    // โหลดครั้งแรกทันที
-    load();
+  // โหลดครั้งแรกทันที
+  load();
 
-    // เริ่ม auto
-    startAutoEngine();
-  })();
+  // เริ่ม auto
+  startAutoEngine();
+})();
 </script>
 </body>
 </html>
