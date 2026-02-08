@@ -13,9 +13,9 @@
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.72);
 
-      --good:#30d16a;   /* เขียว */
-      --mid:#f3c43a;    /* เหลือง */
-      --bad:#ff4d4d;    /* แดง */
+      --good:#30d16a;
+      --mid:#f3c43a;
+      --bad:#ff4d4d;
 
       --radius:18px;
       --shadow:0 18px 60px rgba(0,0,0,.35);
@@ -50,70 +50,41 @@
     .topbarLeft{
       display:grid;
       gap:6px;
+      min-width:0;
     }
 
-    /* ===== Auto Refresh Top Box ===== */
-    .autoTopBox{
+    /* ===== Refresh box (TOP) ===== */
+    .refreshBox{
       flex:0 0 auto;
-      min-width:300px;
-      width:min(520px, 100%);
+      width:fit-content;
       background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
       border:1px solid rgba(255,255,255,.12);
-      border-radius:16px;
+      border-radius:14px;
       box-shadow:0 18px 50px rgba(0,0,0,.35);
-      padding:10px 12px;
+      padding:8px 10px;
       position:relative;
       overflow:hidden;
-      min-height:66px; /* fix กันกระตุก */
+      min-height:46px;
       display:flex;
       align-items:center;
+      gap:10px;
     }
-    .autoTopBox::before{
+    .refreshBox::before{
       content:"";
       position:absolute; inset:-2px;
       background:radial-gradient(closest-side at 70% 0%, rgba(120,200,255,.22), transparent 70%);
       pointer-events:none;
     }
-    .autoRow{
+    .refreshDot{
       position:relative;
       z-index:1;
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .autoLeft{
-      display:grid;
-      gap:6px;
-      min-width:0;
-    }
-    .autoTopLine{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      font-weight:900;
-      white-space:nowrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
-      font-size:12px;
-      font-weight:900;
-    }
-    .blinkDot{
       width:10px;height:10px;border-radius:999px;
       background:var(--good);
       box-shadow:0 0 14px rgba(48,209,106,.55);
       animation: blink 1.1s infinite;
       flex:0 0 auto;
     }
-    .blinkDot.off{
+    .refreshDot.off{
       background:var(--bad);
       box-shadow:0 0 14px rgba(255,77,77,.45);
     }
@@ -121,58 +92,13 @@
       0%, 100% { opacity: .25; transform: scale(.92); }
       50%      { opacity: 1;    transform: scale(1); }
     }
-
-    .autoSubLine{
-      font-size:12px;
-      color:rgba(234,240,255,.72);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 360px;
-    }
-
-    .toggleWrap{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex:0 0 auto;
-    }
-    .toggleLabel{
-      font-size:12px;
-      color:rgba(234,240,255,.75);
-      font-weight:900;
-      white-space:nowrap;
-    }
-    .switch{
-      width:54px;
-      height:30px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.25);
+    .refreshText{
       position:relative;
-      cursor:pointer;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
-      flex:0 0 auto;
-    }
-    .switch::after{
-      content:"";
-      position:absolute;
-      top:3px; left:3px;
-      width:24px; height:24px;
-      border-radius:999px;
-      background:rgba(255,255,255,.85);
-      box-shadow:0 10px 20px rgba(0,0,0,.35);
-      transition:transform .18s ease;
-    }
-    .switch.on{
-      background:rgba(48,209,106,.18);
-      border-color:rgba(48,209,106,.30);
-    }
-    .switch.on::after{ transform: translateX(24px); }
-
-    @media (max-width:560px){
-      .autoTopBox{min-width:unset}
-      .autoSubLine{max-width:260px}
+      z-index:1;
+      font-weight:900;
+      font-size:12px;
+      color:rgba(234,240,255,.86);
+      white-space:nowrap;
     }
 
     /* ===== KPI cards ===== */
@@ -226,16 +152,17 @@
       border:1px solid rgba(255,255,255,.08);
     }
 
-    /* ===== Table ===== */
+    /* ===== Table wrap (mobile) ===== */
     .tableWrap{
       width:100%;
-      overflow-x:auto; /* สำคัญ: มือถือเลื่อนตาราง */
+      overflow-x:auto;
       border-radius:18px;
+      -webkit-overflow-scrolling: touch;
     }
 
     .table{
       width:100%;
-      min-width:980px; /* ทำให้มือถือเลื่อนง่าย ไม่พัง layout */
+      min-width:980px;
       border-collapse:separate;
       border-spacing:0;
       overflow:hidden;
@@ -244,6 +171,7 @@
       background:rgba(255,255,255,.04);
       box-shadow:var(--shadow);
     }
+
     .table thead th{
       text-align:left;
       font-size:14px;
@@ -258,9 +186,23 @@
       padding:14px 14px;
       border-bottom:1px solid rgba(255,255,255,.08);
       vertical-align:top;
+      background:transparent;
     }
     .table tbody tr:last-child td{border-bottom:none}
     .name{font-size:16px;font-weight:900}
+
+    /* ===== Sticky first column (ชื่อ) for scroll ===== */
+    .table thead th:first-child,
+    .table tbody td:first-child{
+      position:sticky;
+      left:0;
+      z-index:3;
+      background:rgba(10,19,34,.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-right:1px solid rgba(255,255,255,.08);
+    }
+    .table thead th:first-child{ z-index:5; }
 
     /* percent cell */
     .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -349,31 +291,31 @@
     .dayNum{opacity:.9}
     .dayCount{font-size:20px;letter-spacing:.3px}
 
-    /* ===== Tooltip: super compact (auto shrink) ===== */
+    /* ===== Tooltip: smaller ~40% ===== */
     .tt{
       position:fixed;
       z-index:9999;
       display:none;
 
       width:auto;
-      min-width:220px;
-      max-width:min(260px, calc(100vw - 24px));
+      min-width:150px;
+      max-width:min(165px, calc(100vw - 18px)); /* ~40% smaller from 260 */
 
-      max-height:min(220px, calc(100vh - 32px));
+      max-height:min(170px, calc(100vh - 24px));
       overflow:auto;
-      padding:10px 10px 8px;
-      border-radius:14px;
+      padding:7px 7px 6px;
+      border-radius:12px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(10,19,34,.92);
-      box-shadow:0 22px 70px rgba(0,0,0,.55);
+      box-shadow:0 18px 55px rgba(0,0,0,.55);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
 
     .ttHead{
       font-weight:900;
-      font-size:13px;
-      margin-bottom:8px;
+      font-size:11px;
+      margin-bottom:6px;
       color:rgba(234,240,255,.95);
       white-space:nowrap;
       overflow:hidden;
@@ -384,30 +326,30 @@
       display:flex;
       align-items:center;
       justify-content:flex-start;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:12px;
+      gap:6px;
+      padding:6px 7px;
+      border-radius:10px;
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.08);
-      margin-bottom:6px;
+      margin-bottom:5px;
     }
     .ttRow:last-child{margin-bottom:0}
 
     .ttL{
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:6px;
       font-weight:900;
-      font-size:13px;
+      font-size:11px;
       min-width:0;
     }
 
     .ic{
-      width:20px;height:20px;border-radius:999px;
+      width:16px;height:16px;border-radius:999px;
       display:grid;place-items:center;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(0,0,0,.18);
-      font-size:12px;
+      font-size:10px;
       flex:0 0 auto;
     }
     .ic.ok{background:rgba(48,209,106,.18); border-color:rgba(48,209,106,.35); color:#dfffe9}
@@ -416,7 +358,7 @@
     .ttTimeInline{
       margin-left:auto;
       font-weight:900;
-      font-size:13px;
+      font-size:11px;
       color:rgba(234,240,255,.90);
       white-space:nowrap;
     }
@@ -424,14 +366,14 @@
     .ttDash{
       margin-left:auto;
       font-weight:900;
-      font-size:13px;
+      font-size:11px;
       color:rgba(234,240,255,.45);
       white-space:nowrap;
     }
 
     .ttArrow{
       position:fixed;
-      width:10px;height:10px;
+      width:8px;height:8px;
       background:rgba(10,19,34,.92);
       border-left:1px solid rgba(255,255,255,.14);
       border-top:1px solid rgba(255,255,255,.14);
@@ -458,56 +400,35 @@
     <div class="topbar">
       <div class="topbarLeft">
         <h1>Dashboard</h1>
-        <div class="muted" style="font-size:12px">ข้อมูลจะอัปเดตอัตโนมัติตาม Auto Refresh (ถ้าเปิดไว้)</div>
+        <div class="muted" style="font-size:12px">ข้อมูลจะอัปเดตอัตโนมัติ</div>
       </div>
 
-      <!-- Auto Refresh (TOP) -->
-      <div class="autoTopBox" aria-live="polite">
-        <div class="autoRow">
-          <div class="autoLeft">
-            <div class="autoTopLine">
-              <span class="pill">
-                <span id="runDot" class="blinkDot"></span>
-                <span id="runText">Auto Refresh</span>
-              </span>
-              <span class="pill" id="statePill">Active</span>
-            </div>
-            <div class="autoSubLine" id="refreshLine">กำลังเตรียม...</div>
-          </div>
-
-          <div class="toggleWrap">
-            <div class="toggleLabel" id="toggleLabel">เปิด</div>
-            <div id="toggleSwitch" class="switch on" role="switch" aria-checked="true" tabindex="0"></div>
-          </div>
-        </div>
+      <!-- Refresh box (TOP) -->
+      <div class="refreshBox" aria-live="polite">
+        <span id="refreshDot" class="refreshDot"></span>
+        <span id="refreshLine" class="refreshText">รีเฟรชใน --</span>
       </div>
     </div>
 
     <div class="kpis">
-      <!-- LEFT: Pie -->
       <div class="kpi">
         <div class="label">สัดส่วนทำครบ (สัปดาห์นี้)</div>
-
         <div class="pieWrap">
           <div class="pie" id="pie"></div>
-
           <div style="display:grid;gap:8px">
             <div style="font-weight:900;font-size:22px" id="piePct">-</div>
             <div class="muted" id="pieText">กำลังคำนวณ...</div>
           </div>
         </div>
-
         <div class="sub">วงกลม = สัดส่วน “ครบ 21/21” เทียบทั้งหมด</div>
       </div>
 
-      <!-- MID: Complete -->
       <div class="kpi">
         <div class="label">ทำครบ 21/21</div>
         <div id="kpiComplete" class="value good">-</div>
         <div class="sub">จำนวนคนที่ครบทุกวันทุกเวลา</div>
       </div>
 
-      <!-- RIGHT: Incomplete -->
       <div class="kpi">
         <div class="label">ทำไม่ครบ</div>
         <div id="kpiIncomplete" class="value bad">-</div>
@@ -547,7 +468,6 @@
   // ====== CONFIG ======
   const REFRESH_MS = 60_000; // 1 นาที
 
-  // main UI
   const elWeek = document.getElementById("weekHeader");
   const tbody  = document.getElementById("tbody");
 
@@ -558,13 +478,9 @@
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
-  // auto refresh UI
-  const runDot = document.getElementById("runDot");
-  const runText = document.getElementById("runText");
-  const statePill = document.getElementById("statePill");
+  // refresh UI
+  const refreshDot = document.getElementById("refreshDot");
   const refreshLine = document.getElementById("refreshLine");
-  const toggleSwitch = document.getElementById("toggleSwitch");
-  const toggleLabel = document.getElementById("toggleLabel");
 
   // tooltip
   const tt = document.getElementById("tt");
@@ -587,7 +503,7 @@
   function thaiDayShortFromISO(iso){
     const [y,m,d] = String(iso).split("-").map(Number);
     const dt = new Date(y, m-1, d);
-    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."]; // Sun..Sat
+    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
     return th[dt.getDay()];
   }
 
@@ -606,11 +522,6 @@
     return "bad";
   }
 
-  function formatEveryX(ms){
-    const sec = Math.max(1, Math.round(ms/1000));
-    if (sec % 60 === 0) return `ทุก ${sec/60} นาที`;
-    return `ทุก ${sec} วินาที`;
-  }
   function fmtCountdown(ms){
     const s = Math.max(0, Math.ceil(ms/1000));
     const mm = Math.floor(s/60);
@@ -618,110 +529,6 @@
     if (mm <= 0) return `${s} วิ`;
     return `${mm}:${ss} นาที`;
   }
-
-  // ===== Auto Refresh Controller =====
-  let autoEnabled = true; // เปิดทุกครั้งที่เข้า
-  let nextRefreshAt = Date.now() + REFRESH_MS;
-  let tickTimer = null;
-  let refreshTimer = null;
-  let inFlight = false;
-
-  function setAutoUI(){
-    if (autoEnabled){
-      toggleSwitch.classList.add("on");
-      toggleSwitch.setAttribute("aria-checked","true");
-      toggleLabel.textContent = "เปิด";
-      runDot.classList.remove("off");
-      runText.textContent = "Auto Refresh";
-      statePill.textContent = "Active";
-    } else {
-      toggleSwitch.classList.remove("on");
-      toggleSwitch.setAttribute("aria-checked","false");
-      toggleLabel.textContent = "ปิด";
-      runDot.classList.add("off");
-      runText.textContent = "Auto Refresh";
-      statePill.textContent = "Off";
-    }
-  }
-
-  function updateAutoText(){
-    const every = formatEveryX(REFRESH_MS);
-
-    if (document.hidden){
-      refreshLine.textContent = `Auto Refresh: ${every} • หยุดชั่วคราว (แท็บไม่ active)`;
-      return;
-    }
-    if (!autoEnabled){
-      refreshLine.textContent = `Auto Refresh: ${every} • ปิดอยู่`;
-      return;
-    }
-
-    const msLeft = Math.max(0, nextRefreshAt - Date.now());
-    refreshLine.textContent = `Auto Refresh: ${every} • รีเฟรชใน ${fmtCountdown(msLeft)}`;
-  }
-
-  function clearTimers(){
-    if (tickTimer){ clearInterval(tickTimer); tickTimer = null; }
-    if (refreshTimer){ clearTimeout(refreshTimer); refreshTimer = null; }
-  }
-
-  async function doRefreshNow(){
-    if (document.hidden || !autoEnabled) return;
-    await load(true);
-    nextRefreshAt = Date.now() + REFRESH_MS;
-    updateAutoText();
-    scheduleRefresh();
-  }
-
-  function scheduleRefresh(){
-    if (document.hidden || !autoEnabled) return;
-    const msLeft = Math.max(0, nextRefreshAt - Date.now());
-    if (refreshTimer) clearTimeout(refreshTimer);
-    refreshTimer = setTimeout(doRefreshNow, msLeft);
-  }
-
-  function startAuto(){
-    clearTimers();
-    nextRefreshAt = Date.now() + REFRESH_MS;
-    tickTimer = setInterval(updateAutoText, 1000);
-    scheduleRefresh();
-    updateAutoText();
-  }
-
-  function stopAuto(){
-    clearTimers();
-    updateAutoText();
-  }
-
-  function setAutoEnabled(v){
-    autoEnabled = !!v;
-    setAutoUI();
-    if (autoEnabled) startAuto();
-    else stopAuto();
-  }
-
-  function toggleAuto(){ setAutoEnabled(!autoEnabled); }
-
-  toggleSwitch.addEventListener("click", toggleAuto);
-  toggleSwitch.addEventListener("keydown", (e)=>{
-    if (e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      toggleAuto();
-    }
-  });
-
-  document.addEventListener("visibilitychange", ()=>{
-    updateAutoText();
-    if (!document.hidden && autoEnabled){
-      clearTimers();
-      nextRefreshAt = Date.now() + REFRESH_MS;
-      tickTimer = setInterval(updateAutoText, 1000);
-      scheduleRefresh();
-    }
-    if (document.hidden){
-      if (refreshTimer){ clearTimeout(refreshTimer); refreshTimer = null; }
-    }
-  });
 
   // ===== Tooltip =====
   function showTooltipFor(el){
@@ -767,20 +574,20 @@
     const ttRect = tt.getBoundingClientRect();
 
     let left = rect.left + rect.width/2 - ttRect.width/2;
-    let top  = rect.bottom + 10;
+    let top  = rect.bottom + 9;
 
-    left = Math.max(10, Math.min(left, window.innerWidth - ttRect.width - 10));
+    left = Math.max(8, Math.min(left, window.innerWidth - ttRect.width - 8));
 
-    if (top + ttRect.height > window.innerHeight - 10){
-      top = rect.top - ttRect.height - 10;
+    if (top + ttRect.height > window.innerHeight - 8){
+      top = rect.top - ttRect.height - 9;
     }
-    top = Math.max(10, Math.min(top, window.innerHeight - ttRect.height - 10));
+    top = Math.max(8, Math.min(top, window.innerHeight - ttRect.height - 8));
 
     tt.style.left = left + "px";
     tt.style.top  = top + "px";
 
-    const arrowLeft = Math.max(left + 16, Math.min(rect.left + rect.width/2 - 5, left + ttRect.width - 24));
-    const arrowTop = (top > rect.top) ? (rect.bottom + 4) : (rect.top - 8);
+    const arrowLeft = Math.max(left + 14, Math.min(rect.left + rect.width/2 - 4, left + ttRect.width - 18));
+    const arrowTop = (top > rect.top) ? (rect.bottom + 3) : (rect.top - 7);
 
     ttArrow.style.left = arrowLeft + "px";
     ttArrow.style.top  = arrowTop + "px";
@@ -794,14 +601,15 @@
     ttActiveEl = null;
   }
 
-  // ปิด tooltip เมื่อ scroll/resize
   window.addEventListener("scroll", ()=>{ if (ttActiveEl) hideTooltip(); }, { passive:true });
   window.addEventListener("resize", ()=>{ if (ttActiveEl) hideTooltip(); });
 
   // ===== Render =====
   function render(out){
     const w = out.week;
-    elWeek.textContent = `สัปดาห์นี้: จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
+
+    // ลบคำว่า "สัปดาห์นี้:" ออก ตามที่ขอ
+    elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
 
     const thisW = (out.summary && out.summary.thisWeek) ? out.summary.thisWeek : {};
     const peopleTotal = Number(thisW.peopleTotal || 0);
@@ -834,7 +642,6 @@
         const dayShort = thaiDayShortFromISO(iso);
         const dayNum = dayNumFromISO(iso);
 
-        // รองรับหลายรูปแบบของเวลา (ถ้ามีใน API)
         const t1 = (d.times && d.times.s1) || d.t1 || "";
         const t2 = (d.times && d.times.s2) || d.t2 || "";
         const t3 = (d.times && d.times.s3) || d.t3 || "";
@@ -895,38 +702,33 @@
 
   function bindTooltips_(){
     const isTouch = (matchMedia && matchMedia("(pointer: coarse)").matches) || ("ontouchstart" in window);
-
     const boxes = document.querySelectorAll(".daybox[data-tt]");
+
     boxes.forEach(el => {
-      // ล้างของเก่าก่อน (กัน bind ซ้ำหลัง refresh)
       el.onmouseenter = null;
       el.onmouseleave = null;
       el.onclick = null;
 
       if (isTouch){
-        // มือถือ: แตะเพื่อเปิด/ปิด
         el.addEventListener("click", (e)=>{
           e.stopPropagation();
-          if (ttActiveEl === el){
-            hideTooltip();
-          } else {
-            showTooltipFor(el);
-          }
+          if (ttActiveEl === el) hideTooltip();
+          else showTooltipFor(el);
         });
       } else {
-        // PC: hover
         el.addEventListener("mouseenter", ()=> showTooltipFor(el));
         el.addEventListener("mouseleave", ()=> hideTooltip());
       }
     });
 
-    // แตะที่อื่นบนมือถือเพื่อปิด
     if (isTouch){
       document.addEventListener("click", ()=> hideTooltip(), { once:true });
     }
   }
 
   // ===== Load =====
+  let inFlight = false;
+
   async function load(isAuto=false){
     if (inFlight) return;
     inFlight = true;
@@ -949,11 +751,63 @@
     }
   }
 
+  // ===== Auto Refresh (always ON, no toggle) =====
+  let nextRefreshAt = Date.now() + REFRESH_MS;
+  let tickTimer = null;
+  let refreshTimer = null;
+
+  function setRefreshUI(){
+    if (document.hidden){
+      refreshDot.classList.add("off");
+      refreshLine.textContent = "รีเฟรชใน --";
+      return;
+    }
+    refreshDot.classList.remove("off");
+    const leftMs = Math.max(0, nextRefreshAt - Date.now());
+    refreshLine.textContent = `รีเฟรชใน ${fmtCountdown(leftMs)}`;
+  }
+
+  async function doRefreshNow(){
+    if (document.hidden) return;
+    await load(true);
+    nextRefreshAt = Date.now() + REFRESH_MS;
+    setRefreshUI();
+    scheduleRefresh();
+  }
+
+  function scheduleRefresh(){
+    if (document.hidden) return;
+    const msLeft = Math.max(0, nextRefreshAt - Date.now());
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(doRefreshNow, msLeft);
+  }
+
+  function startAuto(){
+    if (tickTimer) clearInterval(tickTimer);
+    if (refreshTimer) clearTimeout(refreshTimer);
+
+    nextRefreshAt = Date.now() + REFRESH_MS;
+    tickTimer = setInterval(setRefreshUI, 1000);
+    scheduleRefresh();
+    setRefreshUI();
+  }
+
+  document.addEventListener("visibilitychange", ()=>{
+    setRefreshUI();
+
+    if (!document.hidden){
+      // กลับมา: รีเซ็ตรอบใหม่ ไม่ยิงถี่
+      if (refreshTimer) clearTimeout(refreshTimer);
+      nextRefreshAt = Date.now() + REFRESH_MS;
+      scheduleRefresh();
+    } else {
+      if (refreshTimer) { clearTimeout(refreshTimer); refreshTimer = null; }
+    }
+  });
+
   // ===== init =====
   (async function init(){
-    setAutoUI();
     await load(false);
-    setAutoEnabled(true); // เปิด Auto Refresh ทุกครั้ง
     startAuto();
   })();
 </script>
