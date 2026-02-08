@@ -13,9 +13,9 @@
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.72);
 
-      --good:#30d16a;   /* เขียว */
-      --mid:#f3c43a;    /* เหลือง */
-      --bad:#ff4d4d;    /* แดง */
+      --good:#30d16a;
+      --mid:#f3c43a;
+      --bad:#ff4d4d;
 
       --radius:18px;
     }
@@ -45,17 +45,17 @@
     }
     h1{margin:0;font-size:26px;font-weight:800;letter-spacing:.2px}
 
-    /* ====== Auto box ====== */
+    /* ====== Auto box (clean) ====== */
     .autoBox{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:14px;
       padding:12px 12px;
       border-radius:14px;
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
       box-shadow:0 12px 40px rgba(0,0,0,.25);
-      min-width:340px;
+      min-width:360px;
       justify-content:space-between;
     }
     @media (max-width:520px){
@@ -65,34 +65,15 @@
     .autoLeft{
       display:flex;
       flex-direction:column;
-      gap:4px;
-      line-height:1.2;
+      gap:6px;
       min-width:0;
     }
-    .autoTitleRow{
+
+    .autoHead{
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:10px;
       min-width:0;
-    }
-    .autoTitle{
-      font-weight:950;
-      font-size:12px;
-      color:rgba(234,240,255,.88);
-      letter-spacing:.2px;
-      white-space:nowrap;
-    }
-    .autoSub{
-      font-weight:850;
-      font-size:12px;
-      color:rgba(234,240,255,.65);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:220px;
-    }
-    @media (max-width:520px){
-      .autoSub{max-width:unset;white-space:normal}
     }
 
     /* ===== status LED ===== */
@@ -121,13 +102,14 @@
       50% { opacity: .35; transform: scale(.92); }
     }
 
-    /* ===== toggle ===== */
-    .autoRight{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex:0 0 auto;
+    .autoTitle{
+      font-weight:950;
+      font-size:13px;
+      color:rgba(234,240,255,.90);
+      letter-spacing:.2px;
+      white-space:nowrap;
     }
+
     .badge{
       font-weight:950;
       font-size:12px;
@@ -144,21 +126,40 @@
       color:rgba(255,220,220,.90);
     }
 
+    .autoLine{
+      font-weight:850;
+      font-size:12px;
+      color:rgba(234,240,255,.70);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:260px;
+    }
+    @media (max-width:520px){
+      .autoLine{max-width:unset;white-space:normal}
+    }
+
+    /* ===== toggle ===== */
+    .autoRight{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex:0 0 auto;
+    }
+
     .toggle{
-      display:inline-flex;
+      display:flex;
       align-items:center;
       gap:8px;
       user-select:none;
-    }
-    .toggle label{
+      white-space:nowrap;
       font-weight:900;
       font-size:12px;
       color:rgba(234,240,255,.80);
-      white-space:nowrap;
     }
 
     .switch{
-      width:48px;height:28px;border-radius:999px;
+      width:52px;height:30px;border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(0,0,0,.20);
       position:relative;
@@ -166,7 +167,6 @@
       box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
       flex:0 0 auto;
     }
-    .switch:focus-within{ outline:2px solid rgba(120,200,255,.25); outline-offset:2px; }
     .switch input{
       position:absolute; inset:0;
       opacity:0; cursor:pointer;
@@ -174,21 +174,21 @@
     }
     .knob{
       position:absolute; top:50%; left:3px;
-      width:22px;height:22px;border-radius:999px;
+      width:24px;height:24px;border-radius:999px;
       transform:translateY(-50%);
       background:rgba(234,240,255,.92);
       box-shadow:0 8px 18px rgba(0,0,0,.35);
       transition: all .18s ease;
     }
     .switch.on{
-      background:rgba(48,209,106,.18);
+      background:rgba(48,209,106,.20);
       border-color:rgba(48,209,106,.30);
       box-shadow:
         0 0 0 1px rgba(48,209,106,.08),
         inset 0 0 0 1px rgba(48,209,106,.08);
     }
     .switch.on .knob{
-      left:23px;
+      left:25px;
       background:rgba(230,255,242,.95);
     }
 
@@ -221,7 +221,6 @@
     .kpi .label{font-size:14px;color:var(--muted);font-weight:800}
     .kpi .value{font-size:44px;font-weight:900;line-height:1;margin-top:10px}
     .kpi .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
-
     .value.good{color:var(--good)}
     .value.bad{color:var(--bad)}
 
@@ -271,7 +270,6 @@
     .table tbody tr:last-child td{border-bottom:none}
     .name{font-size:16px;font-weight:900}
 
-    /* percent cell */
     .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .chip{
       display:inline-flex;align-items:center;gap:8px;
@@ -304,7 +302,6 @@
     .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
     .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
 
-    /* 7 day boxes */
     .days{
       display:grid;
       grid-template-columns:repeat(7, minmax(0, 1fr));
@@ -350,22 +347,21 @@
     <div class="topbar">
       <h1>Dashboard</h1>
 
-      <!-- Auto Refresh box (top-right) -->
       <div class="autoBox" aria-live="polite">
         <div class="autoLeft">
-          <div class="autoTitleRow">
+          <div class="autoHead">
             <span class="led" id="led" aria-hidden="true"></span>
-            <div class="autoTitle" id="autoTitle">Auto Refresh</div>
+            <div class="autoTitle">Auto Refresh</div>
             <span class="badge" id="badge">--</span>
           </div>
-          <div class="autoSub" id="autoSub">กำลังตั้งค่า...</div>
+          <div class="autoLine" id="autoLine">กำลังตั้งค่า...</div>
         </div>
 
         <div class="autoRight">
           <div class="toggle">
-            <label for="toggleAuto">เปิด/ปิด</label>
+            <span>เปิด/ปิด</span>
             <div class="switch" id="switch">
-              <input id="toggleAuto" type="checkbox" />
+              <input id="toggleAuto" type="checkbox" aria-label="toggle auto refresh" />
               <div class="knob"></div>
             </div>
           </div>
@@ -374,10 +370,8 @@
     </div>
 
     <div class="kpis">
-      <!-- LEFT: Pie -->
       <div class="kpi">
         <div class="label">สัดส่วนทำครบ 21/21 (สัปดาห์นี้)</div>
-
         <div class="pieWrap">
           <div class="pie" id="pie"></div>
           <div style="display:grid;gap:8px">
@@ -387,14 +381,12 @@
         </div>
       </div>
 
-      <!-- MID: Complete -->
       <div class="kpi">
         <div class="label">ทำครบ 21/21</div>
         <div id="kpiComplete" class="value good">-</div>
         <div class="sub">จำนวนคนที่ครบทุกวันทุกเวลา</div>
       </div>
 
-      <!-- RIGHT: Incomplete -->
       <div class="kpi">
         <div class="label">ทำไม่ครบ</div>
         <div id="kpiIncomplete" class="value bad">-</div>
@@ -441,13 +433,12 @@
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
   // Auto box elements
-  const autoSub = document.getElementById("autoSub");
+  const autoLine = document.getElementById("autoLine");
   const badge = document.getElementById("badge");
   const led = document.getElementById("led");
   const toggleAuto = document.getElementById("toggleAuto");
   const switchEl = document.getElementById("switch");
 
-  // localStorage key
   const LS_KEY = "meditation_auto_refresh_enabled";
 
   function pad2(n){ return String(n).padStart(2,"0"); }
@@ -482,10 +473,15 @@
     }[m]));
   }
 
+  function humanEveryText(ms){
+    const sec = Math.round(ms/1000);
+    if (sec % 60 === 0) return `ทุก ${sec/60} นาที`;
+    return `ทุก ${sec} วินาที`;
+  }
+
   async function load(){
     tbody.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.72)">กำลังโหลด...</td></tr>`;
 
-    // คำนวณสัปดาห์นี้ตาม timezone ของ “เครื่องผู้ดู”
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
     const sun = new Date(mon); sun.setDate(mon.getDate()+6);
@@ -558,138 +554,131 @@
   }
 
   // =========================
-  // Auto refresh (toggle + pause on hidden) + countdown
+  // Auto refresh controller (no duplicate text + stable countdown)
   // =========================
   let refreshTimer = null;
   let tickTimer = null;
   let nextAt = 0;
-
-  function humanEveryText(ms){
-    const sec = Math.round(ms/1000);
-    if (sec % 60 === 0) {
-      const min = sec/60;
-      return `ทุก ${min} นาที`;
-    }
-    return `ทุก ${sec} วินาที`;
-  }
 
   function setSwitchUI(on){
     toggleAuto.checked = !!on;
     switchEl.classList.toggle("on", !!on);
   }
 
-  function setIndicator({ enabled, running }){
-    // enabled = ผู้ใช้เปิด toggle ไหม
-    // running = ตอนนี้กำลังทำงานจริงไหม (ต้อง enabled และ tab active)
-    badge.classList.toggle("paused", !running);
-    badge.textContent = running ? "Active" : (enabled ? "Paused" : "Off");
+  function setIndicatorState(state){
+    // state: "active" | "paused" | "off"
+    badge.classList.toggle("paused", state !== "active");
+    badge.textContent = (state === "active") ? "Active" : (state === "paused" ? "Paused" : "Off");
 
     led.classList.remove("green","red");
-    led.classList.add(running ? "green" : "red");
-
-    // ถ้าปิด toggle -> หยุด animation blink? (ตามโจทย์: ปิดให้แดงกระพริบ) ดังนั้นคง blink ไว้ทั้งแดง/เขียว
+    led.classList.add(state === "active" ? "green" : "red");
   }
 
-  function renderCountdown(){
-    if (!nextAt) return;
-
-    const remainMs = Math.max(0, nextAt - Date.now());
-    const remainSec = Math.ceil(remainMs / 1000);
+  function renderAutoLine(){
+    const every = humanEveryText(REFRESH_MS);
 
     if (!toggleAuto.checked){
-      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • ปิดอยู่`;
+      autoLine.textContent = `Auto Refresh: ${every} • ปิดอยู่`;
       return;
     }
 
     if (document.hidden){
-      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • หยุดชั่วคราว (แท็บไม่ active)`;
+      autoLine.textContent = `Auto Refresh: ${every} • หยุดชั่วคราว (แท็บไม่ active)`;
       return;
     }
 
-    autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • รีเฟรชในอีก ${remainSec} วิ`;
+    if (!nextAt){
+      autoLine.textContent = `Auto Refresh: ${every} • กำลังเริ่ม...`;
+      return;
+    }
+
+    const remainMs = Math.max(0, nextAt - Date.now());
+    const remainSec = Math.ceil(remainMs / 1000);
+    autoLine.textContent = `Auto Refresh: ${every} • รีเฟรชในอีก ${remainSec} วิ`;
   }
 
-  async function runOnceAndReset(){
+  async function refreshNowAndScheduleNext(){
     await load();
     nextAt = Date.now() + REFRESH_MS;
-    renderCountdown();
+    renderAutoLine();
   }
 
-  function stopAuto(){
+  function clearTimers(){
     if (refreshTimer) clearInterval(refreshTimer);
     if (tickTimer) clearInterval(tickTimer);
     refreshTimer = null;
     tickTimer = null;
-    nextAt = 0;
   }
 
-  function startAuto(){
-    stopAuto();
+  function startAutoEngine(){
+    clearTimers();
 
-    const enabled = !!toggleAuto.checked;
-    const running = enabled && !document.hidden;
-
-    setIndicator({ enabled, running });
-
-    // ไม่เปิด = ไม่ทำอะไร
-    if (!enabled){
-      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • ปิดอยู่`;
+    if (!toggleAuto.checked){
+      nextAt = 0;
+      setIndicatorState("off");
+      renderAutoLine();
       return;
     }
 
-    // เปิดแต่แท็บไม่ active = รอ
     if (document.hidden){
-      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • หยุดชั่วคราว (แท็บไม่ active)`;
+      nextAt = 0;
+      setIndicatorState("paused");
+      renderAutoLine();
       return;
     }
 
-    // โหลดทันที + ตั้งรอบ
-    runOnceAndReset();
+    setIndicatorState("active");
 
-    // countdown tick
-    tickTimer = setInterval(renderCountdown, 1000);
+    // ทำให้ countdown ไม่หาย: set nextAt ก่อน แล้วค่อยโหลด
+    nextAt = Date.now() + REFRESH_MS;
+    renderAutoLine();
 
-    // periodic refresh
+    // โหลดทันที แล้ว reset รอบใหม่ให้แม่น
+    refreshNowAndScheduleNext();
+
+    // tick ทุก 1 วิ เพื่อแสดง countdown
+    tickTimer = setInterval(renderAutoLine, 1000);
+
+    // refresh ทุก REFRESH_MS (แต่จะ re-align ด้วย refreshNowAndScheduleNext)
     refreshTimer = setInterval(async ()=>{
-      if (!toggleAuto.checked) return; // เผื่อผู้ใช้ปิดระหว่างทาง
+      if (!toggleAuto.checked) return;
       if (document.hidden) return;
-      await runOnceAndReset();
+      await refreshNowAndScheduleNext();
     }, REFRESH_MS);
   }
 
-  // toggle click
+  // toggle events (ให้คลิกได้ทั้งแถบ switch + input)
   switchEl.addEventListener("click", (e)=>{
-    // ให้คลิกทั้งแถบได้
-    // แต่ถ้าคลิก input ก็ปล่อยให้ทำงานปกติ
+    // คลิกที่ input จะเกิด change เองอยู่แล้ว ให้เลี่ยงการสลับซ้ำ
     if (e.target === toggleAuto) return;
     toggleAuto.checked = !toggleAuto.checked;
     setSwitchUI(toggleAuto.checked);
     localStorage.setItem(LS_KEY, toggleAuto.checked ? "1" : "0");
-    startAuto();
+    startAutoEngine();
   });
 
   toggleAuto.addEventListener("change", ()=>{
     setSwitchUI(toggleAuto.checked);
     localStorage.setItem(LS_KEY, toggleAuto.checked ? "1" : "0");
-    startAuto();
+    startAutoEngine();
   });
 
-  // pause when hidden
+  // pause/resume on tab visibility
   document.addEventListener("visibilitychange", ()=>{
-    // ถ้าปิดอยู่ ไม่ต้องทำอะไร
     if (!toggleAuto.checked){
-      setIndicator({ enabled:false, running:false });
-      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • ปิดอยู่`;
+      setIndicatorState("off");
+      renderAutoLine();
       return;
     }
 
-    // เปิดอยู่: ถ้าซ่อน = หยุด timers, ถ้ากลับมา = startAuto (โหลดทันที)
     if (document.hidden){
-      stopAuto();
-      setIndicator({ enabled:true, running:false });
-      autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • หยุดชั่วคราว (แท็บไม่ active)`;
+      clearTimers();
+      nextAt = 0;
+      setIndicatorState("paused");
+      renderAutoLine();
     } else {
-      startAuto();
+      // กลับมา active: โหลดทันที + เริ่มนับใหม่
+      startAutoEngine();
     }
   });
 
@@ -697,16 +686,15 @@
   // init
   // =========================
   (function init(){
-    // โหลดค่า toggle ล่าสุดจากเครื่องผู้ใช้
     const saved = localStorage.getItem(LS_KEY);
-    const enabled = (saved === null) ? true : (saved === "1"); // default เปิด
+    const enabled = (saved === null) ? true : (saved === "1");
     setSwitchUI(enabled);
 
-    // แสดงข้อความเริ่มต้น
-    autoSub.textContent = `Auto Refresh: ${humanEveryText(REFRESH_MS)} • กำลังเริ่ม...`;
+    // โหลดครั้งแรกทันทีเพื่อให้เห็นข้อมูลไว (ไม่ต้องรอ auto)
+    load();
 
-    // เริ่มทำงานตาม toggle
-    startAuto();
+    // เริ่ม auto engine (ถ้าเปิดอยู่)
+    startAutoEngine();
   })();
 </script>
 </body>
