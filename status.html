@@ -100,9 +100,6 @@
       -webkit-user-select:none;
       display:block;
     }
-    @media (max-width:760px){
-      .updatedCorner{ display:none; }
-    }
 
     label{display:block;margin:12px 0 6px}
     select{
@@ -131,8 +128,7 @@
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
 
-    /* desktop back button */
-    .topline{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .topline{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     a.btnlink{flex:1;text-decoration:none}
     a.btnlink button{
       width:100%;
@@ -263,13 +259,7 @@
     .sumBig.ok{ color: var(--ok); }
     .sumBig.bad{ color: var(--danger); }
 
-    /* ===========================
-       MOBILE UX MODE (<=760px)
-       - sticky: check + updated + back (centered)
-       - reduce bottom spacing
-       =========================== */
-    .stickyBar{ display:none; }
-
+    /* ✅ Mobile: ไม่ sticky / จัดปุ่ม+อัปเดตให้อยู่ท้าย flow */
     .updatedFooter{
       display:none;
       text-align:center;
@@ -279,7 +269,7 @@
       color:rgba(234,240,255,.72);
       user-select:none;
       -webkit-user-select:none;
-      margin-top:2px;
+      margin-top:10px;
     }
     .updatedFooter .pill{
       display:inline-flex;
@@ -296,78 +286,38 @@
       box-shadow:0 0 0 4px rgba(101,255,179,.18);
     }
 
-    /* mobile back button inside sticky */
-    .backFooter{
-      display:none;
-      text-align:center;
-      margin-top:6px;
-    }
-    .backFooter a{
-      display:inline-flex;
-      text-decoration:none;
-    }
-    .backFooter button{
-      margin-top:0;
-      width:auto;
-      min-width:220px;
-      padding:10px 14px;
-      border-radius:999px;
-      background:rgba(255,255,255,.10);
-      color:rgba(234,240,255,.96);
-      border:1px solid rgba(255,255,255,.14);
-      font-weight:950;
-    }
-
     @media (max-width:760px){
-      /* ✅ ให้คอนเทนต์ไม่โดน sticky บัง */
-      .wrap{ padding:16px; padding-bottom:170px; }
+      .wrap{ padding:16px; }
+
+      .updatedCorner{ display:none; }
+      .updatedFooter{ display:block; }
 
       .boxes{ grid-template-columns:1fr; }
       .box{ min-height:104px; padding:14px 14px; }
-      .resultHeader{
-        position:sticky; top:0; z-index:5;
-        backdrop-filter: blur(10px);
-      }
 
-      #checkBtn{ display:none; }
-
-      .stickyBar{
-        display:flex;
-        position:fixed;
-        left:0; right:0; bottom:0;
-        /* ✅ ลดช่องว่างขอบล่างให้พอดี */
-        padding:10px 14px calc(10px + env(safe-area-inset-bottom));
-        background:linear-gradient(180deg, rgba(11,18,32,0), rgba(11,18,32,.92) 32%, rgba(11,18,32,.98));
-        backdrop-filter: blur(10px);
-        z-index:20;
+      /* ให้ปุ่มด้านล่างดูไม่ชิดขอบเกินไป */
+      .actionStack{ margin-top:16px; padding-bottom:12px; }
+      .actionStack .topline{ margin-top:12px; }
+      .actionStack a.btnlink button{
+        border-radius:999px;
+        padding:12px 14px;
       }
-      .stickyBar .inner{
-        width:min(820px, 100%);
-        margin:0 auto;
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        gap:0;
-      }
-      .stickyBar .inner button{
-        margin-top:0;
-        width:100%;
+      .actionStack #checkBtn{
         border-radius:18px;
         padding:14px 16px;
       }
 
-      .updatedFooter{ display:block; }
-      .backFooter{ display:block; }
-
-      /* ✅ ซ่อน back button ใน card (มือถือใช้แบบ sticky เท่านั้น) */
+      /* โชว์ปุ่มกลับเฉพาะตอนมีผลลัพธ์แล้ว */
       #backTop{ display:none; }
+      #backBottom{ display:none; }
+      .hasResult #backBottom{ display:flex; }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="card">
+    <div class="card" id="pageCard">
 
       <div class="headerBlock">
         <div class="updatedCorner" id="updatedCorner">อัปเดตล่าสุด —</div>
@@ -383,12 +333,26 @@
       <label>วันที่ต้องการตรวจสอบ</label>
       <select id="dateSel"></select>
 
-      <!-- Desktop button -->
-      <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
+      <div class="actionStack" id="actionStack">
+        <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
+
+        <!-- ✅ มือถือ: อัปเดตอยู่ใต้ปุ่มตรวจสอบ -->
+        <div class="updatedFooter" id="updatedFooter">
+          <span class="pill">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="updatedFooterText">อัปเดตล่าสุด —</span>
+          </span>
+        </div>
+
+        <!-- ✅ มือถือ: ปุ่มกลับ (จะแสดงหลังจากมีผลลัพธ์แล้ว) -->
+        <div class="topline" id="backBottom">
+          <a class="btnlink" href="/"><button type="button">กลับไปบันทึกข้อมูล</button></a>
+        </div>
+      </div>
 
       <div class="msg" id="out"></div>
 
-      <!-- Desktop back button (hidden on mobile) -->
+      <!-- Desktop back button (PC ใช้ตัวนี้) -->
       <div class="topline" id="backTop">
         <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
       </div>
@@ -396,31 +360,12 @@
     </div>
   </div>
 
-  <!-- Mobile Sticky Action -->
-  <div class="stickyBar" id="stickyBar">
-    <div class="inner">
-      <button id="checkBtnMobile" type="button">ตรวจสอบสถานะ</button>
-
-      <div class="updatedFooter" id="updatedFooter">
-        <span class="pill">
-          <span class="dot" aria-hidden="true"></span>
-          <span id="updatedFooterText">อัปเดตล่าสุด —</span>
-        </span>
-      </div>
-
-      <!-- ✅ Back button centered under updated -->
-      <div class="backFooter" id="backFooter">
-        <a href="/"><button type="button">กลับไปบันทึกข้อมูล</button></a>
-      </div>
-    </div>
-  </div>
-
 <script>
+  const pageCard = document.getElementById("pageCard");
   const weekHeaderEl = document.getElementById("weekHeader");
   const nameSel = document.getElementById("nameSel");
   const dateSel = document.getElementById("dateSel");
-  const btnDesktop = document.getElementById("checkBtn");
-  const btnMobile = document.getElementById("checkBtnMobile");
+  const btn = document.getElementById("checkBtn");
   const out = document.getElementById("out");
 
   const updatedCorner = document.getElementById("updatedCorner");
@@ -593,14 +538,15 @@
       </div>
     `;
 
+    // ✅ แสดงปุ่มกลับด้านล่างเฉพาะบนมือถือ เมื่อมีผลลัพธ์แล้ว
+    pageCard.classList.add("hasResult");
+
     setUpdatedNow();
   }
 
   function setLoading(isLoading, msg){
-    btnDesktop.disabled = isLoading;
-    btnMobile.disabled = isLoading;
-    btnDesktop.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
-    btnMobile.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
+    btn.disabled = isLoading;
+    btn.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
 
     if (isLoading) {
       out.className = "msg";
@@ -679,8 +625,7 @@
     autoTimer = setTimeout(() => runCheck(), 250);
   }
 
-  btnDesktop.addEventListener("click", runCheck);
-  btnMobile.addEventListener("click", runCheck);
+  btn.addEventListener("click", runCheck);
 
   nameSel.addEventListener("change", scheduleAutoCheck);
   dateSel.addEventListener("change", scheduleAutoCheck);
