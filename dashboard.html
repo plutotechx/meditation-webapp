@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
-  <!-- UpdatedAt: 2026-02-09 12:41 (+07:00) -->
+  <!-- UpdatedAt: 2026-02-09 12:58 (+07:00) -->
 
   <style>
     :root{
@@ -311,8 +311,9 @@
     .hoverTip .hdr{
       font-weight:950;
       font-size:15px;
-      margin:0 0 6px;
+      margin:2px 0 8px;
       color:rgba(234,240,255,.95);
+      text-align:center; /* ✅ หัวกรอบอยู่กึ่งกลาง */
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -346,6 +347,15 @@
       text-overflow:ellipsis;
     }
 
+    .tipSep{
+      font-weight:950;
+      font-size:14px;
+      opacity:.85;
+      line-height:1;
+      flex:0 0 auto;
+      margin:0 6px; /* ✅ ระยะรอบ ":" เท่ากันทุกบรรทัด */
+    }
+
     .ico{
       width:24px;height:24px;
       border-radius:999px;
@@ -363,7 +373,7 @@
       opacity:.98;
       white-space:nowrap;
       flex:0 0 auto;
-      margin-left:6px; /* ✅ เวลาชิดเข้ามา */
+      margin-left:0; /* ✅ คุมระยะด้วย tipSep */
       text-align:left;
     }
     .tipTime.dim{opacity:.55}
@@ -379,6 +389,55 @@
       left:50%;
       margin-left:-6px;
     }
+  
+    /* =========================================================
+       Mobile friendly (card view)
+       ========================================================= */
+    @media (max-width: 720px){
+      .wrap{padding:14px 10px 22px}
+      .kpis{grid-template-columns:1fr}
+      .table thead{display:none}
+      .table, .table tbody, .table tr, .table td{display:block;width:100%}
+      .table{background:transparent;border:none;box-shadow:none}
+      .table tbody tr{
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.10);
+        border-radius:18px;
+        padding:12px 12px 14px;
+        margin-bottom:12px;
+        box-shadow:0 14px 40px rgba(0,0,0,.35);
+      }
+      .table tbody td{
+        border-bottom:none;
+        padding:10px 6px;
+      }
+      .table tbody td[data-label]::before{
+        content: attr(data-label);
+        display:block;
+        font-size:12px;
+        font-weight:900;
+        color:rgba(234,240,255,.70);
+        margin-bottom:6px;
+      }
+      .name{font-size:18px}
+      .pctRow{gap:10px}
+      .progress{width:100%}
+
+      .days{
+        min-width:0 !important; /* ✅ ไม่บังคับให้เลื่อนแนวนอน */
+        grid-template-columns:repeat(4, minmax(0, 1fr));
+        gap:7px;
+      }
+      .daybox{padding:7px 7px 9px;border-radius:12px}
+      .dayCount{font-size:22px}
+    }
+
+    @media (max-width: 420px){
+      .days{grid-template-columns:repeat(3, minmax(0, 1fr));gap:7px}
+      .dayCount{font-size:20px}
+      .dayPill{font-size:11px;padding:4px 8px}
+    }
+
   </style>
 </head>
 
@@ -552,13 +611,14 @@
     ];
 
     return r.map(x=>{
-      const timeText = (x.ok && x.time) ? `: ${x.time} น.` : ": —";
+      const timeText = (x.ok && x.time) ? `${x.time} น.` : "—";
       return `
         <div class="tipRow">
           <div class="tipLeft">
             <div class="ico ${x.ok ? "ok" : "no"}">${icon(x.ok)}</div>
             <div class="tipLabel">${x.label}</div>
           </div>
+          <div class="tipSep">:</div>
           <div class="tipTime ${timeText==="—" ? "dim" : ""}">${timeText}</div>
         </div>
       `;
@@ -689,8 +749,8 @@
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td class="name">${escapeHtml(p.name||"")}</td>
-        <td>
+        <td class="name" data-label="ชื่อ">${escapeHtml(p.name||"")}</td>
+        <td data-label="% สัปดาห์">
           <div class="pctRow">
             <span class="chip ${g}">
               <span class="dot"></span>
@@ -702,8 +762,8 @@
           </div>
           <div class="subline">ทำได้ ${totalDone}/${totalSlots} ครั้ง</div>
         </td>
-        <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
-        <td><div class="days">${dayBoxes}</div></td>
+        <td style="font-weight:900;font-size:16px" data-label="ครบทั้งวัน">${doneDays}/7</td>
+        <td data-label="สรุป 7 วัน"><div class="days">${dayBoxes}</div></td>
       `;
       tbody.appendChild(tr);
     }
