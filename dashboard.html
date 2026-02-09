@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
-  <!-- UpdatedAt: 2026-02-09 12:15 (+07:00) -->
+  <!-- UpdatedAt: 2026-02-09 12:24 (+07:00) -->
 
   <style>
     :root{
@@ -283,22 +283,22 @@
     .btn:hover{background:rgba(255,255,255,.10)}
 
     /* =========================================================
-       Tooltip (SMALL)
+       Tooltip (COMPACT)
        ========================================================= */
     .hoverTip{
       position:fixed;
       z-index:99999;
       display:none;
 
-      width:300px; /* ✅ เล็กลง */
-      max-width:min(300px, calc(100vw - 24px));
+      width:270px; /* ✅ เล็กลงอีก */
+      max-width:min(270px, calc(100vw - 24px));
 
       background:rgba(10,16,26,.96);
       border:1px solid rgba(255,255,255,.14);
-      border-radius:16px;
+      border-radius:14px;
       box-shadow:0 18px 55px rgba(0,0,0,.55);
 
-      padding:10px;
+      padding:8px; /* ✅ ลด padding */
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       color:var(--text);
@@ -310,7 +310,7 @@
     .hoverTip .hdr{
       font-weight:950;
       font-size:15px;
-      margin:0 0 8px;
+      margin:0 0 6px; /* ✅ ชิดขึ้น */
       color:rgba(234,240,255,.95);
       white-space:nowrap;
       overflow:hidden;
@@ -321,31 +321,32 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
-      padding:10px 10px;
+      gap:8px;            /* ✅ ลดช่องว่างในแถว */
+      padding:8px 10px;   /* ✅ ลดความสูงแถว */
       border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
-      margin-bottom:8px;
+      margin-bottom:6px;  /* ✅ ลดระยะห่างระหว่างแถว */
     }
     .tipRow:last-child{margin-bottom:0}
 
     .tipLeft{
       display:flex;
       align-items:center;
-      gap:10px;
+      gap:8px;            /* ✅ ลด gap */
       font-weight:950;
       min-width:0;
+      flex:1 1 auto;      /* ✅ ให้ฝั่งซ้ายกินพื้นที่ -> ดันเวลาให้ชิด */
     }
     .tipLabel{
-      font-size:14px;
+      font-size:13px;     /* ✅ ลดนิด */
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
 
     .ico{
-      width:26px;height:26px;
+      width:24px;height:24px; /* ✅ ไอคอนเล็กลง */
       border-radius:999px;
       display:grid;place-items:center;
       border:1px solid rgba(255,255,255,.16);
@@ -357,10 +358,12 @@
 
     .tipTime{
       font-weight:950;
-      font-size:15px;
+      font-size:14px;     /* ✅ ลดนิด */
       opacity:.98;
       white-space:nowrap;
       flex:0 0 auto;
+      min-width:70px;     /* ✅ คุมไม่ให้เวลาลอยห่าง */
+      text-align:right;
     }
     .tipTime.dim{opacity:.55}
 
@@ -494,6 +497,7 @@
     const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
     return th[dt.getDay()];
   }
+
   // ✅ Tooltip header ไทยเป๊ะ: "จ. 9 ก.พ. 69"
   function thaiTooltipHeaderFromISO(iso){
     const [y,m,d] = String(iso||"").split("-").map(Number);
@@ -580,8 +584,8 @@
     if (!tipVisible) return;
 
     const r = anchorEl.getBoundingClientRect();
-    const tipW = hoverTip.offsetWidth || 300;
-    const tipH = hoverTip.offsetHeight || 190;
+    const tipW = hoverTip.offsetWidth || 270;
+    const tipH = hoverTip.offsetHeight || 170;
 
     let left = r.left + (r.width/2) - (tipW/2);
     let top  = r.bottom + 10;
