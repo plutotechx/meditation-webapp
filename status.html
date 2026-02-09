@@ -259,7 +259,7 @@
     .sumBig.ok{ color: var(--ok); }
     .sumBig.bad{ color: var(--danger); }
 
-    /* ✅ Mobile footer updated (not sticky) */
+    /* Mobile footer updated (not sticky) */
     .updatedFooter{
       display:none;
       text-align:center;
@@ -286,7 +286,7 @@
       box-shadow:0 0 0 4px rgba(101,255,179,.18);
     }
 
-    /* ✅ FIX: ปุ่มกลับสำหรับมือถือ ต้องไม่โผล่บน PC */
+    /* FIX: ปุ่มกลับสำหรับมือถือ ต้องไม่โผล่บน PC */
     #backBottom{ display:none; }
 
     @media (max-width:760px){
@@ -298,9 +298,8 @@
       .boxes{ grid-template-columns:1fr; }
       .box{ min-height:104px; padding:14px 14px; }
 
-      /* ให้ปุ่มด้านล่างดูไม่ชิดขอบเกินไป */
       .actionStack{ margin-top:16px; padding-bottom:12px; }
-      .actionStack .topline{ margin-top:12px; }
+      .actionStack .topline{ margin-top:10px; }
       .actionStack a.btnlink button{
         border-radius:999px;
         padding:12px 14px;
@@ -310,12 +309,18 @@
         padding:14px 16px;
       }
 
-      /* ✅ Mobile: ซ่อนปุ่มกลับแบบ Desktop */
+      /* Mobile: ซ่อนปุ่มกลับแบบ Desktop */
       #backTop{ display:none; }
 
-      /* ✅ Mobile: โชว์ปุ่มกลับเฉพาะตอนมีผลลัพธ์ */
-      #backBottom{ display:none; }
-      .hasResult #backBottom{ display:flex; }
+      /* ✅ Mobile: โชว์ปุ่มกลับ "ตลอด" ตั้งแต่หน้าแรก */
+      #backBottom{ display:flex; }
+
+      /* ปุ่มกลับให้เป็นโทนรอง ดูเรียบร้อย */
+      #backBottom a.btnlink button{
+        background:rgba(255,255,255,.08);
+        border:1px solid rgba(255,255,255,.14);
+        color:rgba(234,240,255,.92);
+      }
     }
   </style>
 </head>
@@ -341,7 +346,7 @@
       <div class="actionStack" id="actionStack">
         <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
 
-        <!-- ✅ Mobile: อัปเดตอยู่ใต้ปุ่มตรวจสอบ -->
+        <!-- Mobile: อัปเดตอยู่ใต้ปุ่มตรวจสอบ -->
         <div class="updatedFooter" id="updatedFooter">
           <span class="pill">
             <span class="dot" aria-hidden="true"></span>
@@ -349,7 +354,7 @@
           </span>
         </div>
 
-        <!-- ✅ Mobile: ปุ่มกลับ (แสดงหลังมีผลลัพธ์แล้วเท่านั้น) -->
+        <!-- ✅ Mobile: ปุ่มกลับ (มีตั้งแต่หน้าแรก) -->
         <div class="topline" id="backBottom">
           <a class="btnlink" href="/"><button type="button">กลับไปบันทึกข้อมูล</button></a>
         </div>
@@ -357,7 +362,7 @@
 
       <div class="msg" id="out"></div>
 
-      <!-- ✅ Desktop: มีปุ่มกลับอันเดียว ไม่ซ้อน -->
+      <!-- Desktop: มีปุ่มกลับอันเดียว ไม่ซ้อน -->
       <div class="topline" id="backTop">
         <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
       </div>
@@ -542,9 +547,6 @@
         ${mobileFirst ? "" : sumBox}
       </div>
     `;
-
-    // ✅ แสดงปุ่มกลับด้านล่างเฉพาะบนมือถือ เมื่อมีผลลัพธ์แล้ว
-    pageCard.classList.add("hasResult");
 
     setUpdatedNow();
   }
