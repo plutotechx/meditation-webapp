@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
-  <!-- UpdatedAt: 2026-02-09 13:05 (+07:00) -->
+  <!-- UpdatedAt: 2026-02-09 18:30 (+07:00) -->
 
   <style>
     :root{
@@ -395,6 +395,21 @@
        ========================================================= */
     @media (max-width: 720px){
       .wrap{padding:14px 10px 22px}
+
+      /* Mobile: move countdown pill to top-right */
+      .autoMini{
+        position:fixed;
+        top:calc(env(safe-area-inset-top, 0px) + 12px);
+        right:12px;
+        z-index:100000;
+        height:32px;
+        padding:6px 10px;
+        font-size:13px;
+        line-height:1;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .autoMini .dotLive{ width:10px; height:10px; }
       .kpis{grid-template-columns:1fr}
       .table thead{display:none}
       .table, .table tbody, .table tr, .table td{display:block;width:100%}
@@ -576,6 +591,8 @@
   const tipHdr = document.getElementById("tipHdr");
   const tipBody = document.getElementById("tipBody");
   let tipVisible = false;
+  let tipAnchor = null;
+  const isTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
 
   function fmtTimeHHmm(v){
     const s = String(v||"").trim();
@@ -632,6 +649,7 @@
     hoverTip.classList.add("show");
     hoverTip.setAttribute("aria-hidden","false");
     tipVisible = true;
+    tipAnchor = anchorEl;
     positionTip(anchorEl);
   }
 
@@ -639,7 +657,33 @@
     hoverTip.classList.remove("show");
     hoverTip.setAttribute("aria-hidden","true");
     tipVisible = false;
+    tipAnchor = null;
   }
+
+  
+  function toggleTip(anchorEl, headerText, dayObj){
+    if (tipVisible && tipAnchor === anchorEl){
+      hideTip();
+    } else {
+      showTip(anchorEl, headerText, dayObj);
+    }
+  }
+
+  // tap outside / scroll should close tooltip (mobile friendly)
+  document.addEventListener("pointerdown", (ev)=>{
+    if (!tipVisible) return;
+    const inTip = hoverTip.contains(ev.target);
+    const inBox = ev.target && ev.target.closest ? ev.target.closest(".daybox") : null;
+    if (!inTip && !inBox) hideTip();
+  }, { passive:true });
+
+  hoverTip.addEventListener("pointerdown", (ev)=>{
+    // tap tooltip itself to close
+    ev.stopPropagation();
+    hideTip();
+  });
+
+  window.addEventListener("scroll", ()=>{ if (tipVisible) hideTip(); }, { passive:true });
 
   function positionTip(anchorEl){
     if (!tipVisible) return;
@@ -770,15 +814,31 @@
 
     // bind tooltip events (after DOM updated)
     document.querySelectorAll(".daybox").forEach(el=>{
-      el.addEventListener("mouseenter", ()=>{
+      const getPayload = ()=>{
         const hdr = el.getAttribute("data-tipheader") || "-";
         const raw = el.getAttribute("data-tip") || "";
         let dayObj = {};
         try { dayObj = JSON.parse(decodeURIComponent(raw)); } catch(e){}
-        showTip(el, hdr, dayObj);
-      });
-      el.addEventListener("mousemove", ()=> positionTip(el));
-      el.addEventListener("mouseleave", hideTip);
+        return { hdr, dayObj };
+      };
+
+      if (isTouch){
+        // Mobile: tap to toggle, tap again or tap outside to close
+        el.addEventListener("click", (ev)=>{
+          ev.preventDefault();
+          ev.stopPropagation();
+          const { hdr, dayObj } = getPayload();
+          toggleTip(el, hdr, dayObj);
+        });
+      } else {
+        // Desktop: hover behavior
+        el.addEventListener("mouseenter", ()=>{
+          const { hdr, dayObj } = getPayload();
+          showTip(el, hdr, dayObj);
+        });
+        el.addEventListener("mousemove", ()=> positionTip(el));
+        el.addEventListener("mouseleave", hideTip);
+      }
     });
 
     if (!rows.length){
