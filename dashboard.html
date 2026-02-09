@@ -1,845 +1,573 @@
-<!--
-  File: dashboard.html
-  Final ModifiedAt: 2026-02-09 11:01:25 +0700
-  Change:
-  - Tooltip size reduced (fixed width 340px + max-width clamp)
-  - Tooltip match screenshot (rows + arrow + clamp)
-  - Fixed double "น."
-  - Tooltip header Thai exact: "จ. 9 ก.พ. 69" (B.E. 2 digits)
--->
 <!doctype html>
 <html lang="th">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- แก้ไขล่าสุด: 2026-02-09 11:39 (+07:00) -->
   <title>Dashboard - Daily Meditation</title>
 
   <style>
     :root{
-      --bg:#0a1322;
-      --card:rgba(255,255,255,.07);
-      --border:rgba(255,255,255,.10);
-      --text:#eaf0ff;
-      --muted:rgba(234,240,255,.72);
-
-      --good:#30d16a;
-      --mid:#f3c43a;
-      --bad:#ff4d4d;
-
-      --radius:18px;
-      --shadow:0 18px 60px rgba(0,0,0,.35);
+      --bg:#0b0d12;
+      --card:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.90);
+      --muted:rgba(255,255,255,.55);
+      --green:#30d158;
+      --red:#ff4d4d;
+      --amber:#ffd60a;
     }
 
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-      background:
-        radial-gradient(1200px 600px at 25% 0%, rgba(88,140,255,.16), transparent 60%),
-        radial-gradient(900px 500px at 80% 15%, rgba(0,240,255,.12), transparent 55%),
-        linear-gradient(180deg, #081224 0%, #070f1e 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", sans-serif;
+      background: radial-gradient(1200px 900px at 40% -20%, rgba(120,140,255,.14), transparent 60%),
+                  radial-gradient(900px 700px at 110% 10%, rgba(48,209,88,.12), transparent 55%),
+                  var(--bg);
       color:var(--text);
-      min-height:100vh;
+      padding:18px;
     }
 
-    .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 26px}
+    .wrap{max-width:1200px;margin:0 auto}
 
-    /* ===== Top row ===== */
     .topRow{
       display:flex;
-      align-items:flex-start;
+      gap:12px;
+      align-items:center;
       justify-content:space-between;
-      gap:12px;
       flex-wrap:wrap;
-      margin-bottom:12px;
+      margin-bottom:14px;
     }
-    h1{margin:0;font-size:24px;font-weight:900;letter-spacing:.2px}
+    .title{
+      font-size:26px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      margin:0;
+    }
+    .sub{
+      margin:4px 0 0 0;
+      color:var(--muted);
+      font-weight:700;
+      font-size:14px;
+    }
 
-    /* week menu */
-    .weekMenu{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+    .controls{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
     }
-    .seg{
-      display:inline-flex;
-      background:rgba(0,0,0,.22);
+    .btn{
       border:1px solid rgba(255,255,255,.14);
-      border-radius:999px;
-      padding:6px;
-      gap:6px;
-      box-shadow:0 12px 34px rgba(0,0,0,.26);
-    }
-    .seg button{
-      border:0;
-      border-radius:999px;
-      padding:8px 12px;
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
       font-weight:900;
-      color:rgba(234,240,255,.85);
-      background:transparent;
       cursor:pointer;
-      white-space:nowrap;
+      user-select:none;
+      transition:transform .08s ease, background .15s ease;
     }
-    .seg button.active{
-      color:#071120;
-      background:rgba(106,169,255,.95);
-      box-shadow:0 10px 24px rgba(106,169,255,.22);
-    }
+    .btn:hover{background:rgba(255,255,255,.10)}
+    .btn:active{transform:scale(.98)}
 
-    /* auto refresh mini box */
-    .autoMini{
-      height:38px;
-      padding:8px 12px;
-      border-radius:999px;
+    .pill{
       border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
+      background:rgba(255,255,255,.06);
+      padding:10px 12px;border-radius:14px;
       font-weight:900;
-      color:rgba(234,240,255,.85);
-      display:flex;
-      align-items:center;
-      gap:10px;
-      white-space:nowrap;
+      color:var(--text);
+      display:flex;align-items:center;gap:10px;
     }
-    .dotLive{
+    .dot{
       width:10px;height:10px;border-radius:999px;
-      background:var(--good);
-      box-shadow:0 0 0 0 rgba(48,209,106,.55);
-      animation:pulseG 1.2s infinite;
-      flex:0 0 auto;
+      background:rgba(255,255,255,.24);
     }
-    @keyframes pulseG{
-      0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
-      70%{ box-shadow:0 0 0 10px rgba(48,209,106,0) }
-      100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
-    }
+    .dot.on{background:var(--green)}
+    .dot.off{background:rgba(255,255,255,.24)}
+    .small{font-size:13px;color:var(--muted);font-weight:800}
 
-    .weekTitle{font-size:18px;font-weight:900;margin:10px 0 12px;color:rgba(234,240,255,.92)}
-    .muted{color:var(--muted)}
-
-    /* ===== KPI cards ===== */
-    .kpis{
+    .grid2{
       display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:1fr 1fr;
       gap:12px;
-      margin:6px 0 14px;
-      align-items:stretch;
+      margin:12px 0 16px;
     }
-    @media (max-width:900px){ .kpis{grid-template-columns:1fr;} }
-
-    .kpi{
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:16px 16px 14px;
-      box-shadow:0 18px 50px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
-      min-height:160px;
-    }
-    .kpi:before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:radial-gradient(closest-side at 65% 0%, rgba(120,200,255,.25), transparent 70%);
-      pointer-events:none;
-    }
-    .kpi .label{font-size:14px;color:var(--muted);font-weight:800}
-    .kpi .value{font-size:44px;font-weight:900;line-height:1;margin-top:10px}
-    .kpi .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
-    .value.good{color:var(--good)}
-    .value.bad{color:var(--bad)}
-
-    /* ===== pie ===== */
-    .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
-    .pie{
-      width:110px;height:110px;border-radius:999px;
-      background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 16px 45px rgba(0,0,0,.35);
-      position:relative;
-      flex:0 0 auto;
-    }
-    .pie:after{
-      content:"";
-      position:absolute; inset:12px;
-      background:rgba(10,19,34,.85);
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.08);
+    @media (max-width:920px){.grid2{grid-template-columns:1fr}}
+    .card{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:24px;
+      padding:18px 18px;
+      box-shadow: 0 18px 55px rgba(0,0,0,.35);
     }
 
-    /* ===== Table ===== */
-    .table{
+    .bigNumber{
+      font-size:62px;
+      font-weight:1200;
+      line-height:1;
+      margin:0;
+    }
+    .bigNumber.green{color:var(--green)}
+    .bigNumber.red{color:var(--red)}
+    .label{
+      margin-top:8px;
+      color:rgba(255,255,255,.70);
+      font-weight:900;
+      font-size:14px;
+    }
+
+    table{
       width:100%;
       border-collapse:separate;
-      border-spacing:0;
-      overflow:hidden;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.04);
-      box-shadow:var(--shadow);
+      border-spacing:0 10px;
     }
-    .table thead th{
+    thead th{
       text-align:left;
-      font-size:14px;
-      font-weight:900;
-      color:rgba(234,240,255,.82);
-      padding:14px 14px;
-      background:rgba(0,0,0,.20);
-      border-bottom:1px solid rgba(255,255,255,.10);
+      color:rgba(255,255,255,.72);
+      font-size:13px;
+      font-weight:1000;
+      padding:0 10px;
       white-space:nowrap;
     }
-    .table tbody td{
-      padding:14px 14px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      vertical-align:top;
+    tbody tr{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,.22);
     }
-    .table tbody tr:last-child td{border-bottom:none}
-    .name{font-size:16px;font-weight:900}
-
-    /* percent cell */
-    .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .chip{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:12px;
-      font-weight:900;border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.18);
-      min-width:110px;justify-content:center;
+    tbody td{
+      padding:12px 10px;
+      vertical-align:middle;
     }
-    .dot{width:12px;height:12px;border-radius:999px;background:var(--mid)}
-    .chip.good{color:#dfffe9}
-    .chip.good .dot{background:var(--good)}
-    .chip.mid{color:#fff5d0}
-    .chip.mid .dot{background:var(--mid)}
-    .chip.bad{color:#ffd9d9}
-    .chip.bad .dot{background:var(--bad)}
+    tbody tr td:first-child{
+      border-top-left-radius:16px;
+      border-bottom-left-radius:16px;
+      font-weight:1000;
+    }
+    tbody tr td:last-child{
+      border-top-right-radius:16px;
+      border-bottom-right-radius:16px;
+    }
 
-    .progress{
-      width:min(280px, 100%);
-      height:10px;border-radius:999px;
-      background:rgba(255,255,255,.10);
+    .barWrap{
+      background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.10);
+      border-radius:999px;
+      height:10px;
       overflow:hidden;
     }
-    .progress > i{
-      display:block;height:100%;
+    .bar{
+      height:100%;
       width:0%;
-      background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.55));
+      background:rgba(255,255,255,.75);
+      transition:width .25s ease;
     }
-    .progress.mid > i{ background:linear-gradient(90deg, rgba(243,196,58,.95), rgba(243,196,58,.55)); }
-    .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
-    .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
 
-    /* ===== 7 day boxes ===== */
     .days{
-      display:grid;
-      grid-template-columns:repeat(7, minmax(0, 1fr));
+      display:flex;
       gap:10px;
-      min-width:560px;
-      align-items:start;
+      justify-content:flex-start;
+      flex-wrap:wrap;
     }
-    @media (max-width:1100px){ .days{min-width:460px} }
-    @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
-
     .daybox{
-      border-radius:14px;
-      padding:12px 10px 12px;
-      text-align:center;
-      font-weight:950;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.20);
-      user-select:none;
+      width:72px;
+      min-height:74px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:10px;
       position:relative;
       cursor:default;
     }
-    .daybox.good{
-      background:linear-gradient(180deg, rgba(48,209,106,.35), rgba(48,209,106,.18));
-      border-color:rgba(48,209,106,.35);
-    }
-    .daybox.mid{
-      background:linear-gradient(180deg, rgba(243,196,58,.30), rgba(243,196,58,.16));
-      border-color:rgba(243,196,58,.35);
-    }
-    .daybox.bad{
-      background:linear-gradient(180deg, rgba(255,77,77,.30), rgba(255,77,77,.15));
-      border-color:rgba(255,77,77,.35);
-    }
-
+    .daybox.hasTip{ cursor:pointer; }
+    .daybox.hasTip:focus{ outline:2px solid rgba(255,255,255,.22); outline-offset:2px; }
     .dayTop{
       display:flex;align-items:center;justify-content:space-between;
-      gap:6px;margin-bottom:8px;
+      gap:8px;
     }
-    .dowBadge{
-      font-size:12px;
-      padding:4px 10px;
+    .dowPill{
+      padding:6px 10px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
+      font-weight:1000;
+      font-size:14px;
+      border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.18);
-      line-height:1;
-      white-space:nowrap;
-      font-weight:950;
     }
     .dayNum{
-      font-size:13px;
-      opacity:.9;
-      font-weight:950;
-    }
-    .dayCount{
-      font-size:28px;
-      letter-spacing:.2px;
+      font-size:18px;
       font-weight:1100;
+      opacity:.95;
+    }
+    .dayMain{
+      font-size:36px;
+      font-weight:1200;
+      line-height:1;
+      text-align:center;
+      margin-top:4px;
     }
 
-    .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
-    .btn{
-      text-decoration:none;color:var(--text);
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.14);
-      padding:10px 14px;border-radius:12px;
-      font-weight:900;
+    .dgGreen{
+      border-color:rgba(48,209,88,.32);
+      background:rgba(48,209,88,.12);
     }
-    .btn:hover{background:rgba(255,255,255,.10)}
-
-    /* =========================================================
-       Tooltip (SMALL)
-       ========================================================= */
-    .hoverTip{
-      position:fixed;
-      z-index:99999;
-      display:none;
-
-      width:340px; /* ✅ เล็กลงจริง */
-      max-width:min(340px, calc(100vw - 24px)); /* ✅ คุมไม่ให้ใหญ่ */
-
-      background:rgba(10,16,26,.96);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:16px;
-      box-shadow:0 18px 55px rgba(0,0,0,.55);
-
-      padding:10px; /* ✅ ลด padding */
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      color:var(--text);
-      overflow:hidden;
-      pointer-events:none;
+    .dgRed{
+      border-color:rgba(255,77,77,.28);
+      background:rgba(255,77,77,.10);
     }
-    .hoverTip.show{display:block}
-
-    .hoverTip .hdr{
-      font-weight:950;
-      font-size:15px;          /* ✅ ลด */
-      margin:0 0 8px;
-      color:rgba(234,240,255,.95);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .dgAmber{
+      border-color:rgba(255,214,10,.28);
+      background:rgba(255,214,10,.10);
     }
 
-    .tipRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;                 /* ✅ ลด */
-      padding:10px 10px;        /* ✅ ลด */
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      margin-bottom:8px;        /* ✅ ลด */
-    }
-
-    .tipLeft{
-      display:flex;
-      align-items:center;
-      gap:10px;                 /* ✅ ลด */
-      font-weight:950;
-      min-width:0;
-    }
-    .tipLabel{
-      font-size:14px;           /* ✅ ลด */
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .ico{
-      width:26px;height:26px;   /* ✅ ลด */
-      border-radius:999px;
-      display:grid;place-items:center;
-      border:1px solid rgba(255,255,255,.16);
-      flex:0 0 auto;
-    }
-    .ico.ok{background:rgba(48,209,106,.22); border-color:rgba(48,209,106,.40)}
-    .ico.no{background:rgba(255,77,77,.20); border-color:rgba(255,77,77,.40)}
-    .ico svg{display:block}
-
-    .tipTime{
-      font-weight:950;
-      font-size:15px;           /* ✅ ลด */
-      opacity:.98;
-      white-space:nowrap;
-      flex:0 0 auto;
-    }
-    .tipTime.dim{opacity:.55}
-
-    .hoverTip .arrow{
-      position:absolute;
-      width:12px;height:12px;
-      background:rgba(10,16,26,.96);
-      border-left:1px solid rgba(255,255,255,.14);
-      border-top:1px solid rgba(255,255,255,.14);
-      transform:rotate(45deg);
-      top:-7px;
-      left:50%;
-      margin-left:-6px;
-    }
+    /* ===== Tooltip (Small) ===== */
+    .tt{position:fixed;z-index:9999;left:0;top:0;transform:translate(-9999px,-9999px);width:min(280px, calc(100vw - 24px));background:rgba(17,18,24,.92);border:1px solid rgba(255,255,255,.16);border-radius:16px;box-shadow:0 18px 55px rgba(0,0,0,.55);padding:10px;backdrop-filter: blur(10px);-webkit-backdrop-filter: blur(10px);pointer-events:none;}
+    .tt.show{pointer-events:auto;}
+    .tt .ttTitle{font-weight:1100;font-size:18px;margin:0 0 8px 0;color:rgba(234,240,255,.98);}
+    .tt .ttRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);margin-top:8px;}
+    .tt .ttLeft{display:flex;align-items:center;gap:10px;font-weight:1000;font-size:18px;}
+    .tt .ttTime{font-weight:1100;font-size:18px;opacity:.95;}
+    .tt .ico{width:34px;height:34px;border-radius:999px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.22);flex:0 0 auto;}
+    .tt .ico.ok{border-color:rgba(48,209,106,.45);background:rgba(48,209,106,.18);}
+    .tt .ico.bad{border-color:rgba(255,77,77,.42);background:rgba(255,77,77,.14);}
+    .tt .ico svg{width:18px;height:18px;}
+    .ttArrow{position:fixed;z-index:9998;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:10px solid rgba(17,18,24,.92);transform:translate(-9999px,-9999px);filter: drop-shadow(0 6px 10px rgba(0,0,0,.55));pointer-events:none;}
   </style>
 </head>
 
 <body>
   <div class="wrap">
+
     <div class="topRow">
       <div>
-        <h1>Dashboard</h1>
-        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้</div>
+        <h1 class="title">Dashboard</h1>
+        <div id="weekLabel" class="sub">—</div>
       </div>
 
-      <div class="weekMenu">
-        <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
-          <button id="btnThis" class="active" role="tab" aria-selected="true">สัปดาห์นี้</button>
-          <button id="btnLast" role="tab" aria-selected="false">สัปดาห์ที่แล้ว</button>
+      <div class="controls">
+        <div class="pill" title="Auto refresh 1 นาที">
+          <div id="autoDot" class="dot on"></div>
+          <div>Auto refresh</div>
+          <div class="small">1 นาที</div>
         </div>
 
-        <div class="autoMini" aria-live="polite" title="รีเฟรชอัตโนมัติ">
-          <span class="dotLive"></span>
-          <span>รีเฟรชใน <span id="countdown">--</span> วิ</span>
-        </div>
+        <button class="btn" id="btnPrev">◀ สัปดาห์ก่อน</button>
+        <button class="btn" id="btnThis">สัปดาห์นี้</button>
+        <button class="btn" id="btnNext">สัปดาห์ถัดไป ▶</button>
+        <button class="btn" id="btnRefresh">รีเฟรช</button>
       </div>
     </div>
 
-    <div class="kpis">
-      <div class="kpi">
-        <div class="label">สัดส่วนทำครบ (สัปดาห์ที่เลือก)</div>
-        <div class="pieWrap">
-          <div class="pie" id="pie"></div>
-          <div style="display:grid;gap:8px">
-            <div style="font-weight:900;font-size:22px" id="piePct">-</div>
-            <div class="muted" id="pieText">กำลังคำนวณ...</div>
-          </div>
-        </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="bigNumber green" id="completePeople">0 คน</div>
+        <div class="label">จำนวนคนที่ครบทุกช่วงเวลา</div>
       </div>
 
-      <div class="kpi">
-        <div class="label">ทำครบ 21/21</div>
-        <div id="kpiComplete" class="value good">-</div>
-        <div class="sub">จำนวนคนที่ครบทุกวันทุกเวลา</div>
-      </div>
-
-      <div class="kpi">
-        <div class="label">ทำไม่ครบ</div>
-        <div id="kpiIncomplete" class="value bad">-</div>
-        <div class="sub">จำนวนคนที่ยังไม่ครบ 21/21</div>
+      <div class="card">
+        <div class="bigNumber red" id="incompletePeople">0 คน</div>
+        <div class="label">จำนวนคนที่ยังไม่ครบ 21/21</div>
       </div>
     </div>
 
-    <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th style="width:26%">ชื่อ</th>
-          <th style="width:30%">% สัปดาห์</th>
-          <th style="width:10%">ครบทั้งวัน</th>
-          <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
-      </tbody>
-    </table>
-
-    <div class="btns">
-      <a class="btn" href="/">กลับหน้าบันทึกข้อมูล</a>
-      <a class="btn" href="/status.html">ไปหน้าตรวจสอบสถานะ</a>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:220px">ชื่อ</th>
+            <th style="width:120px">รวม</th>
+            <th style="width:160px">%</th>
+            <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
+
   </div>
 
-  <!-- Tooltip element -->
-  <div class="hoverTip" id="hoverTip" role="dialog" aria-hidden="true">
-    <div class="arrow"></div>
-    <div class="hdr" id="tipHdr">-</div>
-    <div id="tipBody"></div>
-  </div>
+  <!-- ===== Tooltip ===== -->
+  <div id="ttArrow" class="ttArrow" aria-hidden="true"></div>
+  <div id="tt" class="tt" role="dialog" aria-hidden="true"></div>
 
 <script>
   // ====== CONFIG ======
-  const REFRESH_MS = 60_000; // 1 นาที
-  let weekOffset = 0;
+  const API_DASHBOARD = "/api/dashboard"; // cloudflare function
+  const REFRESH_MS = 60 * 1000;
 
-  // UI refs
+  // ====== DOM ======
+  const weekLabel = document.getElementById("weekLabel");
+  const completePeopleEl = document.getElementById("completePeople");
+  const incompletePeopleEl = document.getElementById("incompletePeople");
+  const tbody = document.getElementById("tbody");
+
+  const btnPrev = document.getElementById("btnPrev");
   const btnThis = document.getElementById("btnThis");
-  const btnLast = document.getElementById("btnLast");
-  const countdownEl = document.getElementById("countdown");
+  const btnNext = document.getElementById("btnNext");
+  const btnRefresh = document.getElementById("btnRefresh");
 
-  const elWeek = document.getElementById("weekHeader");
-  const tbody  = document.getElementById("tbody");
+  const autoDot = document.getElementById("autoDot");
 
-  const pie = document.getElementById("pie");
-  const piePct = document.getElementById("piePct");
-  const pieText = document.getElementById("pieText");
+  // ====== state ======
+  let weekOffset = 0;
+  let autoTimer = null;
+  let autoOn = true;
 
-  const kpiComplete = document.getElementById("kpiComplete");
-  const kpiIncomplete = document.getElementById("kpiIncomplete");
-
-  // Tooltip refs
-  const hoverTip = document.getElementById("hoverTip");
-  const tipHdr = document.getElementById("tipHdr");
-  const tipBody = document.getElementById("tipBody");
-
-  // ===== helpers =====
+  // ====== helpers ======
   function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>( {
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m] ));
+    return String(s||"")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
   }
-  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
-  function thaiDateFromISO(iso){
-    const [y,m,d] = iso.split("-").map(Number);
+  function escapeAttr(s){
+    return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  // ===== Tooltip helpers =====
+  const tt = document.getElementById("tt");
+  const ttArrow = document.getElementById("ttArrow");
+  let tipOpenFor = null;
+
+  const TH_DOW_SHORT = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
+  const TH_MON_SHORT = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+
+  function thaiHeaderFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if (!y || !m || !d) return "";
     const dt = new Date(y, m-1, d);
-    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
-  }
-  function thaiShortDow(d){
-    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
-    return th[d.getDay()];
-  }
-
-  // ✅ Tooltip header ไทยเป๊ะ: "จ. 9 ก.พ. 69"
-  function thaiTooltipHeaderFromISO(iso){
-    const [y,m,d] = String(iso).split("-").map(Number);
-    const dt = new Date(y, (m||1)-1, d||1);
-
-    const thDow = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."][dt.getDay()];
-    const thMonth = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][dt.getMonth()];
-
-    const be2 = String((dt.getFullYear() + 543) % 100).padStart(2, "0");
-    const dayNum = dt.getDate();
-
-    return `${thDow} ${dayNum} ${thMonth} ${be2}`;
+    const dow = TH_DOW_SHORT[dt.getDay()] || "";
+    const mon = TH_MON_SHORT[m-1] || "";
+    const yy = (y + 543) % 100;
+    return `${dow} ${d} ${mon} ${String(yy).padStart(2,"0")}`;
   }
 
-  function dayGrade(count){
-    if (count === 3) return "good";
-    if (count === 2) return "mid";
-    return "bad";
-  }
-  function gradeByPercent(p){
-    if (p >= 90) return "good";
-    if (p >= 70) return "mid";
-    return "bad";
+  function cleanHHmm(s){
+    s = String(s||"").trim();
+    if (!s) return "";
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (!m) return "";
+    return `${m[1].padStart(2,"0")}:${m[2]}`;
   }
 
-  // ===== Tooltip logic =====
-  let tipVisible = false;
+  function iconSvg(ok){
+    return ok
+      ? `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7L10.5 16.5L4 10" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17" stroke="white" stroke-width="2.6" stroke-linecap="round"/></svg>`;
+  }
 
-  function buildTipHTML(dayObj){
-    const times = dayObj.times || dayObj.timeMap || dayObj.sessionTimes || null;
-
-    // ✅ เวลาเป็น "HH:MM น." (ไม่มีทางเป็น "น. น.")
-    function fmtTime(v){
-      if (!v) return "";
-      const s = String(v).trim();
-      const m = s.match(/(\d{1,2}:\d{2})/);
-      if (!m) return "";
-
-      const parts = m[1].split(":");
-      const hh = String(Number(parts[0])).padStart(2,"0");
-      const mm = String(Number(parts[1])).padStart(2,"0");
-      return `${hh}:${mm} น.`;
-    }
-
-    function getTime(key){
-      if (!times) return "";
-      return fmtTime(times[key]);
-    }
-
-    const t1 = getTime("s1") || getTime("ครั้งที่ 1");
-    const t2 = getTime("s2") || getTime("ครั้งที่ 2");
-    const t3 = getTime("s3") || getTime("ครั้งที่ 3");
-    const hasTime = !!(t1 || t2 || t3);
-
-    const cnt = Number(dayObj.count || 0);
-    const ok1 = hasTime ? !!t1 : (cnt >= 1);
-    const ok2 = hasTime ? !!t2 : (cnt >= 2);
-    const ok3 = hasTime ? !!t3 : (cnt >= 3);
-
-    function icon(ok){
-      if (ok){
-        return `
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M20 7L10.5 16.5L4 10" stroke="#30d16a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        `;
-      }
+  function buildTipHtml(payload){
+    const head = thaiHeaderFromISO(payload.dateISO);
+    const s = payload.sessions || {};
+    const rows = [
+      { label:"ครั้งที่ 1", ok: !!s.s1?.done, time: cleanHHmm(s.s1?.time) },
+      { label:"ครั้งที่ 2", ok: !!s.s2?.done, time: cleanHHmm(s.s2?.time) },
+      { label:"ครั้งที่ 3", ok: !!s.s3?.done, time: cleanHHmm(s.s3?.time) },
+    ];
+    const htmlRows = rows.map(r=>{
+      const t = r.ok ? (r.time ? `${r.time} น.` : "—") : "—";
       return `
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M18 6L6 18M6 6l12 12" stroke="#ff4d4d" stroke-width="2.8" stroke-linecap="round"/>
-        </svg>
-      `;
-    }
-
-    const row = (ok, label, timeText)=>`
-      <div class="tipRow">
-        <div class="tipLeft">
-          <div class="ico ${ok ? "ok" : "no"}">${icon(ok)}</div>
-          <div class="tipLabel">${label}</div>
+        <div class="ttRow">
+          <div class="ttLeft">
+            <div class="ico ${r.ok ? "ok" : "bad"}">${iconSvg(r.ok)}</div>
+            <div>${r.label}</div>
+          </div>
+          <div class="ttTime">${t}</div>
         </div>
-        <div class="tipTime ${(!ok || !timeText) ? "dim" : ""}">${ok ? (timeText || "—") : "—"}</div>
-      </div>
-    `;
-
-    return `
-      ${row(ok1, "ครั้งที่ 1", t1)}
-      ${row(ok2, "ครั้งที่ 2", t2)}
-      ${row(ok3, "ครั้งที่ 3", t3)}
-    `;
-  }
-
-  function showTip(anchorEl, headerText, dayObj){
-    tipHdr.textContent = headerText;
-    tipBody.innerHTML = buildTipHTML(dayObj);
-
-    hoverTip.classList.add("show");
-    hoverTip.setAttribute("aria-hidden","false");
-    tipVisible = true;
-
-    positionTip(anchorEl);
+      `;
+    }).join("");
+    return `<div class="ttTitle">${escapeHtml(head)}</div>${htmlRows}`;
   }
 
   function hideTip(){
-    hoverTip.classList.remove("show");
-    hoverTip.setAttribute("aria-hidden","true");
-    tipVisible = false;
+    tt.classList.remove("show");
+    tt.setAttribute("aria-hidden","true");
+    tt.style.transform = "translate(-9999px,-9999px)";
+    ttArrow.style.transform = "translate(-9999px,-9999px)";
+    tipOpenFor = null;
   }
 
-  function positionTip(anchorEl){
-    if (!tipVisible) return;
-    const r = anchorEl.getBoundingClientRect();
+  function showTipFor(el){
+    const raw = el.getAttribute("data-tt") || "";
+    if (!raw) return;
+    let payload = null;
+    try{ payload = JSON.parse(raw); }catch(e){ payload = null; }
+    if (!payload || !payload.dateISO) return;
 
-    const tipW = hoverTip.offsetWidth || 340;
-    const tipH = hoverTip.offsetHeight || 210;
+    tt.innerHTML = buildTipHtml(payload);
+    tt.classList.add("show");
+    tt.setAttribute("aria-hidden","false");
 
-    let left = r.left + (r.width/2) - (tipW/2);
-    let top  = r.bottom + 10;
+    const r = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const pad = 10;
 
-    left = clamp(left, 12, window.innerWidth - tipW - 12);
+    const w = tt.offsetWidth || 280;
+    const h = tt.offsetHeight || 160;
 
-    const arrow = hoverTip.querySelector(".arrow");
+    let left = r.left + (r.width/2) - (w/2);
+    left = Math.max(pad, Math.min(left, vw - w - pad));
 
-    if (top + tipH > window.innerHeight - 12) {
-      top = r.top - tipH - 10;
-      top = clamp(top, 12, window.innerHeight - tipH - 12);
-      arrow.style.top = "auto";
-      arrow.style.bottom = "-7px";
-      arrow.style.transform = "rotate(225deg)";
-    } else {
-      arrow.style.bottom = "auto";
-      arrow.style.top = "-7px";
-      arrow.style.transform = "rotate(45deg)";
+    let top = r.bottom + 14;
+    if (top + h + pad > window.innerHeight){
+      top = r.top - h - 14;
     }
 
-    hoverTip.style.left = `${Math.round(left)}px`;
-    hoverTip.style.top  = `${Math.round(top)}px`;
+    tt.style.transform = `translate(${Math.round(left)}px, ${Math.round(top)}px)`;
 
-    const centerX = r.left + (r.width/2);
-    const arrowLeft = clamp(centerX - left, 22, tipW - 22);
-    arrow.style.left = `${Math.round(arrowLeft)}px`;
+    const arrowLeft = Math.max(pad, Math.min(r.left + r.width/2 - 9, vw - pad - 18));
+    const arrowTop = (top > r.bottom) ? (r.bottom + 4) : (r.top - 12);
+
+    if (top < r.top){
+      ttArrow.style.borderBottom = "0";
+      ttArrow.style.borderTop = "10px solid rgba(17,18,24,.92)";
+    } else {
+      ttArrow.style.borderTop = "0";
+      ttArrow.style.borderBottom = "10px solid rgba(17,18,24,.92)";
+    }
+    ttArrow.style.transform = `translate(${Math.round(arrowLeft)}px, ${Math.round(arrowTop)}px)`;
+
+    tipOpenFor = el;
   }
 
-  window.addEventListener("resize", ()=>{ if (tipVisible) hideTip(); });
-  window.addEventListener("scroll", ()=>{ if (tipVisible) hideTip(); }, { passive:true });
+  function dowShort(i){
+    return ["จ.","อ.","พ.","พฤ.","ศ.","ส.","อา."][i] || "";
+  }
 
-  // ====== render ======
-  function render(out){
-    const w = out.week;
-    elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
+  function fmtRange(week){
+    // week.startISO / endISO -> แสดงเป็น ISO เดิม (คุมความชัวร์)
+    return `Week: ${week.startISO} ถึง ${week.endISO}`;
+  }
 
-    const thisW = (out.summary && out.summary.thisWeek) ? out.summary.thisWeek : {};
-    const peopleTotal = Number(thisW.peopleTotal || 0);
-    const completePeople = Number(thisW.completePeople || 0);
-    const incompletePeople = Number(thisW.incompletePeople || 0);
-    const completeRate = Number(thisW.completeRate || 0);
+  function colorClass(cnt){
+    if (cnt >= 3) return "dgGreen";
+    if (cnt >= 1) return "dgAmber";
+    return "dgRed";
+  }
 
-    pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
-    piePct.textContent = `${completeRate}%`;
-    pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
+  function isoToDowDay(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    // getDay: 0=Sun ... 6=Sat -> convert to Thai short above that uses Mon first
+    const js = dt.getDay();
+    const map = {0:6,1:0,2:1,3:2,4:3,5:4,6:5};
+    const idx = map[js];
+    return { dow: dowShort(idx), day: d };
+  }
 
-    kpiComplete.textContent = `${completePeople} คน`;
-    kpiIncomplete.textContent = `${incompletePeople} คน`;
+  async function load(){
+    const u = `${API_DASHBOARD}?weekOffset=${encodeURIComponent(String(weekOffset))}&_=${Date.now()}`;
+    const r = await fetch(u, { cache:"no-store" });
+    const j = await r.json();
+    if (!j || !j.ok) throw new Error("API error");
+    render(j);
+  }
 
-    const rows = out.people || [];
-    rows.sort((a,b)=> (b.percent||0) - (a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
+  function render(data){
+    weekLabel.textContent = fmtRange(data.week);
 
-    tbody.innerHTML = "";
+    const sum = data.summary?.thisWeek || {};
+    completePeopleEl.textContent = `${sum.completePeople || 0} คน`;
+    incompletePeopleEl.textContent = `${sum.incompletePeople || 0} คน`;
 
-    for (const p of rows){
-      const pct = Number(p.percent || 0);
-      const g = gradeByPercent(pct);
-      const chipText = (pct === 100) ? "ครบ 100%" : `${pct}%`;
-      const doneDays = Number(p.doneDays || 0);
-      const totalDone = Number(p.totalDone || 0);
-      const totalSlots = Number(p.totalSlots || 21);
+    const rows = data.people || [];
+    tbody.innerHTML = rows.map(p=>{
+      const percent = Number(p.percent || 0);
+      const barW = Math.max(0, Math.min(100, percent));
 
-      const perDay = Array.isArray(p.perDay) ? p.perDay : [];
-      const dayBoxes = perDay.map((d)=>{
+      const dayBoxes = (p.perDay || []).map(d=>{
         const cnt = Number(d.count || 0);
-        const dg = dayGrade(cnt);
-        const iso = String(d.dateISO || "");
-
-        const [yy,mm,dd] = iso.split("-").map(Number);
-        const dt = new Date(yy, (mm||1)-1, dd||1);
-        const dow = thaiShortDow(dt);
-        const dayNum = dd || "";
-
-        const tipHeader = thaiTooltipHeaderFromISO(iso);
-
-        const payload = encodeURIComponent(JSON.stringify({
-          dateISO: iso,
-          count: cnt,
-          times: d.times || d.timeMap || d.sessionTimes || null
-        }));
+        const dg = colorClass(cnt);
+        const { dow, day } = isoToDowDay(d.dateISO);
 
         return `
-          <div class="daybox ${dg}" data-tipheader="${escapeHtml(tipHeader)}" data-tip="${payload}">
-            <div class="dayTop">
-              <span class="dowBadge">${dow}</span>
-              <span class="dayNum">${dayNum}</span>
-            </div>
-            <div class="dayCount">${cnt}/3</div>
+          <div class="daybox ${dg} hasTip" tabindex="0" role="button"
+               data-tt="${escapeAttr(JSON.stringify({dateISO: iso, sessions: d.sessions || null}))}">
+             <div class="dayTop">
+               <div class="dowPill">${escapeHtml(dow)}</div>
+               <div class="dayNum">${day}</div>
+             </div>
+             <div class="dayMain">${cnt}/3</div>
           </div>
         `;
       }).join("");
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="name">${escapeHtml(p.name||"")}</td>
-        <td>
-          <div class="pctRow">
-            <span class="chip ${g}">
-              <span class="dot"></span>
-              <span>${chipText}</span>
-            </span>
-            <div class="progress ${g}">
-              <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
+      return `
+        <tr>
+          <td>${escapeHtml(p.name || "")}</td>
+          <td><b>${p.totalDone || 0}</b>/<span class="small">21</span></td>
+          <td>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="barWrap" style="flex:1">
+                <div class="bar" style="width:${barW}%"></div>
+              </div>
+              <div style="min-width:44px;font-weight:1000">${percent}%</div>
             </div>
-          </div>
-          <div class="subline">ทำได้ ${totalDone}/${totalSlots} ครั้ง</div>
-        </td>
-        <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
-        <td><div class="days">${dayBoxes}</div></td>
+          </td>
+          <td><div class="days">${dayBoxes}</div></td>
+        </tr>
       `;
-      tbody.appendChild(tr);
-    }
-
-    if (!rows.length){
-      tbody.innerHTML = `<tr><td colspan="4" class="muted">ไม่พบข้อมูล</td></tr>`;
-    }
-
-    // bind tooltip events
-    document.querySelectorAll(".daybox").forEach(el=>{
-      el.addEventListener("mouseenter", ()=>{
-        const hdr = el.getAttribute("data-tipheader") || "-";
-        const raw = el.getAttribute("data-tip") || "";
-        let dayObj = {};
-        try { dayObj = JSON.parse(decodeURIComponent(raw)); } catch(e){}
-        showTip(el, hdr, dayObj);
-      });
-      el.addEventListener("mousemove", ()=> positionTip(el));
-      el.addEventListener("mouseleave", hideTip);
-    });
+    }).join("");
   }
-
-  // ====== load ======
-  let inFlight = false;
-  async function load(isAuto=false){
-    if (inFlight) return;
-    inFlight = true;
-
-    if (!isAuto){
-      tbody.innerHTML = `<tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>`;
-    }
-
-    try{
-      const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(weekOffset))}`, { cache:"no-store" });
-      const out = await res.json().catch(()=>({}));
-
-      if (!res.ok || !out.ok){
-        tbody.innerHTML = `<tr><td colspan="4" class="muted">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
-        return;
-      }
-      render(out);
-    } finally{
-      inFlight = false;
-    }
-  }
-
-  // ====== menu actions ======
-  function setActiveWeek(offset){
-    weekOffset = offset;
-
-    btnThis.classList.toggle("active", weekOffset === 0);
-    btnLast.classList.toggle("active", weekOffset === -1);
-    btnThis.setAttribute("aria-selected", String(weekOffset === 0));
-    btnLast.setAttribute("aria-selected", String(weekOffset === -1));
-
-    hideTip();
-    load(false);
-
-    nextRefreshAt = Date.now() + REFRESH_MS;
-  }
-
-  btnThis.addEventListener("click", ()=> setActiveWeek(0));
-  btnLast.addEventListener("click", ()=> setActiveWeek(-1));
-
-  // ====== Auto refresh (1 นาที) + หยุดตอนแท็บไม่ active ======
-  let nextRefreshAt = Date.now() + REFRESH_MS;
-  let tickTimer = null;
-  let refreshTimer = null;
 
   function startAuto(){
     stopAuto();
-    nextRefreshAt = Date.now() + REFRESH_MS;
-
-    tickTimer = setInterval(()=>{
-      if (document.hidden) return;
-      const leftMs = Math.max(0, nextRefreshAt - Date.now());
-      countdownEl.textContent = String(Math.ceil(leftMs/1000));
-    }, 250);
-
-    refreshTimer = setInterval(async ()=>{
-      if (document.hidden) return;
-      await load(true);
-      nextRefreshAt = Date.now() + REFRESH_MS;
-      hideTip();
-    }, REFRESH_MS);
+    if (!autoOn) return;
+    autoDot.classList.remove("off");
+    autoDot.classList.add("on");
+    autoTimer = setInterval(()=>load().catch(()=>{}), REFRESH_MS);
   }
-
   function stopAuto(){
-    if (tickTimer){ clearInterval(tickTimer); tickTimer=null; }
-    if (refreshTimer){ clearInterval(refreshTimer); refreshTimer=null; }
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+  }
+  function setAuto(on){
+    autoOn = !!on;
+    if (autoOn){
+      startAuto();
+    } else {
+      stopAuto();
+      autoDot.classList.remove("on");
+      autoDot.classList.add("off");
+    }
   }
 
-  document.addEventListener("visibilitychange", ()=>{
-    if (!document.hidden){
-      nextRefreshAt = Date.now() + REFRESH_MS;
-      load(true);
-      hideTip();
-    }
+  // ===== Tooltip events (event delegation) =====
+  tbody.addEventListener("mouseover", (e)=>{
+    const box = e.target.closest(".daybox.hasTip");
+    if (!box) return;
+    showTipFor(box);
+  });
+  tbody.addEventListener("mouseout", (e)=>{
+    const from = e.target.closest(".daybox.hasTip");
+    const to = e.relatedTarget ? e.relatedTarget.closest(".daybox.hasTip") : null;
+    if (from && from !== to) hideTip();
+  });
+  tbody.addEventListener("click", (e)=>{
+    const box = e.target.closest(".daybox.hasTip");
+    if (!box) return;
+    if (tipOpenFor === box) hideTip();
+    else showTipFor(box);
+  });
+  document.addEventListener("keydown", (e)=>{ if (e.key === "Escape") hideTip(); });
+  window.addEventListener("scroll", hideTip, { passive:true });
+  window.addEventListener("resize", hideTip);
+
+  // ====== init =====
+  btnPrev.addEventListener("click", ()=>{ weekOffset -= 1; load(); });
+  btnNext.addEventListener("click", ()=>{ weekOffset += 1; load(); });
+  btnThis.addEventListener("click", ()=>{ weekOffset = 0; load(); });
+  btnRefresh.addEventListener("click", ()=>load());
+
+  document.querySelector(".pill").addEventListener("click", ()=>{
+    setAuto(!autoOn);
   });
 
-  // ===== init =====
-  (function init(){
-    setActiveWeek(0);
-    startAuto();
-  })();
+  load().then(()=>startAuto()).catch(err=>{
+    console.error(err);
+  });
 </script>
 </body>
 </html>
