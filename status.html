@@ -24,14 +24,13 @@
       --tint-border-ok: rgba(101,255,179,.34);
       --tint-border-bad: rgba(255,106,106,.34);
 
-      /* summary levels */
-      --lvl0: rgba(255,106,106,.18);   /* red */
+      --lvl0: rgba(255,106,106,.18);
       --lvl0b: rgba(255,106,106,.42);
-      --lvl1: rgba(255,170,90,.18);    /* orange */
+      --lvl1: rgba(255,170,90,.18);
       --lvl1b: rgba(255,170,90,.42);
-      --lvl2: rgba(255,230,110,.18);   /* yellow */
+      --lvl2: rgba(255,230,110,.18);
       --lvl2b: rgba(255,230,110,.42);
-      --lvl3: rgba(101,255,179,.18);   /* green */
+      --lvl3: rgba(101,255,179,.18);
       --lvl3b: rgba(101,255,179,.42);
     }
 
@@ -85,7 +84,7 @@
       text-align:center;
     }
 
-    /* Desktop corner updated */
+    /* desktop corner updated */
     .updatedCorner{
       position:absolute;
       top:14px;
@@ -102,7 +101,6 @@
       display:block;
     }
     @media (max-width:760px){
-      /* ✅ mobile: hide corner updated (we use footer updated instead) */
       .updatedCorner{ display:none; }
     }
 
@@ -133,6 +131,7 @@
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
 
+    /* desktop back button */
     .topline{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
     a.btnlink{flex:1;text-decoration:none}
     a.btnlink button{
@@ -152,10 +151,7 @@
       font-weight:950;
       text-align:center;
     }
-    .resultHeader .line{
-      font-size:16px;
-      letter-spacing:.2px;
-    }
+    .resultHeader .line{ font-size:16px; letter-spacing:.2px; }
 
     .boxes{
       margin-top:12px;
@@ -182,7 +178,6 @@
       position:relative;
       overflow:hidden;
     }
-
     .box.ok{
       background:linear-gradient(180deg, var(--tint-ok), rgba(0,0,0,.16));
       border-color:var(--tint-border-ok);
@@ -195,7 +190,6 @@
       background:rgba(0,0,0,.18);
       border-color:rgba(255,255,255,.12);
     }
-
     .box.sum.lvl0{ background:linear-gradient(180deg, var(--lvl0), rgba(0,0,0,.16)); border-color:var(--lvl0b); }
     .box.sum.lvl1{ background:linear-gradient(180deg, var(--lvl1), rgba(0,0,0,.16)); border-color:var(--lvl1b); }
     .box.sum.lvl2{ background:linear-gradient(180deg, var(--lvl2), rgba(0,0,0,.16)); border-color:var(--lvl2b); }
@@ -271,23 +265,21 @@
 
     /* ===========================
        MOBILE UX MODE (<=760px)
-       - 1 column + Sticky bar
-       - Updated time centered under "ตรวจสอบสถานะ"
-       - "กลับหน้าบันทึกข้อมูล" moves to bottom after results
+       - sticky: check + updated + back (centered)
+       - reduce bottom spacing
        =========================== */
     .stickyBar{ display:none; }
 
-    /* Mobile-only footer updated (under check button) */
     .updatedFooter{
       display:none;
       text-align:center;
-      margin-top:8px;
       font-size:12px;
       font-weight:900;
       letter-spacing:.2px;
       color:rgba(234,240,255,.72);
       user-select:none;
       -webkit-user-select:none;
+      margin-top:2px;
     }
     .updatedFooter .pill{
       display:inline-flex;
@@ -304,26 +296,47 @@
       box-shadow:0 0 0 4px rgba(101,255,179,.18);
     }
 
-    /* Mobile bottom back button container */
-    .bottomBack{
+    /* mobile back button inside sticky */
+    .backFooter{
       display:none;
-      margin-top:14px;
+      text-align:center;
+      margin-top:6px;
+    }
+    .backFooter a{
+      display:inline-flex;
+      text-decoration:none;
+    }
+    .backFooter button{
+      margin-top:0;
+      width:auto;
+      min-width:220px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      color:rgba(234,240,255,.96);
+      border:1px solid rgba(255,255,255,.14);
+      font-weight:950;
     }
 
     @media (max-width:760px){
-      .wrap{ padding:16px; padding-bottom:110px; } /* เผื่อ sticky bar */
+      /* ✅ ให้คอนเทนต์ไม่โดน sticky บัง */
+      .wrap{ padding:16px; padding-bottom:170px; }
+
       .boxes{ grid-template-columns:1fr; }
       .box{ min-height:104px; padding:14px 14px; }
-      .resultHeader{ position:sticky; top:0; z-index:5; backdrop-filter: blur(10px); }
+      .resultHeader{
+        position:sticky; top:0; z-index:5;
+        backdrop-filter: blur(10px);
+      }
 
-      /* hide desktop check button on mobile */
       #checkBtn{ display:none; }
 
       .stickyBar{
         display:flex;
         position:fixed;
         left:0; right:0; bottom:0;
-        padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+        /* ✅ ลดช่องว่างขอบล่างให้พอดี */
+        padding:10px 14px calc(10px + env(safe-area-inset-bottom));
         background:linear-gradient(180deg, rgba(11,18,32,0), rgba(11,18,32,.92) 32%, rgba(11,18,32,.98));
         backdrop-filter: blur(10px);
         z-index:20;
@@ -334,7 +347,7 @@
         display:flex;
         flex-direction:column;
         align-items:center;
-        gap:8px;
+        gap:0;
       }
       .stickyBar .inner button{
         margin-top:0;
@@ -343,19 +356,11 @@
         padding:14px 16px;
       }
 
-      /* show mobile updated footer */
       .updatedFooter{ display:block; }
+      .backFooter{ display:block; }
 
-      /* mobile bottom back button (shown only after results) */
-      .bottomBack{ display:block; }
-      .bottomBack a.btnlink button{
-        width:100%;
-        background:rgba(255,255,255,.10);
-        color:var(--text);
-        border:1px solid rgba(255,255,255,.14);
-        border-radius:18px;
-        padding:14px 16px;
-      }
+      /* ✅ ซ่อน back button ใน card (มือถือใช้แบบ sticky เท่านั้น) */
+      #backTop{ display:none; }
     }
   </style>
 </head>
@@ -383,13 +388,8 @@
 
       <div class="msg" id="out"></div>
 
-      <!-- Desktop back button stays here -->
+      <!-- Desktop back button (hidden on mobile) -->
       <div class="topline" id="backTop">
-        <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
-      </div>
-
-      <!-- Mobile back button will be shown at bottom AFTER results -->
-      <div class="bottomBack" id="backBottom" style="display:none;">
         <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
       </div>
 
@@ -401,12 +401,16 @@
     <div class="inner">
       <button id="checkBtnMobile" type="button">ตรวจสอบสถานะ</button>
 
-      <!-- ✅ mobile updated centered under the button -->
       <div class="updatedFooter" id="updatedFooter">
         <span class="pill">
           <span class="dot" aria-hidden="true"></span>
           <span id="updatedFooterText">อัปเดตล่าสุด —</span>
         </span>
+      </div>
+
+      <!-- ✅ Back button centered under updated -->
+      <div class="backFooter" id="backFooter">
+        <a href="/"><button type="button">กลับไปบันทึกข้อมูล</button></a>
       </div>
     </div>
   </div>
@@ -421,9 +425,6 @@
 
   const updatedCorner = document.getElementById("updatedCorner");
   const updatedFooterText = document.getElementById("updatedFooterText");
-
-  const backTop = document.getElementById("backTop");
-  const backBottom = document.getElementById("backBottom");
 
   const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
 
@@ -448,7 +449,6 @@
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocalShort(mon)} – อาทิตย์ ${thaiDateLabelLocalShort(sun)}`;
   }
 
-  // เพิ่ม "วันอาทิตย์สัปดาห์ที่แล้ว"
   function buildDateOptions(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
@@ -494,10 +494,7 @@
     const now = new Date();
     const hhmm = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
 
-    // desktop corner
     updatedCorner.textContent = `อัปเดตล่าสุด ${hhmm}`;
-
-    // mobile footer under button
     updatedFooterText.textContent = `อัปเดตล่าสุด ${hhmm}`;
   }
 
@@ -596,12 +593,6 @@
       </div>
     `;
 
-    // ✅ mobile only: move back button to bottom after results
-    if (isMobile()) {
-      backTop.style.display = "none";
-      backBottom.style.display = "block";
-    }
-
     setUpdatedNow();
   }
 
@@ -676,7 +667,7 @@
     }
   }
 
-  // ✅ Auto-check บนมือถือ
+  // Auto-check on mobile
   let autoTimer = null;
   function scheduleAutoCheck(){
     if (!isMobile()) return;
@@ -700,14 +691,6 @@
       runCheck();
     }
   });
-
-  // ✅ ถ้ากลับมาหน้านี้ใหม่ ให้ปุ่มกลับหน้าบันทึกอยู่ตำแหน่งเดิมก่อน (mobile)
-  function resetMobileBackButton(){
-    if (!isMobile()) return;
-    backTop.style.display = "block";
-    backBottom.style.display = "none";
-  }
-  resetMobileBackButton();
 
   showWeekHeader();
   buildDateOptions();
