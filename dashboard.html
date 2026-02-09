@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
-  <!-- UpdatedAt: 2026-02-09 12:24 (+07:00) -->
+  <!-- UpdatedAt: 2026-02-09 12:33 (+07:00) -->
 
   <style>
     :root{
@@ -283,22 +283,22 @@
     .btn:hover{background:rgba(255,255,255,.10)}
 
     /* =========================================================
-       Tooltip (COMPACT)
+       Tooltip (TIGHT - cut empty red area)
        ========================================================= */
     .hoverTip{
       position:fixed;
       z-index:99999;
       display:none;
 
-      width:270px; /* ✅ เล็กลงอีก */
-      max-width:min(270px, calc(100vw - 24px));
+      width:240px; /* ✅ แคบลงอีกเพื่อตัดพื้นที่ว่าง */
+      max-width:min(240px, calc(100vw - 24px));
 
       background:rgba(10,16,26,.96);
       border:1px solid rgba(255,255,255,.14);
       border-radius:14px;
       box-shadow:0 18px 55px rgba(0,0,0,.55);
 
-      padding:8px; /* ✅ ลด padding */
+      padding:8px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       color:var(--text);
@@ -310,7 +310,7 @@
     .hoverTip .hdr{
       font-weight:950;
       font-size:15px;
-      margin:0 0 6px; /* ✅ ชิดขึ้น */
+      margin:0 0 6px;
       color:rgba(234,240,255,.95);
       white-space:nowrap;
       overflow:hidden;
@@ -320,33 +320,33 @@
     .tipRow{
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:8px;            /* ✅ ลดช่องว่างในแถว */
-      padding:8px 10px;   /* ✅ ลดความสูงแถว */
+      justify-content:flex-start; /* ✅ ไม่ดันเวลาไปขวาสุด */
+      gap:10px;
+      padding:8px 10px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
-      margin-bottom:6px;  /* ✅ ลดระยะห่างระหว่างแถว */
+      margin-bottom:6px;
     }
     .tipRow:last-child{margin-bottom:0}
 
     .tipLeft{
       display:flex;
       align-items:center;
-      gap:8px;            /* ✅ ลด gap */
+      gap:8px;
       font-weight:950;
       min-width:0;
-      flex:1 1 auto;      /* ✅ ให้ฝั่งซ้ายกินพื้นที่ -> ดันเวลาให้ชิด */
+      flex:0 0 auto; /* ✅ ไม่ขยายฝั่งซ้าย เพื่อไม่สร้างพื้นที่ว่าง */
     }
     .tipLabel{
-      font-size:13px;     /* ✅ ลดนิด */
+      font-size:13px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
 
     .ico{
-      width:24px;height:24px; /* ✅ ไอคอนเล็กลง */
+      width:24px;height:24px;
       border-radius:999px;
       display:grid;place-items:center;
       border:1px solid rgba(255,255,255,.16);
@@ -358,12 +358,12 @@
 
     .tipTime{
       font-weight:950;
-      font-size:14px;     /* ✅ ลดนิด */
+      font-size:14px;
       opacity:.98;
       white-space:nowrap;
       flex:0 0 auto;
-      min-width:70px;     /* ✅ คุมไม่ให้เวลาลอยห่าง */
-      text-align:right;
+      margin-left:8px; /* ✅ เวลาชิดเข้ามา */
+      text-align:left;
     }
     .tipTime.dim{opacity:.55}
 
@@ -457,13 +457,9 @@
   </div>
 
 <script>
-  // ====== CONFIG ======
-  const REFRESH_MS = 60_000; // 1 นาที
-
-  // state: weekOffset (0=this, -1=last)
+  const REFRESH_MS = 60_000;
   let weekOffset = 0;
 
-  // UI refs
   const btnThis = document.getElementById("btnThis");
   const btnLast = document.getElementById("btnLast");
   const countdownEl = document.getElementById("countdown");
@@ -498,7 +494,6 @@
     return th[dt.getDay()];
   }
 
-  // ✅ Tooltip header ไทยเป๊ะ: "จ. 9 ก.พ. 69"
   function thaiTooltipHeaderFromISO(iso){
     const [y,m,d] = String(iso||"").split("-").map(Number);
     if (!y || !m || !d) return "-";
@@ -507,11 +502,9 @@
     const thDow = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."][dt.getDay()];
     const thMonth = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][dt.getMonth()];
     const be2 = String((dt.getFullYear() + 543) % 100).padStart(2, "0");
-
     return `${thDow} ${dt.getDate()} ${thMonth} ${be2}`;
   }
 
-  // ===== Tooltip logic =====
   const hoverTip = document.getElementById("hoverTip");
   const tipHdr = document.getElementById("tipHdr");
   const tipBody = document.getElementById("tipBody");
@@ -524,7 +517,7 @@
     if (!m) return "";
     const hh = String(Number(m[1])).padStart(2,"0");
     const mm = String(Number(m[2])).padStart(2,"0");
-    return `${hh}:${mm}`; // add " น." at render time
+    return `${hh}:${mm}`;
   }
 
   function icon(ok){
@@ -539,7 +532,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M18 6L6 18M6 6l12 12" stroke="#ff4d4d" stroke-width="2.8" stroke-linecap="round"/>
       </svg>
-    `;
+      `;
   }
 
   function buildTipHTML(dayObj){
@@ -567,7 +560,6 @@
   function showTip(anchorEl, headerText, dayObj){
     tipHdr.textContent = headerText;
     tipBody.innerHTML = buildTipHTML(dayObj);
-
     hoverTip.classList.add("show");
     hoverTip.setAttribute("aria-hidden","false");
     tipVisible = true;
@@ -584,7 +576,7 @@
     if (!tipVisible) return;
 
     const r = anchorEl.getBoundingClientRect();
-    const tipW = hoverTip.offsetWidth || 270;
+    const tipW = hoverTip.offsetWidth || 240;
     const tipH = hoverTip.offsetHeight || 170;
 
     let left = r.left + (r.width/2) - (tipW/2);
@@ -707,7 +699,6 @@
       tbody.appendChild(tr);
     }
 
-    // bind tooltip events (after DOM updated)
     document.querySelectorAll(".daybox").forEach(el=>{
       el.addEventListener("mouseenter", ()=>{
         const hdr = el.getAttribute("data-tipheader") || "-";
