@@ -15,32 +15,69 @@
       --card-border: rgba(255,255,255,.28);
       --green: #21b14b;
     }
-    body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
+
+    *{box-sizing:border-box}
+    body{
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      margin:0;background:var(--bg);color:var(--text)
+    }
     .wrap{max-width:820px;margin:0 auto;padding:24px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
-    h1{margin:0 0 6px;font-size:22px}
-    .muted{color:var(--muted);margin:0 0 16px;line-height:1.55}
+
+    /* ===== Header Center ===== */
+    .headerCenter{
+      text-align:center;
+      display:grid;
+      gap:6px;
+      margin-bottom:16px;
+    }
+    h1{margin:0;font-size:22px}
+    .muted{color:var(--muted);margin:0;line-height:1.55}
+    #weekHeader{
+      margin:0;
+      color:rgba(234,240,255,.78);
+      font-weight:800;
+    }
+
     label{display:block;margin:12px 0 6px}
     select,input{
-      width:100%;box-sizing:border-box;border-radius:14px;
+      width:100%;
+      border-radius:14px;
       border:1px solid rgba(255,255,255,.18);
-      background:var(--input);color:#fff;padding:12px 12px;outline:none
+      background:var(--input);
+      color:#fff;
+      padding:12px 12px;
+      outline:none
     }
     .grid{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
+
     button{
-      margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;
-      background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer
+      margin-top:14px;width:100%;
+      padding:12px 14px;border:0;border-radius:14px;
+      background:var(--btn);color:var(--btnText);
+      font-weight:800;cursor:pointer
     }
     button:disabled{opacity:.6;cursor:not-allowed}
+
     .msg{margin-top:12px;min-height:22px;white-space:pre-line}
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
-    .small{font-size:12px;color:var(--muted);margin-top:10px}
+
+    /* หมายเหตุให้อยู่กลาง */
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:10px;
+      text-align:center;
+    }
+
     a.linkbtn{display:block;text-decoration:none}
     a.linkbtn button{
-      margin-top:10px;background:rgba(255,255,255,.10);
-      color:var(--text);border:1px solid rgba(255,255,255,.14)
+      margin-top:10px;
+      background:rgba(255,255,255,.10);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.14)
     }
 
     /* ===== Success Popup ===== */
@@ -156,12 +193,13 @@
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>Update Daily Meditation</h1>
-      <p class="muted">บันทึกข้อมูลการทำสมาธิ</p>
 
-      <p class="muted" id="weekHeader" style="margin-top:-10px;margin-bottom:12px;">
-        กำลังคำนวณช่วงสัปดาห์...
-      </p>
+      <!-- ===== Center Header (FIX) ===== -->
+      <div class="headerCenter">
+        <h1>Update Daily Meditation</h1>
+        <p class="muted">บันทึกข้อมูลการทำสมาธิ</p>
+        <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
+      </div>
 
       <form id="f">
         <label>ชื่อ - ชื่อเล่น</label>
@@ -293,7 +331,7 @@
     return sun;
   }
 
-  // ===== Week header (ยังคง “สัปดาห์นี้” ตามจันทร์-อาทิตย์ของสัปดาห์ปัจจุบัน) =====
+  // ===== Week header (จันทร์-อาทิตย์ของสัปดาห์ปัจจุบัน) =====
   (function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
@@ -316,7 +354,6 @@
 
     // this week
     const monThis = mondayOfWeekLocal(now);
-    const sunThis = sundayOfWeekFromMonday(monThis);
 
     // previous Sunday = monThis - 1 day
     const prevSun = new Date(monThis);
@@ -404,12 +441,10 @@
     };
 
     // ไม่ให้คลิกพื้นหลังปิดเอง (ตัด event click overlay ออกตามที่ต้องการ)
-    // ESC ก็ไม่จำเป็น แต่คงไว้ได้ ถ้าจะตัดก็ลบ block นี้
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') window.hideSuccessPopup();
     });
 
-    // expose refresh delay
     window.__POPUP_MS__ = POPUP_MS;
     window.__REFRESH_AFTER_MS__ = REFRESH_AFTER_MS;
   })();
@@ -430,7 +465,7 @@
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
 
-    // audit (ถ้ายังใช้)
+    // audit
     payload.clientNow = new Date().toISOString();
     payload.tzOffsetMin = new Date().getTimezoneOffset();
 
@@ -452,7 +487,7 @@
         // reset form
         form.reset();
 
-        // rebuild date options (8 วัน) ให้กลับมาเป็นวันนี้ และอัปเดต weekdayHidden
+        // rebuild date options (8 วัน)
         buildLogDateOptions8Days();
 
         // refresh หน้า หลัง popup หาย + 2 วิ
