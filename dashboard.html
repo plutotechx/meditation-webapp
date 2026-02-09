@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
-  <!-- UpdatedAt: 2026-02-09 12:33 (+07:00) -->
+  <!-- UpdatedAt: 2026-02-09 12:41 (+07:00) -->
 
   <style>
     :root{
@@ -290,8 +290,9 @@
       z-index:99999;
       display:none;
 
-      width:240px; /* ✅ แคบลงอีกเพื่อตัดพื้นที่ว่าง */
-      max-width:min(240px, calc(100vw - 24px));
+            width:fit-content; /* ✅ ตัดพื้นที่ว่างด้านขวา */
+            max-width:calc(100vw - 24px);
+      min-width:200px; /* กันแคบเกิน */
 
       background:rgba(10,16,26,.96);
       border:1px solid rgba(255,255,255,.14);
@@ -322,7 +323,7 @@
       align-items:center;
       justify-content:flex-start; /* ✅ ไม่ดันเวลาไปขวาสุด */
       gap:10px;
-      padding:8px 10px;
+      padding:8px 12px 8px 10px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
@@ -362,7 +363,7 @@
       opacity:.98;
       white-space:nowrap;
       flex:0 0 auto;
-      margin-left:8px; /* ✅ เวลาชิดเข้ามา */
+      margin-left:6px; /* ✅ เวลาชิดเข้ามา */
       text-align:left;
     }
     .tipTime.dim{opacity:.55}
@@ -457,9 +458,13 @@
   </div>
 
 <script>
-  const REFRESH_MS = 60_000;
+  // ====== CONFIG ======
+  const REFRESH_MS = 60_000; // 1 นาที
+
+  // state: weekOffset (0=this, -1=last)
   let weekOffset = 0;
 
+  // UI refs
   const btnThis = document.getElementById("btnThis");
   const btnLast = document.getElementById("btnLast");
   const countdownEl = document.getElementById("countdown");
@@ -494,6 +499,7 @@
     return th[dt.getDay()];
   }
 
+  // ✅ Tooltip header ไทยเป๊ะ: "จ. 9 ก.พ. 69"
   function thaiTooltipHeaderFromISO(iso){
     const [y,m,d] = String(iso||"").split("-").map(Number);
     if (!y || !m || !d) return "-";
@@ -502,9 +508,11 @@
     const thDow = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."][dt.getDay()];
     const thMonth = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][dt.getMonth()];
     const be2 = String((dt.getFullYear() + 543) % 100).padStart(2, "0");
+
     return `${thDow} ${dt.getDate()} ${thMonth} ${be2}`;
   }
 
+  // ===== Tooltip logic =====
   const hoverTip = document.getElementById("hoverTip");
   const tipHdr = document.getElementById("tipHdr");
   const tipBody = document.getElementById("tipBody");
@@ -517,7 +525,7 @@
     if (!m) return "";
     const hh = String(Number(m[1])).padStart(2,"0");
     const mm = String(Number(m[2])).padStart(2,"0");
-    return `${hh}:${mm}`;
+    return `${hh}:${mm}`; // add " น." at render time
   }
 
   function icon(ok){
@@ -532,7 +540,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M18 6L6 18M6 6l12 12" stroke="#ff4d4d" stroke-width="2.8" stroke-linecap="round"/>
       </svg>
-      `;
+    `;
   }
 
   function buildTipHTML(dayObj){
@@ -544,7 +552,7 @@
     ];
 
     return r.map(x=>{
-      const timeText = (x.ok && x.time) ? `${x.time} น.` : "—";
+      const timeText = (x.ok && x.time) ? `: ${x.time} น.` : ": —";
       return `
         <div class="tipRow">
           <div class="tipLeft">
@@ -560,6 +568,7 @@
   function showTip(anchorEl, headerText, dayObj){
     tipHdr.textContent = headerText;
     tipBody.innerHTML = buildTipHTML(dayObj);
+
     hoverTip.classList.add("show");
     hoverTip.setAttribute("aria-hidden","false");
     tipVisible = true;
@@ -699,6 +708,7 @@
       tbody.appendChild(tr);
     }
 
+    // bind tooltip events (after DOM updated)
     document.querySelectorAll(".daybox").forEach(el=>{
       el.addEventListener("mouseenter", ()=>{
         const hdr = el.getAttribute("data-tipheader") || "-";
