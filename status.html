@@ -23,6 +23,16 @@
       --tint-bad: rgba(255,106,106,.16);
       --tint-border-ok: rgba(101,255,179,.34);
       --tint-border-bad: rgba(255,106,106,.34);
+
+      /* summary levels */
+      --lvl0: rgba(255,106,106,.18);   /* red */
+      --lvl0b: rgba(255,106,106,.42);
+      --lvl1: rgba(255,170,90,.18);    /* orange */
+      --lvl1b: rgba(255,170,90,.42);
+      --lvl2: rgba(255,230,110,.18);   /* yellow */
+      --lvl2b: rgba(255,230,110,.42);
+      --lvl3: rgba(101,255,179,.18);   /* green */
+      --lvl3b: rgba(101,255,179,.42);
     }
 
     *{box-sizing:border-box}
@@ -37,10 +47,10 @@
       background:var(--card);
       border:1px solid var(--border);
       border-radius:var(--radius);
-      padding:18px
+      padding:18px;
+      position:relative;
     }
 
-    /* ===== Header center ===== */
     .headerBlock{
       width:100%;
       display:flex;
@@ -49,6 +59,7 @@
       justify-content:center;
       text-align:center;
       margin-bottom:8px;
+      position:relative;
     }
     h1{
       margin:0 0 6px;
@@ -72,6 +83,25 @@
       justify-content:center;
       align-items:center;
       text-align:center;
+    }
+
+    .updatedCorner{
+      position:absolute;
+      top:14px;
+      right:14px;
+      font-size:12px;
+      font-weight:900;
+      color:rgba(234,240,255,.78);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      padding:6px 10px;
+      border-radius:999px;
+      display:none;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    @media (max-width:760px){
+      .updatedCorner{ display:block; }
     }
 
     label{display:block;margin:12px 0 6px}
@@ -110,7 +140,6 @@
       border:1px solid rgba(255,255,255,.14)
     }
 
-    /* ===== Result header ===== */
     .resultHeader{
       margin-top:14px;
       padding:12px 12px;
@@ -126,7 +155,6 @@
       letter-spacing:.2px;
     }
 
-    /* ===== 4 Boxes ===== */
     .boxes{
       margin-top:12px;
       display:grid;
@@ -169,7 +197,12 @@
       border-color:rgba(255,255,255,.12);
     }
 
-    /* title */
+    /* summary levels */
+    .box.sum.lvl0{ background:linear-gradient(180deg, var(--lvl0), rgba(0,0,0,.16)); border-color:var(--lvl0b); }
+    .box.sum.lvl1{ background:linear-gradient(180deg, var(--lvl1), rgba(0,0,0,.16)); border-color:var(--lvl1b); }
+    .box.sum.lvl2{ background:linear-gradient(180deg, var(--lvl2), rgba(0,0,0,.16)); border-color:var(--lvl2b); }
+    .box.sum.lvl3{ background:linear-gradient(180deg, var(--lvl3), rgba(0,0,0,.16)); border-color:var(--lvl3b); }
+
     .boxTitle{
       font-weight:1000;
       color:rgba(234,240,255,.96);
@@ -178,7 +211,6 @@
       line-height:1.1;
     }
 
-    /* divider (UI MODE 2) */
     .divider{
       width:76%;
       height:1px;
@@ -188,7 +220,6 @@
     }
     .mode2 .divider{ display:block; }
 
-    /* icon variants */
     .badgeCorner{
       position:absolute;
       top:12px;
@@ -209,8 +240,6 @@
       border-color:rgba(255,106,106,.44);
       background:rgba(255,106,106,.14);
     }
-    .mode1 .badgeCorner{ display:flex; }
-    .mode2 .badgeCorner{ display:none; }
 
     .titleRowInline{
       display:flex;
@@ -228,12 +257,11 @@
     }
     .badgeInline.ok{ border-color:rgba(101,255,179,.44); background:rgba(101,255,179,.14); }
     .badgeInline.bad{ border-color:rgba(255,106,106,.44); background:rgba(255,106,106,.14); }
-    .mode2 .titleRowInline{ display:flex; }  /* MODE 2: inline badge */
+    .mode2 .titleRowInline{ display:flex; }
 
-    /* time */
     .time{
       font-weight:1100;
-      font-size:26px;     /* ✅ ใหญ่ขึ้น */
+      font-size:26px;
       letter-spacing:.2px;
       line-height:1;
     }
@@ -241,9 +269,8 @@
       color:rgba(234,240,255,.55);
       font-weight:900;
     }
-    .mode2 .time{ font-size:28px; } /* MODE 2 ใหญ่ขึ้นอีกนิด */
+    .mode2 .time{ font-size:28px; }
 
-    /* Summary box */
     .sumLabel{
       font-weight:1000;
       font-size:20px;
@@ -251,13 +278,33 @@
       color:rgba(234,240,255,.92);
       line-height:1.1;
     }
-    .sumBig{
-      font-size:48px;
+
+    /* summary layout: "ครบ" + "3/3" */
+    .sumStack{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .sumTag{
       font-weight:1100;
+      font-size:18px;
+      letter-spacing:.2px;
+      padding:6px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .sumBig{
+      font-size:54px;
+      font-weight:1200;
       line-height:1;
       margin:0;
-      color:var(--ok);
+      color:rgba(234,240,255,.96);
     }
+    .sumBig.ok{ color: var(--ok); }
+    .sumBig.bad{ color: var(--danger); }
   </style>
 </head>
 
@@ -266,6 +313,8 @@
     <div class="card">
 
       <div class="headerBlock">
+        <div class="updatedCorner" id="updatedCorner">อัปเดตล่าสุด —</div>
+
         <h1>ตรวจสอบสถานะการทำสมาธิ</h1>
         <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
       </div>
@@ -302,8 +351,10 @@
   const dateSel = document.getElementById("dateSel");
   const btn = document.getElementById("checkBtn");
   const out = document.getElementById("out");
+  const updatedCorner = document.getElementById("updatedCorner");
 
   const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
+  const LS_KEY_NAME = "med_status_last_name";
 
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
@@ -355,20 +406,41 @@
     return dt.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"numeric" });
   }
 
-  // sessions from API: {done:boolean, time:"HH:mm"}
+  function setUpdatedCornerNow(){
+    const now = new Date();
+    const hh = pad2(now.getHours());
+    const mm = pad2(now.getMinutes());
+    updatedCorner.textContent = `อัปเดตล่าสุด ${hh}:${mm}`;
+  }
+
+  // ✅ รองรับหลายรูปแบบจาก API:
+  // 1) {done:true, time:"15:38"}
+  // 2) {mark:"✅", time:"15:38"}  <-- ของตั้ม
+  // 3) "✅ 15:38"
+  // 4) "—"
   function normalizeSession(v){
+    // object formats
     if (v && typeof v === "object") {
-      const done = !!v.done;
-      const time = (v.time || "").toString().trim();
+      const mark = (v.mark ?? v.status ?? v.icon ?? "").toString().trim();
+      const done =
+        (v.done === true) ||
+        (mark === "✅") ||
+        (/^✅$/i.test(mark)) ||
+        (/ok|done|true|ครบ/i.test(mark));
+
+      const time = (v.time || v.hhmm || v.local || "").toString().trim();
       const timeText = time ? `${time} น.` : "—";
+
       return { done, timeText };
     }
-    // fallback old format
+
+    // string formats
     const s = (v ?? "").toString().trim();
     if (!s || s === "—" || s === "-") return { done:false, timeText:"—" };
+
+    const done = /✅|ok|done|true|ครบ/i.test(s);
     const m = s.match(/(\d{1,2}:\d{2})/);
     const timeText = m ? `${m[1]} น.` : "—";
-    const done = /✅|done|ครบ|true/i.test(s);
     return { done, timeText };
   }
 
@@ -388,6 +460,7 @@
     const s2 = normalizeSession(data.sessions?.s2);
     const s3 = normalizeSession(data.sessions?.s3);
 
+    // doneCount เชื่อ API ก่อน ถ้าไม่มีค่อยคำนวณจาก done flags
     const doneCount = Number.isFinite(Number(data.doneCount))
       ? Number(data.doneCount)
       : [s1.done, s2.done, s3.done].filter(Boolean).length;
@@ -406,12 +479,6 @@
       const cls = st.done ? "ok" : "bad";
       const timeCls = (st.timeText === "—") ? "time muted" : "time";
 
-      // MODE 1: icon corner
-      const corner = `
-        <div class="badgeCorner ${cls}">${iconSvg(cls)}</div>
-      `;
-
-      // MODE 2: inline badge beside title
       const inline = `
         <div class="titleRowInline">
           <div class="boxTitle">${escapeHtml(title)}</div>
@@ -419,25 +486,31 @@
         </div>
       `;
 
-      const titleOnly = `<div class="boxTitle">${escapeHtml(title)}</div>`;
       const divider = `<div class="divider"></div>`;
-
       const modeClass = (UI_MODE === 1) ? "mode1" : "mode2";
 
       return `
         <div class="box ${cls} ${modeClass}">
-          ${UI_MODE === 1 ? corner : ""}
-          ${UI_MODE === 2 ? inline : titleOnly}
+          ${inline}
           ${divider}
           <div class="${timeCls}">${escapeHtml(st.timeText)}</div>
         </div>
       `;
     }
 
+    // ===== Summary colors by level =====
+    const lvl = Math.max(0, Math.min(3, doneCount));
+    const lvlClass = ["lvl0","lvl1","lvl2","lvl3"][lvl];
+    const sumText = `${lvl}/3`;
+    const sumTag = (lvl === 3) ? "ครบ" : "สรุป";
+    const sumBigClass = (lvl === 3) ? "sumBig ok" : (lvl === 0 ? "sumBig bad" : "sumBig");
+
     const sumBox = `
-      <div class="box sum">
-        <div class="sumLabel">สรุป</div>
-        <div class="sumBig">${doneCount}/3</div>
+      <div class="box sum ${lvlClass}">
+        <div class="sumStack">
+          <div class="sumTag">${sumTag}</div>
+          <div class="${sumBigClass}">${sumText}</div>
+        </div>
       </div>
     `;
 
@@ -451,6 +524,17 @@
         ${sumBox}
       </div>
     `;
+
+    setUpdatedCornerNow();
+  }
+
+  function setLoading(isLoading, msg){
+    btn.disabled = isLoading;
+    btn.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
+    if (isLoading) {
+      out.className = "msg";
+      out.textContent = msg || "กำลังตรวจสอบ...";
+    }
   }
 
   async function loadNames(){
@@ -471,6 +555,11 @@
         `<option value="">— เลือกชื่อ —</option>` +
         names.map(n => `<option>${escapeHtml(n)}</option>`).join("");
 
+      const last = (localStorage.getItem(LS_KEY_NAME) || "").trim();
+      if (last && names.includes(last)) {
+        nameSel.value = last;
+      }
+
     } catch (e) {
       nameSel.innerHTML = `<option value="">โหลดรายชื่อไม่สำเร็จ</option>`;
       out.className = "msg bad";
@@ -478,10 +567,7 @@
     }
   }
 
-  btn.addEventListener("click", async () => {
-    out.className = "msg";
-    out.textContent = "กำลังตรวจสอบ...";
-
+  async function runCheck(){
     const name = (nameSel.value || "").trim();
     const logDate = (dateSel.value || "").trim();
 
@@ -491,6 +577,9 @@
       return;
     }
 
+    localStorage.setItem(LS_KEY_NAME, name);
+    setLoading(true, "กำลังตรวจสอบ...");
+
     try {
       const q = new URLSearchParams({ name, logDate });
       const res = await fetch(`/api/checkStatus?${q.toString()}`);
@@ -499,20 +588,38 @@
       if (!res.ok || !data.ok) {
         out.className = "msg bad";
         out.textContent = `ตรวจสอบไม่สำเร็จ: ${data.error || "unknown_error"}`;
+        setLoading(false);
         return;
       }
 
       renderBoxes(data);
+      setLoading(false);
 
     } catch (e) {
       out.className = "msg bad";
       out.textContent = `ตรวจสอบไม่สำเร็จ: ${e}`;
+      setLoading(false);
     }
+  }
+
+  btn.addEventListener("click", runCheck);
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") {
+      ev.preventDefault();
+      runCheck();
+    }
+  });
+
+  nameSel.addEventListener("change", () => {
+    const name = (nameSel.value || "").trim();
+    if (name) localStorage.setItem(LS_KEY_NAME, name);
   });
 
   showWeekHeader();
   buildDateOptions();
   loadNames();
+  setUpdatedCornerNow();
 </script>
 </body>
 </html>
