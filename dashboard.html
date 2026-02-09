@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
+  <!-- UpdatedAt: 2026-02-09 12:15 (+07:00) -->
 
   <style>
     :root{
@@ -24,7 +25,7 @@
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
       background:
         radial-gradient(1200px 600px at 25% 0%, rgba(88,140,255,.16), transparent 60%),
         radial-gradient(900px 500px at 80% 15%, rgba(0,240,255,.12), transparent 55%),
@@ -35,7 +36,6 @@
 
     .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 26px}
 
-    /* ===== Top row ===== */
     .topRow{
       display:flex;
       align-items:flex-start;
@@ -46,7 +46,6 @@
     }
     h1{margin:0;font-size:24px;font-weight:900;letter-spacing:.2px}
 
-    /* week menu */
     .weekMenu{
       display:flex;
       gap:10px;
@@ -78,7 +77,6 @@
       box-shadow:0 10px 24px rgba(106,169,255,.22);
     }
 
-    /* auto refresh mini box */
     .autoMini{
       height:38px;
       padding:8px 12px;
@@ -108,7 +106,6 @@
     .weekTitle{font-size:18px;font-weight:900;margin:10px 0 12px;color:rgba(234,240,255,.92)}
     .muted{color:var(--muted)}
 
-    /* ===== KPI cards ===== */
     .kpis{
       display:grid;
       grid-template-columns:repeat(3,minmax(0,1fr));
@@ -140,7 +137,6 @@
     .value.good{color:var(--good)}
     .value.bad{color:var(--bad)}
 
-    /* ===== pie ===== */
     .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
     .pie{
       width:110px;height:110px;border-radius:999px;
@@ -158,7 +154,6 @@
       border:1px solid rgba(255,255,255,.08);
     }
 
-    /* ===== Table ===== */
     .table{
       width:100%;
       border-collapse:separate;
@@ -187,7 +182,6 @@
     .table tbody tr:last-child td{border-bottom:none}
     .name{font-size:16px;font-weight:900}
 
-    /* percent cell */
     .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
     .chip{
       display:inline-flex;align-items:center;gap:8px;
@@ -220,7 +214,6 @@
     .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
     .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
 
-    /* 7 day boxes (keep as your current style) */
     .days{
       display:grid;
       grid-template-columns:repeat(7, minmax(0, 1fr));
@@ -255,23 +248,29 @@
     }
 
     .dayTop{
-      display:flex;justify-content:space-between;align-items:center;
-      gap:6px;
-      margin-bottom:4px;
-      font-size:12px;
-      color:rgba(234,240,255,.86);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:6px;margin-bottom:8px;
     }
     .dayPill{
-      display:inline-flex;align-items:center;justify-content:center;
-      padding:2px 8px;
+      font-size:12px;
+      padding:4px 10px;
       border-radius:999px;
-      background:rgba(0,0,0,.22);
       border:1px solid rgba(255,255,255,.14);
-      min-width:40px;
-      font-weight:900;
+      background:rgba(0,0,0,.18);
+      line-height:1;
+      white-space:nowrap;
+      font-weight:950;
     }
-    .dayNum{opacity:.9}
-    .dayCount{font-size:20px;letter-spacing:.3px}
+    .dayNum{
+      font-size:13px;
+      opacity:.9;
+      font-weight:950;
+    }
+    .dayCount{
+      font-size:26px;
+      letter-spacing:.2px;
+      font-weight:1100;
+    }
 
     .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
     .btn{
@@ -282,6 +281,100 @@
       font-weight:900;
     }
     .btn:hover{background:rgba(255,255,255,.10)}
+
+    /* =========================================================
+       Tooltip (SMALL)
+       ========================================================= */
+    .hoverTip{
+      position:fixed;
+      z-index:99999;
+      display:none;
+
+      width:300px; /* ✅ เล็กลง */
+      max-width:min(300px, calc(100vw - 24px));
+
+      background:rgba(10,16,26,.96);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:16px;
+      box-shadow:0 18px 55px rgba(0,0,0,.55);
+
+      padding:10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color:var(--text);
+      overflow:hidden;
+      pointer-events:none;
+    }
+    .hoverTip.show{display:block}
+
+    .hoverTip .hdr{
+      font-weight:950;
+      font-size:15px;
+      margin:0 0 8px;
+      color:rgba(234,240,255,.95);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .tipRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      margin-bottom:8px;
+    }
+    .tipRow:last-child{margin-bottom:0}
+
+    .tipLeft{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:950;
+      min-width:0;
+    }
+    .tipLabel{
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .ico{
+      width:26px;height:26px;
+      border-radius:999px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.16);
+      flex:0 0 auto;
+    }
+    .ico.ok{background:rgba(48,209,106,.22); border-color:rgba(48,209,106,.40)}
+    .ico.no{background:rgba(255,77,77,.20); border-color:rgba(255,77,77,.40)}
+    .ico svg{display:block}
+
+    .tipTime{
+      font-weight:950;
+      font-size:15px;
+      opacity:.98;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .tipTime.dim{opacity:.55}
+
+    .hoverTip .arrow{
+      position:absolute;
+      width:12px;height:12px;
+      background:rgba(10,16,26,.96);
+      border-left:1px solid rgba(255,255,255,.14);
+      border-top:1px solid rgba(255,255,255,.14);
+      transform:rotate(45deg);
+      top:-7px;
+      left:50%;
+      margin-left:-6px;
+    }
   </style>
 </head>
 
@@ -290,7 +383,7 @@
     <div class="topRow">
       <div>
         <h1>Dashboard</h1>
-        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้ (ไม่ต้องลบข้อมูลแล้ว)</div>
+        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้</div>
       </div>
 
       <div class="weekMenu">
@@ -353,6 +446,13 @@
     </div>
   </div>
 
+  <!-- Tooltip element -->
+  <div class="hoverTip" id="hoverTip" role="dialog" aria-hidden="true">
+    <div class="arrow"></div>
+    <div class="hdr" id="tipHdr">-</div>
+    <div id="tipBody"></div>
+  </div>
+
 <script>
   // ====== CONFIG ======
   const REFRESH_MS = 60_000; // 1 นาที
@@ -375,38 +475,159 @@
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
-  // ====== helpers ======
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[m] ));
   }
+
   function thaiDateFromISO(iso){
     const [y,m,d] = iso.split("-").map(Number);
     const dt = new Date(y, m-1, d);
     return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
+  }
+
+  function thaiDayShortFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if (!y || !m || !d) return "-";
+    const dt = new Date(y, m-1, d);
+    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
+    return th[dt.getDay()];
+  }
+  // ✅ Tooltip header ไทยเป๊ะ: "จ. 9 ก.พ. 69"
+  function thaiTooltipHeaderFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if (!y || !m || !d) return "-";
+    const dt = new Date(y, m-1, d);
+
+    const thDow = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."][dt.getDay()];
+    const thMonth = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][dt.getMonth()];
+    const be2 = String((dt.getFullYear() + 543) % 100).padStart(2, "0");
+
+    return `${thDow} ${dt.getDate()} ${thMonth} ${be2}`;
+  }
+
+  // ===== Tooltip logic =====
+  const hoverTip = document.getElementById("hoverTip");
+  const tipHdr = document.getElementById("tipHdr");
+  const tipBody = document.getElementById("tipBody");
+  let tipVisible = false;
+
+  function fmtTimeHHmm(v){
+    const s = String(v||"").trim();
+    if (!s) return "";
+    const m = s.match(/(\d{1,2}):(\d{2})/);
+    if (!m) return "";
+    const hh = String(Number(m[1])).padStart(2,"0");
+    const mm = String(Number(m[2])).padStart(2,"0");
+    return `${hh}:${mm}`; // add " น." at render time
+  }
+
+  function icon(ok){
+    if (ok){
+      return `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20 7L10.5 16.5L4 10" stroke="#30d16a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+    }
+    return `
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M18 6L6 18M6 6l12 12" stroke="#ff4d4d" stroke-width="2.8" stroke-linecap="round"/>
+      </svg>
+    `;
+  }
+
+  function buildTipHTML(dayObj){
+    const s = (dayObj && dayObj.sessions) ? dayObj.sessions : {};
+    const r = [
+      { label:"ครั้งที่ 1", ok: !!(s.s1 && s.s1.done), time: fmtTimeHHmm(s.s1 && s.s1.time) },
+      { label:"ครั้งที่ 2", ok: !!(s.s2 && s.s2.done), time: fmtTimeHHmm(s.s2 && s.s2.time) },
+      { label:"ครั้งที่ 3", ok: !!(s.s3 && s.s3.done), time: fmtTimeHHmm(s.s3 && s.s3.time) },
+    ];
+
+    return r.map(x=>{
+      const timeText = (x.ok && x.time) ? `${x.time} น.` : "—";
+      return `
+        <div class="tipRow">
+          <div class="tipLeft">
+            <div class="ico ${x.ok ? "ok" : "no"}">${icon(x.ok)}</div>
+            <div class="tipLabel">${x.label}</div>
+          </div>
+          <div class="tipTime ${timeText==="—" ? "dim" : ""}">${timeText}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function showTip(anchorEl, headerText, dayObj){
+    tipHdr.textContent = headerText;
+    tipBody.innerHTML = buildTipHTML(dayObj);
+
+    hoverTip.classList.add("show");
+    hoverTip.setAttribute("aria-hidden","false");
+    tipVisible = true;
+    positionTip(anchorEl);
+  }
+
+  function hideTip(){
+    hoverTip.classList.remove("show");
+    hoverTip.setAttribute("aria-hidden","true");
+    tipVisible = false;
+  }
+
+  function positionTip(anchorEl){
+    if (!tipVisible) return;
+
+    const r = anchorEl.getBoundingClientRect();
+    const tipW = hoverTip.offsetWidth || 300;
+    const tipH = hoverTip.offsetHeight || 190;
+
+    let left = r.left + (r.width/2) - (tipW/2);
+    let top  = r.bottom + 10;
+
+    left = Math.max(12, Math.min(left, window.innerWidth - tipW - 12));
+
+    const arrow = hoverTip.querySelector(".arrow");
+    if (top + tipH > window.innerHeight - 12) {
+      top = r.top - tipH - 10;
+      top = Math.max(12, Math.min(top, window.innerHeight - tipH - 12));
+      arrow.style.top = "auto";
+      arrow.style.bottom = "-7px";
+      arrow.style.transform = "rotate(225deg)";
+    } else {
+      arrow.style.bottom = "auto";
+      arrow.style.top = "-7px";
+      arrow.style.transform = "rotate(45deg)";
+    }
+
+    hoverTip.style.left = `${Math.round(left)}px`;
+    hoverTip.style.top  = `${Math.round(top)}px`;
+
+    const centerX = r.left + (r.width/2);
+    const arrowLeft = Math.max(22, Math.min(centerX - left, tipW - 22));
+    arrow.style.left = `${Math.round(arrowLeft)}px`;
+  }
+
+  window.addEventListener("resize", ()=>{ if (tipVisible) hideTip(); });
+  window.addEventListener("scroll", ()=>{ if (tipVisible) hideTip(); }, { passive:true });
+
+  function dayNumFromISO(iso){
+    const p = String(iso||"").split("-");
+    return p.length === 3 ? Number(p[2]) : "";
+  }
+
+  function dayGrade(count){
+    if (count === 3) return "good";
+    if (count === 2) return "mid";
+    return "bad";
   }
   function gradeByPercent(p){
     if (p >= 90) return "good";
     if (p >= 70) return "mid";
     return "bad";
   }
-  function dayGrade(count){
-    if (count === 3) return "good";
-    if (count === 2) return "mid";
-    return "bad";
-  }
-  function thaiDayShortFromISO(iso){
-    const [y,m,d] = iso.split("-").map(Number);
-    const dt = new Date(y, m-1, d);
-    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
-    return th[dt.getDay()];
-  }
-  function dayNumFromISO(iso){
-    return Number(iso.split("-")[2]) || "";
-  }
 
-  // ====== render ======
   function render(out){
     const w = out.week;
     elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
@@ -434,6 +655,8 @@
       const g = gradeByPercent(pct);
       const chipText = (pct === 100) ? "ครบ 100%" : `${pct}%`;
       const doneDays = Number(p.doneDays || 0);
+      const totalDone = Number(p.totalDone || 0);
+      const totalSlots = Number(p.totalSlots || 21);
 
       const dayBoxes = (p.perDay || []).map((d)=>{
         const cnt = Number(d.count || 0);
@@ -442,8 +665,14 @@
         const dayShort = thaiDayShortFromISO(iso);
         const dayNum = dayNumFromISO(iso);
 
+        const tipHeader = thaiTooltipHeaderFromISO(iso);
+        const tipPayload = encodeURIComponent(JSON.stringify({
+          dateISO: iso,
+          sessions: d.sessions || null
+        }));
+
         return `
-          <div class="daybox ${dg}">
+          <div class="daybox ${dg}" data-tipheader="${escapeHtml(tipHeader)}" data-tip="${tipPayload}">
             <div class="dayTop">
               <span class="dayPill">${dayShort}</span>
               <span class="dayNum">${dayNum}</span>
@@ -466,7 +695,7 @@
               <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
             </div>
           </div>
-          <div class="subline">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
+          <div class="subline">ทำได้ ${totalDone}/${totalSlots} ครั้ง</div>
         </td>
         <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
         <td><div class="days">${dayBoxes}</div></td>
@@ -474,12 +703,24 @@
       tbody.appendChild(tr);
     }
 
+    // bind tooltip events (after DOM updated)
+    document.querySelectorAll(".daybox").forEach(el=>{
+      el.addEventListener("mouseenter", ()=>{
+        const hdr = el.getAttribute("data-tipheader") || "-";
+        const raw = el.getAttribute("data-tip") || "";
+        let dayObj = {};
+        try { dayObj = JSON.parse(decodeURIComponent(raw)); } catch(e){}
+        showTip(el, hdr, dayObj);
+      });
+      el.addEventListener("mousemove", ()=> positionTip(el));
+      el.addEventListener("mouseleave", hideTip);
+    });
+
     if (!rows.length){
       tbody.innerHTML = `<tr><td colspan="4" class="muted">ไม่พบข้อมูล</td></tr>`;
     }
   }
 
-  // ====== load ======
   let inFlight = false;
   async function load(isAuto=false){
     if (inFlight) return;
@@ -503,7 +744,6 @@
     }
   }
 
-  // ====== menu actions ======
   function setActiveWeek(offset){
     weekOffset = offset;
 
@@ -512,16 +752,15 @@
     btnThis.setAttribute("aria-selected", String(weekOffset === 0));
     btnLast.setAttribute("aria-selected", String(weekOffset === -1));
 
+    hideTip();
     load(false);
 
-    // รีเซ็ต countdown ให้รู้สึก “โหลดรอบใหม่”
     nextRefreshAt = Date.now() + REFRESH_MS;
   }
 
   btnThis.addEventListener("click", ()=> setActiveWeek(0));
   btnLast.addEventListener("click", ()=> setActiveWeek(-1));
 
-  // ====== Auto refresh (1 นาที) + หยุดตอนแท็บไม่ active ======
   let nextRefreshAt = Date.now() + REFRESH_MS;
   let tickTimer = null;
   let refreshTimer = null;
@@ -540,6 +779,7 @@
       if (document.hidden) return;
       await load(true);
       nextRefreshAt = Date.now() + REFRESH_MS;
+      hideTip();
     }, REFRESH_MS);
   }
 
@@ -549,19 +789,16 @@
   }
 
   document.addEventListener("visibilitychange", ()=>{
-    if (document.hidden){
-      // ปล่อยตัวเลขค้างไว้เฉย ๆ ไม่ยิง
-    } else {
-      // กลับมา: รีเซ็ตใหม่กัน “เด้งยิงทันที”
+    if (!document.hidden){
       nextRefreshAt = Date.now() + REFRESH_MS;
       load(true);
+      hideTip();
     }
   });
 
-  // ===== init =====
   (function init(){
-    setActiveWeek(0); // ค่าเริ่มต้น = สัปดาห์นี้
-    startAuto();      // auto refresh 1 นาที
+    setActiveWeek(0);
+    startAuto();
   })();
 </script>
 </body>
