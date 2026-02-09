@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
-  <!-- UpdatedAt: 2026-02-09 18:30 (+07:00) -->
+  <!-- UpdatedAt: 2026-02-10 09:00 (+07:00) -->
 
   <style>
     :root{
@@ -176,22 +176,52 @@
     .dot.bad{background:var(--bad)}
     .dot.none{background:rgba(255,255,255,.28)}
 
-
     .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
+
+    /* ✅ Premium Donut with center label */
     .pie{
-      width:110px;height:110px;border-radius:999px;
+      width:116px;height:116px;border-radius:999px;
       background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
       border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 16px 45px rgba(0,0,0,.35);
+      box-shadow:0 16px 45px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06);
       position:relative;
       flex:0 0 auto;
+      transition: background 260ms ease;
     }
-    .pie:after{
-      content:"";
+
+    .pieInner{
       position:absolute; inset:12px;
-      background:rgba(10,19,34,.85);
+      background:rgba(10,19,34,.88);
       border-radius:999px;
       border:1px solid rgba(255,255,255,.08);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+      pointer-events:none;
+    }
+    .pieCenter{
+      position:absolute; inset:12px;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      text-align:center;
+      pointer-events:none;
+      gap:2px;
+    }
+    .pieCenterBig{
+      font-size:26px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      line-height:1.05;
+      color:rgba(234,240,255,.96);
+    }
+    .pieCenterSub{
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.2px;
+      color:rgba(234,240,255,.78);
+    }
+    .pieCenterTiny{
+      font-size:11px;
+      font-weight:900;
+      color:rgba(234,240,255,.62);
     }
 
     .table{
@@ -278,12 +308,11 @@
       background:linear-gradient(180deg, rgba(48,209,106,.35), rgba(48,209,106,.18));
       border-color:rgba(48,209,106,.35);
     }
-    
     .daybox.s2{
       background:linear-gradient(180deg, rgba(255,140,42,.32), rgba(255,140,42,.16));
       border-color:rgba(255,140,42,.38);
     }
-.daybox.s1{
+    .daybox.s1{
       background:linear-gradient(180deg, rgba(243,196,58,.30), rgba(243,196,58,.16));
       border-color:rgba(243,196,58,.35);
     }
@@ -335,8 +364,8 @@
       z-index:99999;
       display:none;
 
-            width:fit-content; /* ✅ ตัดพื้นที่ว่างด้านขวา */
-            max-width:calc(100vw - 24px);
+      width:fit-content; /* ✅ ตัดพื้นที่ว่างด้านขวา */
+      max-width:calc(100vw - 24px);
       min-width:200px; /* กันแคบเกิน */
 
       background:rgba(10,16,26,.96);
@@ -434,7 +463,7 @@
       left:50%;
       margin-left:-6px;
     }
-  
+
     /* =========================================================
        Mobile friendly (card view)
        ========================================================= */
@@ -503,7 +532,6 @@
       .dayPill{font-size:11px;padding:4px 8px}
     }
 
-  
     /* Mobile landscape: make 0/3-3/3 fit neatly (diagonal layout) */
     @media (max-width: 900px) and (orientation: landscape){
       .dayCount{
@@ -544,7 +572,7 @@
     <div class="topRow">
       <div>
         <h1>Dashboard Meditation</h1>
-</div>
+      </div>
 
       <div class="weekMenu">
         <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
@@ -559,12 +587,19 @@
       </div>
     </div>
 
-    
     <div class="kpis">
       <div class="kpi">
         <div class="label" id="dailyPieLabel">สัดส่วนวันนี้</div>
         <div class="pieWrap">
-          <div class="pie" id="pie"></div>
+          <div class="pie" id="pie" role="img" aria-label="สัดส่วนวันนี้">
+            <div class="pieInner" aria-hidden="true"></div>
+            <div class="pieCenter" aria-hidden="true">
+              <div class="pieCenterBig" id="pieCenterBig">--%</div>
+              <div class="pieCenterSub" id="pieCenterSub">ครบ 3 ครั้ง</div>
+              <div class="pieCenterTiny" id="pieCenterTiny">-/- คน</div>
+            </div>
+          </div>
+
           <div class="legend" aria-label="legend">
             <div class="legendRow"><span class="dot good"></span><span id="lgGood">ครบ 3 ครั้ง: -</span></div>
             <div class="legendRow"><span class="dot bad"></span><span id="lgBad">ทำไม่ครบ: -</span></div>
@@ -602,7 +637,7 @@
       </div>
     </div>
 
-<div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
+    <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
 
     <table class="table">
       <thead>
@@ -648,6 +683,10 @@
 
   const pie = document.getElementById("pie");
   const pieText = document.getElementById("pieText");
+  const pieCenterBig = document.getElementById("pieCenterBig");
+  const pieCenterSub = document.getElementById("pieCenterSub");
+  const pieCenterTiny = document.getElementById("pieCenterTiny");
+
   const dailyPieLabel = document.getElementById("dailyPieLabel");
   const lgGood = document.getElementById("lgGood");
   const lgBad  = document.getElementById("lgBad");
@@ -769,7 +808,6 @@
     tipAnchor = null;
   }
 
-  
   function toggleTip(anchorEl, headerText, dayObj){
     if (tipVisible && tipAnchor === anchorEl){
       hideTip();
@@ -869,8 +907,6 @@
 
     const dayLabelTH = thaiDateFromISO(dayISO);
     dailyPieLabel.textContent = `สัดส่วนวันนี้ (${dayLabelTH})`;
-    dailyCompleteLabel.textContent = `ทำครบวันนี้ (3/3) · ${dayLabelTH}`;
-    dailyNotCompleteLabel.textContent = `ทำไม่ครบวันนี้ · ${dayLabelTH}`;
 
     const completeNames = [];
     const partialNames  = [];
@@ -896,12 +932,16 @@
     const noneN     = noneNames.length;
 
     const pct = (n)=> peopleTotal ? (n/peopleTotal*100) : 0;
-    // keep 1 decimal for accuracy, but use conic-gradient with decimals
     const pGood = pct(completeN);
     const pBad  = pct(partialN);
     const pNone = Math.max(0, 100 - pGood - pBad);
 
     pie.style.background = `conic-gradient(var(--good) 0 ${pGood}%, var(--bad) ${pGood}% ${pGood+pBad}%, var(--none) ${pGood+pBad}% 100%)`;
+
+    // ✅ Center label (premium)
+    pieCenterBig.textContent = `${pGood.toFixed(0)}%`;
+    pieCenterSub.textContent = `ครบ 3 ครั้ง`;
+    pieCenterTiny.textContent = `${completeN}/${peopleTotal} คน`;
 
     lgGood.textContent = `ครบ 3 ครั้ง: ${completeN} คน (${pGood.toFixed(0)}%)`;
     lgBad.textContent  = `ทำไม่ครบ: ${partialN} คน (${pBad.toFixed(0)}%)`;
@@ -931,9 +971,9 @@
     tbody.innerHTML = "";
 
     for (const p of rows){
-      const pct = Number(p.percent || 0);
-      const g = gradeByPercent(pct);
-      const chipText = (pct === 100) ? "ครบ 100%" : `${pct}%`;
+      const pctW = Number(p.percent || 0);
+      const g = gradeByPercent(pctW);
+      const chipText = (pctW === 100) ? "ครบ 100%" : `${pctW}%`;
       const doneDays = Number(p.doneDays || 0);
       const totalDone = Number(p.totalDone || 0);
       const totalSlots = Number(p.totalSlots || 21);
@@ -972,7 +1012,7 @@
               <span>${chipText}</span>
             </span>
             <div class="progress ${g}">
-              <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
+              <i style="width:${Math.max(0, Math.min(100, pctW))}%"></i>
             </div>
           </div>
           <div class="subline">ทำได้ ${totalDone}/${totalSlots} ครั้ง</div>
@@ -994,7 +1034,6 @@
       };
 
       if (isTouch){
-        // Mobile: tap to toggle, tap again or tap outside to close
         el.addEventListener("click", (ev)=>{
           ev.preventDefault();
           ev.stopPropagation();
@@ -1002,7 +1041,6 @@
           toggleTip(el, hdr, dayObj);
         });
       } else {
-        // Desktop: hover behavior
         el.addEventListener("mouseenter", ()=>{
           const { hdr, dayObj } = getPayload();
           showTip(el, hdr, dayObj);
