@@ -1,7 +1,7 @@
 <!--
   File: dashboard.html
-  Final ModifiedAt: 2026-02-09 10:01:14 +0700
-  Change: Restore tooltips (hover/tap) + constrained size + no API changes
+  Final ModifiedAt: 2026-02-09 10:18:39 +0700
+  Change: Tooltip changed to match legacy design (arrow + rows + clamp) per old dashboard
 -->
 <!doctype html>
 <html lang="th">
@@ -225,19 +225,20 @@
     .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
     .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
 
-    /* 7 day boxes (keep as your current style) */
+    /* ===== 7 day boxes ===== */
     .days{
       display:grid;
       grid-template-columns:repeat(7, minmax(0, 1fr));
-      gap:8px;
+      gap:10px;
       min-width:560px;
+      align-items:start;
     }
     @media (max-width:1100px){ .days{min-width:460px} }
     @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
 
     .daybox{
       border-radius:12px;
-      padding:8px 8px 10px;
+      padding:10px 8px 10px;
       text-align:center;
       font-weight:900;
       border:1px solid rgba(255,255,255,.12);
@@ -260,32 +261,25 @@
     }
 
     .dayTop{
-      display:flex;justify-content:space-between;align-items:center;
-      gap:6px;
-      margin-bottom:4px;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:6px;margin-bottom:8px;
+    }
+    .dowBadge{
       font-size:12px;
-      color:rgba(234,240,255,.86);
-    }
-    .dayPill{
-      display:inline-flex;align-items:center;justify-content:center;
-      padding:2px 8px;
+      padding:4px 8px;
       border-radius:999px;
-      background:rgba(0,0,0,.22);
       border:1px solid rgba(255,255,255,.14);
-      min-width:40px;
-      font-weight:900;
+      background:rgba(0,0,0,.18);
+      line-height:1;
+      white-space:nowrap;
     }
-    .dayNum{opacity:.9}
-    .dayCount{font-size:20px;letter-spacing:.3px}
-
-    /* Make tooltip targets feel interactive (subtle) */
-    [data-tt]{
-      outline:none;
-      -webkit-tap-highlight-color: transparent;
+    .dayNum{
+      font-size:13px;
+      opacity:.9;
     }
-    [data-tt]:focus-visible{
-      box-shadow:0 0 0 3px rgba(106,169,255,.25);
-      border-radius:12px;
+    .dayCount{
+      font-size:20px;
+      letter-spacing:.3px;
     }
 
     .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
@@ -298,52 +292,82 @@
     }
     .btn:hover{background:rgba(255,255,255,.10)}
 
-    /* ===== Tooltip (RESTORED) ===== */
-    .tt{
+    /* =========================================================
+       Tooltip (MATCH LEGACY) — copied/adapted from old dashboard
+       ========================================================= */
+    .hoverTip{
       position:fixed;
       z-index:99999;
-      left:0; top:0;
-      transform:translate(-9999px,-9999px);
-      opacity:0;
-      pointer-events:none;
-      transition:opacity .10s ease-out;
-      max-width:min(320px, calc(100vw - 24px));
-    }
-    .tt.is-open{
-      opacity:1;
-    }
-    .ttBox{
-      background:rgba(10,16,30,.92);
-      border:1px solid rgba(255,255,255,.16);
+      display:none;
+      width:360px;
+      max-width:calc(100vw - 24px);
+      background:rgba(10,16,26,.96);
+      border:1px solid rgba(255,255,255,.14);
       border-radius:14px;
-      padding:10px 12px;
-      box-shadow:0 18px 60px rgba(0,0,0,.55);
+      box-shadow:0 18px 55px rgba(0,0,0,.55);
+      padding:12px 12px 10px;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      color:var(--text);
+      overflow:hidden;
+      pointer-events:none;
     }
-    .ttTitle{
-      font-weight:950;
-      font-size:13px;
-      color:rgba(234,240,255,.96);
-      letter-spacing:.2px;
-      margin:0 0 6px;
+    .hoverTip.show{display:block}
+    .hoverTip .hdr{
+      font-weight:900;
+      margin-bottom:10px;
+      color:rgba(234,240,255,.92);
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width: 100%;
     }
-    .ttBody{
-      font-size:12px;
-      line-height:1.45;
-      color:rgba(234,240,255,.78);
-      margin:0;
-      white-space:pre-line;
-      word-break:break-word;
+    .tipRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      margin-bottom:8px;
+      min-width:0;
     }
-    .ttHint{
-      margin-top:8px;
-      font-size:11px;
-      color:rgba(234,240,255,.55);
+    .tipLeft{
+      display:flex;align-items:center;gap:10px;
+      font-weight:900;
+      min-width:0;
+    }
+    .ico{
+      width:26px;height:26px;border-radius:999px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.18);
+      flex:0 0 auto;
+    }
+    .ico.ok{background:rgba(48,209,106,.20); border-color:rgba(48,209,106,.35)}
+    .ico.no{background:rgba(255,77,77,.18); border-color:rgba(255,77,77,.35)}
+    .ico span{font-size:14px;line-height:1}
+    .tipLabel{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tipTime{
+      font-weight:900;
+      opacity:.95;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .hoverTip .arrow{
+      position:absolute;
+      width:12px;height:12px;
+      background:rgba(10,16,26,.96);
+      border-left:1px solid rgba(255,255,255,.14);
+      border-top:1px solid rgba(255,255,255,.14);
+      transform:rotate(45deg);
+      top:-7px;
+      left:50%;
+      margin-left:-6px;
     }
   </style>
 </head>
@@ -353,7 +377,7 @@
     <div class="topRow">
       <div>
         <h1>Dashboard</h1>
-        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้ (ไม่ต้องลบข้อมูลแล้ว)</div>
+        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้</div>
       </div>
 
       <div class="weekMenu">
@@ -416,20 +440,16 @@
     </div>
   </div>
 
-  <!-- Tooltip element (single instance) -->
-  <div id="tt" class="tt" aria-hidden="true">
-    <div class="ttBox">
-      <div id="ttTitle" class="ttTitle"></div>
-      <div id="ttBody" class="ttBody"></div>
-      <div class="ttHint">Tip: มือถือแตะ 1 ครั้งเพื่อดู • แตะที่อื่นเพื่อปิด</div>
-    </div>
+  <!-- Tooltip element (legacy style) -->
+  <div class="hoverTip" id="hoverTip" role="dialog" aria-hidden="true">
+    <div class="arrow"></div>
+    <div class="hdr" id="tipHdr">-</div>
+    <div id="tipBody"></div>
   </div>
 
 <script>
   // ====== CONFIG ======
   const REFRESH_MS = 60_000; // 1 นาที
-
-  // state: weekOffset (0=this, -1=last)
   let weekOffset = 0;
 
   // UI refs
@@ -447,192 +467,139 @@
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
-  // ====== Tooltip (RESTORED) ======
-  const tt = document.getElementById("tt");
-  const ttTitle = document.getElementById("ttTitle");
-  const ttBody  = document.getElementById("ttBody");
+  // ===== Tooltip refs (legacy style) =====
+  const hoverTip = document.getElementById("hoverTip");
+  const tipHdr = document.getElementById("tipHdr");
+  const tipBody = document.getElementById("tipBody");
 
-  let ttOpen = false;
-  let pinned = false;          // for tap
-  let lastMoveTs = 0;
-
-  function openTT(title, body){
-    ttTitle.textContent = title || "";
-    ttBody.textContent = body || "";
-    tt.classList.add("is-open");
-    tt.setAttribute("aria-hidden", "false");
-    ttOpen = true;
-  }
-  function closeTT(){
-    tt.classList.remove("is-open");
-    tt.setAttribute("aria-hidden", "true");
-    tt.style.transform = "translate(-9999px,-9999px)";
-    ttOpen = false;
-    pinned = false;
-  }
-  function moveTT(clientX, clientY){
-    // throttle a bit
-    const now = Date.now();
-    if (now - lastMoveTs < 12) return;
-    lastMoveTs = now;
-
-    const pad = 12;
-    const maxX = window.innerWidth - pad;
-    const maxY = window.innerHeight - pad;
-
-    // preferred position: right-bottom of cursor
-    let x = clientX + 14;
-    let y = clientY + 14;
-
-    // estimate tooltip size using bounding box
-    tt.style.transform = `translate(${Math.min(x, maxX)}px, ${Math.min(y, maxY)}px)`;
-    const rect = tt.getBoundingClientRect();
-
-    // if overflow right/bottom, flip
-    if (rect.right > window.innerWidth - pad){
-      x = clientX - rect.width - 14;
-    }
-    if (rect.bottom > window.innerHeight - pad){
-      y = clientY - rect.height - 14;
-    }
-
-    // clamp
-    x = Math.max(pad, Math.min(x, window.innerWidth - rect.width - pad));
-    y = Math.max(pad, Math.min(y, window.innerHeight - rect.height - pad));
-
-    tt.style.transform = `translate(${x}px, ${y}px)`;
-  }
-
-  // Close when click outside (for mobile pin)
-  document.addEventListener("pointerdown", (e)=>{
-    if (!ttOpen) return;
-    const target = e.target;
-    if (tt.contains(target)) return;
-    const hit = target && target.closest && target.closest("[data-tt]");
-    if (hit) return; // handled by element
-    closeTT();
-  });
-
-  // Escape to close
-  document.addEventListener("keydown", (e)=>{
-    if (e.key === "Escape") closeTT();
-  });
-
-  // Event delegation for dynamic rows
-  function getTTNodeFromEventTarget(t){
-    if (!t || !t.closest) return null;
-    return t.closest("[data-tt]");
-  }
-
-  tbody.addEventListener("pointerover", (e)=>{
-    if (pinned) return;
-    const node = getTTNodeFromEventTarget(e.target);
-    if (!node) return;
-
-    const title = node.getAttribute("data-tt-title") || "";
-    const body  = node.getAttribute("data-tt") || "";
-    openTT(title, body);
-  });
-
-  tbody.addEventListener("pointermove", (e)=>{
-    if (!ttOpen || pinned) return;
-    moveTT(e.clientX, e.clientY);
-  });
-
-  tbody.addEventListener("pointerout", (e)=>{
-    if (pinned) return;
-    const node = getTTNodeFromEventTarget(e.target);
-    if (!node) return;
-
-    // if moving inside the same tooltip target, ignore
-    const toEl = e.relatedTarget;
-    if (toEl && node.contains(toEl)) return;
-
-    closeTT();
-  });
-
-  // Tap-to-pin for mobile/pen
-  tbody.addEventListener("pointerdown", (e)=>{
-    const node = getTTNodeFromEventTarget(e.target);
-    if (!node) return;
-
-    // only pin on touch/pen, mouse will use hover
-    if (e.pointerType === "mouse") return;
-
-    e.preventDefault();
-    const title = node.getAttribute("data-tt-title") || "";
-    const body  = node.getAttribute("data-tt") || "";
-
-    if (ttOpen && pinned){
-      closeTT();
-      return;
-    }
-
-    openTT(title, body);
-    pinned = true;
-    moveTT(e.clientX, e.clientY);
-  });
-
-  // keyboard accessibility
-  tbody.addEventListener("focusin", (e)=>{
-    if (pinned) return;
-    const node = getTTNodeFromEventTarget(e.target);
-    if (!node) return;
-
-    const title = node.getAttribute("data-tt-title") || "";
-    const body  = node.getAttribute("data-tt") || "";
-    openTT(title, body);
-
-    // place tooltip near the element center
-    const r = node.getBoundingClientRect();
-    moveTT(r.left + r.width/2, r.top + r.height/2);
-  });
-
-  tbody.addEventListener("focusout", (e)=>{
-    if (pinned) return;
-    const node = getTTNodeFromEventTarget(e.target);
-    if (!node) return;
-    closeTT();
-  });
-
-  // ====== helpers ======
+  // ===== helpers =====
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[m] ));
   }
+  function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
 
   function thaiDateFromISO(iso){
     const [y,m,d] = iso.split("-").map(Number);
     const dt = new Date(y, m-1, d);
     return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
   }
-
-  function thaiDateLongFromISO(iso){
-    const [y,m,d] = iso.split("-").map(Number);
-    const dt = new Date(y, m-1, d);
-    return dt.toLocaleDateString("th-TH",{weekday:"long", day:"numeric", month:"short", year:"2-digit"});
-  }
-
-  function gradeByPercent(p){
-    if (p >= 90) return "good";
-    if (p >= 70) return "mid";
-    return "bad";
+  function thaiShortDow(d){
+    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
+    return th[d.getDay()];
   }
   function dayGrade(count){
     if (count === 3) return "good";
     if (count === 2) return "mid";
     return "bad";
   }
-  function thaiDayShortFromISO(iso){
-    const [y,m,d] = iso.split("-").map(Number);
-    const dt = new Date(y, m-1, d);
-    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
-    return th[dt.getDay()];
+  function gradeByPercent(p){
+    if (p >= 90) return "good";
+    if (p >= 70) return "mid";
+    return "bad";
   }
-  function dayNumFromISO(iso){
-    return Number(iso.split("-")[2]) || "";
+
+  // ===== Tooltip (legacy behavior) =====
+  let tipVisible = false;
+
+  function buildTipHTML(dayObj){
+    // dayObj: { dateISO, count, times? }
+    const times = dayObj.times || dayObj.timeMap || dayObj.sessionTimes || null;
+
+    const getTime = (k)=>{
+      if (!times) return "";
+      const v = times[k];
+      if (!v) return "";
+      const s = String(v);
+      const m = s.match(/^(\d{2}:\d{2})/);
+      return (m ? m[1] : s) + " น.";
+    };
+
+    // ถ้ามี times จริง -> ใช้ times
+    const t1 = getTime("s1") || getTime("ครั้งที่ 1");
+    const t2 = getTime("s2") || getTime("ครั้งที่ 2");
+    const t3 = getTime("s3") || getTime("ครั้งที่ 3");
+
+    const hasTime = !!(t1 || t2 || t3);
+
+    // ถ้าไม่มีเวลา ส่งมา (ตอนนี้ API ยังไม่มี) -> ใช้ "count" กำหนด ✓/✕ แบบประมาณตามจำนวนครั้ง
+    const cnt = Number(dayObj.count || 0);
+    const ok1 = hasTime ? !!t1 : (cnt >= 1);
+    const ok2 = hasTime ? !!t2 : (cnt >= 2);
+    const ok3 = hasTime ? !!t3 : (cnt >= 3);
+
+    const row = (ok, label, timeText)=>`
+      <div class="tipRow">
+        <div class="tipLeft">
+          <div class="ico ${ok ? "ok" : "no"}"><span>${ok ? "✓" : "✕"}</span></div>
+          <div class="tipLabel">${label}</div>
+        </div>
+        <div class="tipTime">${ok ? escapeHtml(timeText || "—") : "—"}</div>
+      </div>
+    `;
+
+    return `
+      ${row(ok1, "ครั้งที่ 1", t1)}
+      ${row(ok2, "ครั้งที่ 2", t2)}
+      ${row(ok3, "ครั้งที่ 3", t3)}
+      ${!hasTime ? `<div style="margin-top:4px;font-size:12px;color:rgba(234,240,255,.70)">*ตอนนี้ API ส่งมาเป็นจำนวน ${cnt}/3 (ยังไม่มีเวลาแยกรอบ)</div>` : ``}
+    `;
   }
+
+  function showTip(anchorEl, headerText, dayObj){
+    tipHdr.textContent = headerText;
+    tipBody.innerHTML = buildTipHTML(dayObj);
+
+    hoverTip.classList.add("show");
+    hoverTip.setAttribute("aria-hidden","false");
+    tipVisible = true;
+
+    positionTip(anchorEl);
+  }
+
+  function hideTip(){
+    hoverTip.classList.remove("show");
+    hoverTip.setAttribute("aria-hidden","true");
+    tipVisible = false;
+  }
+
+  function positionTip(anchorEl){
+    if (!tipVisible) return;
+    const r = anchorEl.getBoundingClientRect();
+
+    const tipW = hoverTip.offsetWidth || 360;
+    const tipH = hoverTip.offsetHeight || 200;
+
+    let left = r.left + (r.width/2) - (tipW/2);
+    let top  = r.bottom + 10;
+
+    left = clamp(left, 12, window.innerWidth - tipW - 12);
+
+    const arrow = hoverTip.querySelector(".arrow");
+
+    if (top + tipH > window.innerHeight - 12) {
+      top = r.top - tipH - 10;
+      top = clamp(top, 12, window.innerHeight - tipH - 12);
+      arrow.style.top = "auto";
+      arrow.style.bottom = "-7px";
+      arrow.style.transform = "rotate(225deg)";
+    } else {
+      arrow.style.bottom = "auto";
+      arrow.style.top = "-7px";
+      arrow.style.transform = "rotate(45deg)";
+    }
+
+    hoverTip.style.left = `${Math.round(left)}px`;
+    hoverTip.style.top  = `${Math.round(top)}px`;
+
+    const centerX = r.left + (r.width/2);
+    const arrowLeft = clamp(centerX - left, 22, tipW - 22);
+    arrow.style.left = `${Math.round(arrowLeft)}px`;
+  }
+
+  window.addEventListener("resize", ()=>{ if (tipVisible) hideTip(); });
+  window.addEventListener("scroll", ()=>{ if (tipVisible) hideTip(); }, { passive:true });
 
   // ====== render ======
   function render(out){
@@ -665,31 +632,30 @@
       const totalDone = Number(p.totalDone || 0);
       const totalSlots = Number(p.totalSlots || 21);
 
-      // Tooltip for weekly summary cell
-      const weekTTTitle = "สรุปสัปดาห์";
-      const weekTTBody =
-        `ทำได้ ${totalDone}/${totalSlots} ครั้ง\n` +
-        `ครบทั้งวัน ${doneDays}/7 วัน\n` +
-        `เปอร์เซ็นต์ ${pct}%`;
-
-      const dayBoxes = (p.perDay || []).map((d)=>{
+      const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+      const dayBoxes = perDay.map((d)=>{
         const cnt = Number(d.count || 0);
         const dg = dayGrade(cnt);
         const iso = String(d.dateISO || "");
-        const dayShort = thaiDayShortFromISO(iso);
-        const dayNum = dayNumFromISO(iso);
 
-        const dayTTTitle = "รายละเอียดรายวัน";
-        const dayTTBody =
-          `${thaiDateLongFromISO(iso)}\n` +
-          `ทำได้ ${cnt}/3 ครั้ง`;
+        const [yy,mm,dd] = iso.split("-").map(Number);
+        const dt = new Date(yy, (mm||1)-1, dd||1);
+        const dow = thaiShortDow(dt);
+        const dayNum = dd || "";
+
+        const th = dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
+        const tipHeader = `${dow} ${th}`;
+
+        const payload = encodeURIComponent(JSON.stringify({
+          dateISO: iso,
+          count: cnt,
+          times: d.times || d.timeMap || d.sessionTimes || null
+        }));
 
         return `
-          <div class="daybox ${dg}" tabindex="0"
-               data-tt-title="${escapeHtml(dayTTTitle)}"
-               data-tt="${escapeHtml(dayTTBody)}">
+          <div class="daybox ${dg}" data-tipheader="${escapeHtml(tipHeader)}" data-tip="${payload}">
             <div class="dayTop">
-              <span class="dayPill">${dayShort}</span>
+              <span class="dowBadge">${dow}</span>
               <span class="dayNum">${dayNum}</span>
             </div>
             <div class="dayCount">${cnt}/3</div>
@@ -702,15 +668,11 @@
         <td class="name">${escapeHtml(p.name||"")}</td>
         <td>
           <div class="pctRow">
-            <span class="chip ${g}" tabindex="0"
-                  data-tt-title="${escapeHtml(weekTTTitle)}"
-                  data-tt="${escapeHtml(weekTTBody)}">
+            <span class="chip ${g}">
               <span class="dot"></span>
               <span>${chipText}</span>
             </span>
-            <div class="progress ${g}" tabindex="0"
-                 data-tt-title="${escapeHtml(weekTTTitle)}"
-                 data-tt="${escapeHtml(weekTTBody)}">
+            <div class="progress ${g}">
               <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
             </div>
           </div>
@@ -725,6 +687,19 @@
     if (!rows.length){
       tbody.innerHTML = `<tr><td colspan="4" class="muted">ไม่พบข้อมูล</td></tr>`;
     }
+
+    // bind tooltip events after render
+    document.querySelectorAll(".daybox").forEach(el=>{
+      el.addEventListener("mouseenter", ()=>{
+        const hdr = el.getAttribute("data-tipheader") || "-";
+        const raw = el.getAttribute("data-tip") || "";
+        let dayObj = {};
+        try { dayObj = JSON.parse(decodeURIComponent(raw)); } catch(e){}
+        showTip(el, hdr, dayObj);
+      });
+      el.addEventListener("mousemove", ()=> positionTip(el));
+      el.addEventListener("mouseleave", hideTip);
+    });
   }
 
   // ====== load ======
@@ -760,13 +735,10 @@
     btnThis.setAttribute("aria-selected", String(weekOffset === 0));
     btnLast.setAttribute("aria-selected", String(weekOffset === -1));
 
+    hideTip();
     load(false);
 
-    // รีเซ็ต countdown ให้รู้สึก “โหลดรอบใหม่”
     nextRefreshAt = Date.now() + REFRESH_MS;
-
-    // ปิด tooltip กันค้าง
-    closeTT();
   }
 
   btnThis.addEventListener("click", ()=> setActiveWeek(0));
@@ -800,19 +772,17 @@
   }
 
   document.addEventListener("visibilitychange", ()=>{
-    if (document.hidden){
-      // ปล่อยตัวเลขค้างไว้เฉย ๆ ไม่ยิง
-    } else {
+    if (!document.hidden){
       nextRefreshAt = Date.now() + REFRESH_MS;
       load(true);
-      closeTT();
+      hideTip();
     }
   });
 
   // ===== init =====
   (function init(){
-    setActiveWeek(0); // ค่าเริ่มต้น = สัปดาห์นี้
-    startAuto();      // auto refresh 1 นาที
+    setActiveWeek(0);
+    startAuto();
   })();
 </script>
 </body>
