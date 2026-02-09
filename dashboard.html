@@ -7,6 +7,9 @@
 
   <style>
     :root{
+      --bg:#0a1322;
+      --card:rgba(255,255,255,.07);
+      --border:rgba(255,255,255,.10);
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.72);
 
@@ -14,9 +17,8 @@
       --mid:#f3c43a;
       --bad:#ff4d4d;
 
+      --radius:18px;
       --shadow:0 18px 60px rgba(0,0,0,.35);
-      --card:rgba(255,255,255,.06);
-      --border:rgba(255,255,255,.10);
     }
 
     *{box-sizing:border-box}
@@ -31,13 +33,10 @@
       min-height:100vh;
     }
 
-    .wrap{max-width:1180px;margin:0 auto;padding:22px 14px 28px}
-    h1{margin:0;font-size:26px;font-weight:900;letter-spacing:.2px}
-    .muted{color:var(--muted)}
-    .weekTitle{font-size:20px;font-weight:900;margin:12px 0 12px}
+    .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 26px}
 
-    /* ===== Topbar ===== */
-    .topbar{
+    /* ===== Top row ===== */
+    .topRow{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
@@ -45,69 +44,79 @@
       flex-wrap:wrap;
       margin-bottom:12px;
     }
-    .topbarLeft{
-      display:grid;
+    h1{margin:0;font-size:24px;font-weight:900;letter-spacing:.2px}
+
+    /* week menu */
+    .weekMenu{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .seg{
+      display:inline-flex;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      padding:6px;
       gap:6px;
-      min-width:0;
+      box-shadow:0 12px 34px rgba(0,0,0,.26);
+    }
+    .seg button{
+      border:0;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:900;
+      color:rgba(234,240,255,.85);
+      background:transparent;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .seg button.active{
+      color:#071120;
+      background:rgba(106,169,255,.95);
+      box-shadow:0 10px 24px rgba(106,169,255,.22);
     }
 
-    /* ===== Refresh box (TOP) ===== */
-    .refreshBox{
-      flex:0 0 auto;
-      width:fit-content;
-      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      box-shadow:0 18px 50px rgba(0,0,0,.35);
-      padding:8px 10px;
-      position:relative;
-      overflow:hidden;
-      min-height:46px;
+    /* auto refresh mini box */
+    .autoMini{
+      height:38px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      font-weight:900;
+      color:rgba(234,240,255,.85);
       display:flex;
       align-items:center;
       gap:10px;
-    }
-    .refreshBox::before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:radial-gradient(closest-side at 70% 0%, rgba(120,200,255,.22), transparent 70%);
-      pointer-events:none;
-    }
-    .refreshDot{
-      position:relative;
-      z-index:1;
-      width:10px;height:10px;border-radius:999px;
-      background:var(--good);
-      box-shadow:0 0 14px rgba(48,209,106,.55);
-      animation: blink 1.1s infinite;
-      flex:0 0 auto;
-    }
-    .refreshDot.off{
-      background:var(--bad);
-      box-shadow:0 0 14px rgba(255,77,77,.45);
-    }
-    @keyframes blink{
-      0%, 100% { opacity: .25; transform: scale(.92); }
-      50%      { opacity: 1;    transform: scale(1); }
-    }
-    .refreshText{
-      position:relative;
-      z-index:1;
-      font-weight:900;
-      font-size:12px;
-      color:rgba(234,240,255,.86);
       white-space:nowrap;
     }
+    .dotLive{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--good);
+      box-shadow:0 0 0 0 rgba(48,209,106,.55);
+      animation:pulseG 1.2s infinite;
+      flex:0 0 auto;
+    }
+    @keyframes pulseG{
+      0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
+      70%{ box-shadow:0 0 0 10px rgba(48,209,106,0) }
+      100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
+    }
+
+    .weekTitle{font-size:18px;font-weight:900;margin:10px 0 12px;color:rgba(234,240,255,.92)}
+    .muted{color:var(--muted)}
 
     /* ===== KPI cards ===== */
     .kpis{
       display:grid;
       grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:14px;
-      margin:6px 0 16px;
+      gap:12px;
+      margin:6px 0 14px;
       align-items:stretch;
     }
-    @media (max-width:900px){ .kpis{grid-template-columns:1fr;}}
+    @media (max-width:900px){ .kpis{grid-template-columns:1fr;} }
 
     .kpi{
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
@@ -117,7 +126,7 @@
       box-shadow:0 18px 50px rgba(0,0,0,.35);
       position:relative;
       overflow:hidden;
-      min-height:170px;
+      min-height:160px;
     }
     .kpi:before{
       content:"";
@@ -129,7 +138,6 @@
     .kpi .value{font-size:44px;font-weight:900;line-height:1;margin-top:10px}
     .kpi .sub{margin-top:10px;font-size:12px;color:rgba(234,240,255,.6)}
     .value.good{color:var(--good)}
-    .value.mid{color:var(--mid)}
     .value.bad{color:var(--bad)}
 
     /* ===== pie ===== */
@@ -150,27 +158,17 @@
       border:1px solid rgba(255,255,255,.08);
     }
 
-    /* ===== Table wrap (desktop/tablet) ===== */
-    .tableWrap{
-      width:100%;
-      overflow-x:auto;
-      border-radius:18px;
-      -webkit-overflow-scrolling: touch;
-      position:relative;
-    }
-
+    /* ===== Table ===== */
     .table{
       width:100%;
-      min-width:980px;
       border-collapse:separate;
       border-spacing:0;
+      overflow:hidden;
       border-radius:18px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.04);
       box-shadow:var(--shadow);
-      overflow:hidden;
     }
-
     .table thead th{
       text-align:left;
       font-size:14px;
@@ -180,17 +178,13 @@
       background:rgba(0,0,0,.20);
       border-bottom:1px solid rgba(255,255,255,.10);
       white-space:nowrap;
-      vertical-align:middle;
     }
-
     .table tbody td{
       padding:14px 14px;
       border-bottom:1px solid rgba(255,255,255,.08);
       vertical-align:top;
-      background:transparent;
     }
     .table tbody tr:last-child td{border-bottom:none}
-
     .name{font-size:16px;font-weight:900}
 
     /* percent cell */
@@ -226,7 +220,7 @@
     .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
     .subline{margin-top:8px;font-size:12px;color:rgba(234,240,255,.66)}
 
-    /* 7 day boxes (used both table & cards) */
+    /* 7 day boxes (keep as your current style) */
     .days{
       display:grid;
       grid-template-columns:repeat(7, minmax(0, 1fr));
@@ -235,7 +229,6 @@
     }
     @media (max-width:1100px){ .days{min-width:460px} }
     @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
-    @media (max-width:520px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr));} }
 
     .daybox{
       border-radius:12px;
@@ -280,169 +273,6 @@
     .dayNum{opacity:.9}
     .dayCount{font-size:20px;letter-spacing:.3px}
 
-    /* ===== MOBILE CARDS ===== */
-    .cards{
-      display:none;
-      gap:12px;
-    }
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      box-shadow:0 18px 50px rgba(0,0,0,.35);
-      overflow:hidden;
-    }
-    .cardHead{
-      padding:12px 12px 10px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      background:rgba(0,0,0,.16);
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .cardName{
-      font-weight:1000;
-      font-size:16px;
-      line-height:1.2;
-    }
-    .cardMeta{
-      display:grid;
-      gap:6px;
-      align-items:end;
-      text-align:right;
-      flex:0 0 auto;
-    }
-    .miniChip{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:6px 10px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.18);
-      font-weight:1000;
-      font-size:12px;
-      white-space:nowrap;
-    }
-    .miniChip.good{color:#dfffe9}
-    .miniChip.mid{color:#fff5d0}
-    .miniChip.bad{color:#ffd9d9}
-
-    .cardBody{
-      padding:12px;
-      display:grid;
-      gap:10px;
-    }
-    .cardRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      color:rgba(234,240,255,.78);
-      font-weight:900;
-      font-size:12px;
-    }
-    .cardRow b{color:rgba(234,240,255,.92)}
-    .cardDays{
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:8px;
-    }
-    @media (max-width:420px){
-      .cardDays{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
-    }
-
-    /* Desktop/tablet show table, mobile show cards */
-    @media (max-width:820px){
-      .tableWrap{display:none}
-      .cards{display:grid}
-      .weekTitle{font-size:18px}
-      h1{font-size:24px}
-    }
-
-    /* ===== Tooltip (small) ===== */
-    .tt{
-      position:fixed;
-      z-index:9999;
-      display:none;
-      width:auto;
-      min-width:150px;
-      max-width:min(165px, calc(100vw - 18px));
-      max-height:min(170px, calc(100vh - 24px));
-      overflow:auto;
-      padding:7px 7px 6px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(10,19,34,.92);
-      box-shadow:0 18px 55px rgba(0,0,0,.55);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-    .ttHead{
-      font-weight:900;
-      font-size:11px;
-      margin-bottom:6px;
-      color:rgba(234,240,255,.95);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .ttRow{
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      gap:6px;
-      padding:6px 7px;
-      border-radius:10px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);
-      margin-bottom:5px;
-    }
-    .ttRow:last-child{margin-bottom:0}
-    .ttL{
-      display:flex;
-      align-items:center;
-      gap:6px;
-      font-weight:900;
-      font-size:11px;
-      min-width:0;
-    }
-    .ic{
-      width:16px;height:16px;border-radius:999px;
-      display:grid;place-items:center;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(0,0,0,.18);
-      font-size:10px;
-      flex:0 0 auto;
-    }
-    .ic.ok{background:rgba(48,209,106,.18); border-color:rgba(48,209,106,.35); color:#dfffe9}
-    .ic.no{background:rgba(255,77,77,.16); border-color:rgba(255,77,77,.35); color:#ffd9d9}
-    .ttTimeInline{
-      margin-left:auto;
-      font-weight:900;
-      font-size:11px;
-      color:rgba(234,240,255,.90);
-      white-space:nowrap;
-    }
-    .ttDash{
-      margin-left:auto;
-      font-weight:900;
-      font-size:11px;
-      color:rgba(234,240,255,.45);
-      white-space:nowrap;
-    }
-    .ttArrow{
-      position:fixed;
-      width:8px;height:8px;
-      background:rgba(10,19,34,.92);
-      border-left:1px solid rgba(255,255,255,.14);
-      border-top:1px solid rgba(255,255,255,.14);
-      transform:rotate(45deg);
-      z-index:9998;
-      display:none;
-    }
-
     .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
     .btn{
       text-decoration:none;color:var(--text);
@@ -457,22 +287,28 @@
 
 <body>
   <div class="wrap">
-
-    <div class="topbar">
-      <div class="topbarLeft">
+    <div class="topRow">
+      <div>
         <h1>Dashboard</h1>
-        <div class="muted" style="font-size:12px">ข้อมูลจะอัปเดตอัตโนมัติ</div>
+        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้ (ไม่ต้องลบข้อมูลแล้ว)</div>
       </div>
 
-      <div class="refreshBox" aria-live="polite">
-        <span id="refreshDot" class="refreshDot"></span>
-        <span id="refreshLine" class="refreshText">รีเฟรชใน --</span>
+      <div class="weekMenu">
+        <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
+          <button id="btnThis" class="active" role="tab" aria-selected="true">สัปดาห์นี้</button>
+          <button id="btnLast" role="tab" aria-selected="false">สัปดาห์ที่แล้ว</button>
+        </div>
+
+        <div class="autoMini" aria-live="polite" title="รีเฟรชอัตโนมัติ">
+          <span class="dotLive"></span>
+          <span>รีเฟรชใน <span id="countdown">--</span> วิ</span>
+        </div>
       </div>
     </div>
 
     <div class="kpis">
       <div class="kpi">
-        <div class="label">สัดส่วนทำครบ (สัปดาห์นี้)</div>
+        <div class="label">สัดส่วนทำครบ (สัปดาห์ที่เลือก)</div>
         <div class="pieWrap">
           <div class="pie" id="pie"></div>
           <div style="display:grid;gap:8px">
@@ -480,7 +316,6 @@
             <div class="muted" id="pieText">กำลังคำนวณ...</div>
           </div>
         </div>
-        <div class="sub">วงกลม = สัดส่วน “ครบ 21/21” เทียบทั้งหมด</div>
       </div>
 
       <div class="kpi">
@@ -498,27 +333,19 @@
 
     <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
 
-    <!-- Desktop/Table -->
-    <div class="tableWrap">
-      <table class="table">
-        <thead>
-          <tr>
-            <th style="width:26%">ชื่อ</th>
-            <th style="width:30%">% สัปดาห์</th>
-            <th style="width:10%">ครบทั้งวัน</th>
-            <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
-          </tr>
-        </thead>
-        <tbody id="tbody">
-          <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Mobile/Cards -->
-    <div class="cards" id="cards">
-      <!-- render by JS -->
-    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:26%">ชื่อ</th>
+          <th style="width:30%">% สัปดาห์</th>
+          <th style="width:10%">ครบทั้งวัน</th>
+          <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
+      </tbody>
+    </table>
 
     <div class="btns">
       <a class="btn" href="/">กลับหน้าบันทึกข้อมูล</a>
@@ -526,16 +353,20 @@
     </div>
   </div>
 
-  <div class="tt" id="tt"></div>
-  <div class="ttArrow" id="ttArrow"></div>
-
 <script>
   // ====== CONFIG ======
   const REFRESH_MS = 60_000; // 1 นาที
 
+  // state: weekOffset (0=this, -1=last)
+  let weekOffset = 0;
+
+  // UI refs
+  const btnThis = document.getElementById("btnThis");
+  const btnLast = document.getElementById("btnLast");
+  const countdownEl = document.getElementById("countdown");
+
   const elWeek = document.getElementById("weekHeader");
   const tbody  = document.getElementById("tbody");
-  const cards  = document.getElementById("cards");
 
   const pie = document.getElementById("pie");
   const piePct = document.getElementById("piePct");
@@ -544,36 +375,17 @@
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
-  // refresh UI
-  const refreshDot = document.getElementById("refreshDot");
-  const refreshLine = document.getElementById("refreshLine");
-
-  // tooltip
-  const tt = document.getElementById("tt");
-  const ttArrow = document.getElementById("ttArrow");
-  let ttActiveEl = null;
-
+  // ====== helpers ======
   function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({
+    return String(s).replace(/[&<>"']/g, (m)=>( {
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
+    }[m] ));
   }
-
   function thaiDateFromISO(iso){
-    const [y,m,d] = String(iso).split("-").map(Number);
+    const [y,m,d] = iso.split("-").map(Number);
     const dt = new Date(y, m-1, d);
     return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
   }
-  function thaiDayShortFromISO(iso){
-    const [y,m,d] = String(iso).split("-").map(Number);
-    const dt = new Date(y, m-1, d);
-    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
-    return th[dt.getDay()];
-  }
-  function dayNumFromISO(iso){
-    return Number(String(iso).split("-")[2]) || "";
-  }
-
   function gradeByPercent(p){
     if (p >= 90) return "good";
     if (p >= 70) return "mid";
@@ -584,160 +396,17 @@
     if (count === 2) return "mid";
     return "bad";
   }
-
-  function fmtCountdown(ms){
-    const s = Math.max(0, Math.ceil(ms/1000));
-    const mm = Math.floor(s/60);
-    const ss = String(s%60).padStart(2,"0");
-    if (mm <= 0) return `${s} วิ`;
-    return `${mm}:${ss} นาที`;
+  function thaiDayShortFromISO(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    const th = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."];
+    return th[dt.getDay()];
+  }
+  function dayNumFromISO(iso){
+    return Number(iso.split("-")[2]) || "";
   }
 
-  // ✅ แก้ “น.” ซ้อน: ลบ น./น/ช่องว่างท้าย แล้วค่อยเติม น. ทีเดียว
-  function cleanTime(t){
-    let s = String(t || "").trim();
-    if (!s) return "";
-    // ตัด "น." หรือ "น" ท้าย ๆ (รวมช่องว่าง)
-    s = s.replace(/\s*น\.?\s*$/u, "");
-    // กันเคสมีจุด/ช่องท้ายแปลก ๆ
-    s = s.replace(/\s+$/u, "");
-    return s;
-  }
-
-  // ===== Tooltip =====
-  function showTooltipFor(el){
-    const payload = el.getAttribute("data-tt");
-    if (!payload) return;
-
-    let data = null;
-    try { data = JSON.parse(payload); } catch { data = null; }
-    if (!data) return;
-
-    const head = escapeHtml(data.head || "");
-    const rows = Array.isArray(data.rows) ? data.rows : [];
-
-    tt.innerHTML = `
-      <div class="ttHead">${head}</div>
-      ${rows.map(r=>{
-        const ok = !!r.ok;
-        const icon = ok ? "✓" : "✕";
-        const cls = ok ? "ok" : "no";
-        const label = escapeHtml(r.label || "");
-        const raw = cleanTime(r.time || "");
-        const right = raw
-          ? `<span class="ttTimeInline">${escapeHtml(raw)} น.</span>`
-          : `<span class="ttDash">—</span>`;
-        return `
-          <div class="ttRow">
-            <div class="ttL">
-              <span class="ic ${cls}">${icon}</span>
-              <span>${label}</span>
-            </div>
-            ${right}
-          </div>
-        `;
-      }).join("")}
-    `;
-
-    const rect = el.getBoundingClientRect();
-    tt.style.display = "block";
-    ttArrow.style.display = "block";
-
-    const ttRect = tt.getBoundingClientRect();
-
-    let left = rect.left + rect.width/2 - ttRect.width/2;
-    let top  = rect.bottom + 9;
-
-    left = Math.max(8, Math.min(left, window.innerWidth - ttRect.width - 8));
-
-    if (top + ttRect.height > window.innerHeight - 8){
-      top = rect.top - ttRect.height - 9;
-    }
-    top = Math.max(8, Math.min(top, window.innerHeight - ttRect.height - 8));
-
-    tt.style.left = left + "px";
-    tt.style.top  = top + "px";
-
-    const arrowLeft = Math.max(left + 14, Math.min(rect.left + rect.width/2 - 4, left + ttRect.width - 18));
-    const arrowTop = (top > rect.top) ? (rect.bottom + 3) : (rect.top - 7);
-
-    ttArrow.style.left = arrowLeft + "px";
-    ttArrow.style.top  = arrowTop + "px";
-
-    ttActiveEl = el;
-  }
-
-  function hideTooltip(){
-    tt.style.display = "none";
-    ttArrow.style.display = "none";
-    ttActiveEl = null;
-  }
-
-  window.addEventListener("scroll", ()=>{ if (ttActiveEl) hideTooltip(); }, { passive:true });
-  window.addEventListener("resize", ()=>{ if (ttActiveEl) hideTooltip(); });
-
-  function bindTooltips_(){
-    const isTouch = (matchMedia && matchMedia("(pointer: coarse)").matches) || ("ontouchstart" in window);
-    const boxes = document.querySelectorAll(".daybox[data-tt]");
-
-    boxes.forEach(el => {
-      if (isTouch){
-        el.addEventListener("click", (e)=>{
-          e.stopPropagation();
-          if (ttActiveEl === el) hideTooltip();
-          else showTooltipFor(el);
-        });
-      } else {
-        el.addEventListener("mouseenter", ()=> showTooltipFor(el));
-        el.addEventListener("mouseleave", ()=> hideTooltip());
-      }
-    });
-
-    if (isTouch){
-      document.addEventListener("click", ()=> hideTooltip());
-    }
-  }
-
-  // ===== Render blocks =====
-  function buildDayBoxes(perDay){
-    return (perDay || []).map((d)=>{
-      const cnt = Number(d.count || 0);
-      const dg = dayGrade(cnt);
-      const iso = String(d.dateISO || "");
-      const dayShort = thaiDayShortFromISO(iso);
-      const dayNum = dayNumFromISO(iso);
-
-      const t1 = (d.times && d.times.s1) || d.t1 || "";
-      const t2 = (d.times && d.times.s2) || d.t2 || "";
-      const t3 = (d.times && d.times.s3) || d.t3 || "";
-
-      const ok1 = !!t1 || cnt >= 1;
-      const ok2 = !!t2 || cnt >= 2;
-      const ok3 = !!t3 || cnt >= 3;
-
-      const ttPayload = {
-        head: `${dayShort} ${dayNum}`,
-        rows: [
-          { label:"ครั้งที่ 1", ok: ok1, time: t1 || "" },
-          { label:"ครั้งที่ 2", ok: ok2, time: t2 || "" },
-          { label:"ครั้งที่ 3", ok: ok3, time: t3 || "" },
-        ]
-      };
-
-      const payloadEsc = escapeHtml(JSON.stringify(ttPayload));
-
-      return `
-        <div class="daybox ${dg}" data-tt="${payloadEsc}">
-          <div class="dayTop">
-            <span class="dayPill">${dayShort}</span>
-            <span class="dayNum">${dayNum}</span>
-          </div>
-          <div class="dayCount">${cnt}/3</div>
-        </div>
-      `;
-    }).join("");
-  }
-
+  // ====== render ======
   function render(out){
     const w = out.week;
     elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
@@ -758,15 +427,31 @@
     const rows = out.people || [];
     rows.sort((a,b)=> (b.percent||0) - (a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
 
-    // -------- Table (desktop) --------
     tbody.innerHTML = "";
+
     for (const p of rows){
       const pct = Number(p.percent || 0);
       const g = gradeByPercent(pct);
       const chipText = (pct === 100) ? "ครบ 100%" : `${pct}%`;
       const doneDays = Number(p.doneDays || 0);
 
-      const dayBoxes = buildDayBoxes(p.perDay);
+      const dayBoxes = (p.perDay || []).map((d)=>{
+        const cnt = Number(d.count || 0);
+        const dg = dayGrade(cnt);
+        const iso = String(d.dateISO || "");
+        const dayShort = thaiDayShortFromISO(iso);
+        const dayNum = dayNumFromISO(iso);
+
+        return `
+          <div class="daybox ${dg}">
+            <div class="dayTop">
+              <span class="dayPill">${dayShort}</span>
+              <span class="dayNum">${dayNum}</span>
+            </div>
+            <div class="dayCount">${cnt}/3</div>
+          </div>
+        `;
+      }).join("");
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -792,44 +477,10 @@
     if (!rows.length){
       tbody.innerHTML = `<tr><td colspan="4" class="muted">ไม่พบข้อมูล</td></tr>`;
     }
-
-    // -------- Cards (mobile) --------
-    cards.innerHTML = "";
-    for (const p of rows){
-      const pct = Number(p.percent || 0);
-      const g = gradeByPercent(pct);
-      const doneDays = Number(p.doneDays || 0);
-      const dayBoxes = buildDayBoxes(p.perDay);
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <div class="cardHead">
-          <div>
-            <div class="cardName">${escapeHtml(p.name||"")}</div>
-          </div>
-          <div class="cardMeta">
-            <div class="miniChip ${g}">${pct}%</div>
-            <div class="muted" style="font-weight:900;font-size:12px">${doneDays}/7 วัน</div>
-          </div>
-        </div>
-        <div class="cardBody">
-          <div class="cardRow">
-            <span>รวม</span>
-            <b>${p.totalDone}/${p.totalSlots} ครั้ง</b>
-          </div>
-          <div class="cardDays">${dayBoxes}</div>
-        </div>
-      `;
-      cards.appendChild(card);
-    }
-
-    bindTooltips_();
   }
 
-  // ===== Load =====
+  // ====== load ======
   let inFlight = false;
-
   async function load(isAuto=false){
     if (inFlight) return;
     inFlight = true;
@@ -839,12 +490,11 @@
     }
 
     try{
-      const res = await fetch(`/api/dashboard`, { cache: "no-store" });
+      const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(weekOffset))}`, { cache:"no-store" });
       const out = await res.json().catch(()=>({}));
 
       if (!res.ok || !out.ok){
         tbody.innerHTML = `<tr><td colspan="4" class="muted">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
-        cards.innerHTML = `<div class="muted" style="padding:12px">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</div>`;
         return;
       }
       render(out);
@@ -853,52 +503,65 @@
     }
   }
 
-  // ===== Auto Refresh (ทุก 1 นาที) =====
-  let nextRefreshAt = Date.now() + REFRESH_MS;
-  let tickTimer = null;
-  let refreshInterval = null;
+  // ====== menu actions ======
+  function setActiveWeek(offset){
+    weekOffset = offset;
 
-  function updateRefreshUI(){
-    if (document.hidden){
-      refreshDot.classList.add("off");
-      refreshLine.textContent = "รีเฟรชใน --";
-      return;
-    }
-    refreshDot.classList.remove("off");
-    const leftMs = Math.max(0, nextRefreshAt - Date.now());
-    refreshLine.textContent = `รีเฟรชใน ${fmtCountdown(leftMs)}`;
+    btnThis.classList.toggle("active", weekOffset === 0);
+    btnLast.classList.toggle("active", weekOffset === -1);
+    btnThis.setAttribute("aria-selected", String(weekOffset === 0));
+    btnLast.setAttribute("aria-selected", String(weekOffset === -1));
+
+    load(false);
+
+    // รีเซ็ต countdown ให้รู้สึก “โหลดรอบใหม่”
+    nextRefreshAt = Date.now() + REFRESH_MS;
   }
 
-  function startAutoRefresh(){
-    if (tickTimer) clearInterval(tickTimer);
-    if (refreshInterval) clearInterval(refreshInterval);
+  btnThis.addEventListener("click", ()=> setActiveWeek(0));
+  btnLast.addEventListener("click", ()=> setActiveWeek(-1));
 
+  // ====== Auto refresh (1 นาที) + หยุดตอนแท็บไม่ active ======
+  let nextRefreshAt = Date.now() + REFRESH_MS;
+  let tickTimer = null;
+  let refreshTimer = null;
+
+  function startAuto(){
+    stopAuto();
     nextRefreshAt = Date.now() + REFRESH_MS;
-    updateRefreshUI();
 
-    tickTimer = setInterval(updateRefreshUI, 1000);
+    tickTimer = setInterval(()=>{
+      if (document.hidden) return;
+      const leftMs = Math.max(0, nextRefreshAt - Date.now());
+      countdownEl.textContent = String(Math.ceil(leftMs/1000));
+    }, 250);
 
-    refreshInterval = setInterval(async ()=>{
+    refreshTimer = setInterval(async ()=>{
       if (document.hidden) return;
       await load(true);
       nextRefreshAt = Date.now() + REFRESH_MS;
-      updateRefreshUI();
     }, REFRESH_MS);
   }
 
+  function stopAuto(){
+    if (tickTimer){ clearInterval(tickTimer); tickTimer=null; }
+    if (refreshTimer){ clearInterval(refreshTimer); refreshTimer=null; }
+  }
+
   document.addEventListener("visibilitychange", ()=>{
-    if (!document.hidden){
-      nextRefreshAt = Date.now() + REFRESH_MS;
-      updateRefreshUI();
+    if (document.hidden){
+      // ปล่อยตัวเลขค้างไว้เฉย ๆ ไม่ยิง
     } else {
-      updateRefreshUI();
+      // กลับมา: รีเซ็ตใหม่กัน “เด้งยิงทันที”
+      nextRefreshAt = Date.now() + REFRESH_MS;
+      load(true);
     }
   });
 
   // ===== init =====
-  (async function init(){
-    await load(false);
-    startAutoRefresh();
+  (function init(){
+    setActiveWeek(0); // ค่าเริ่มต้น = สัปดาห์นี้
+    startAuto();      // auto refresh 1 นาที
   })();
 </script>
 </body>
