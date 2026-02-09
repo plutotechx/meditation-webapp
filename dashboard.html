@@ -1,7 +1,8 @@
 <!--
   File: dashboard.html
-  Final ModifiedAt: 2026-02-09 10:49:40 +0700
+  Final ModifiedAt: 2026-02-09 11:01:25 +0700
   Change:
+  - Tooltip size reduced (fixed width 340px + max-width clamp)
   - Tooltip match screenshot (rows + arrow + clamp)
   - Fixed double "น."
   - Tooltip header Thai exact: "จ. 9 ก.พ. 69" (B.E. 2 digits)
@@ -299,19 +300,22 @@
     .btn:hover{background:rgba(255,255,255,.10)}
 
     /* =========================================================
-       Tooltip (MATCH SCREENSHOT)
+       Tooltip (SMALL)
        ========================================================= */
     .hoverTip{
       position:fixed;
       z-index:99999;
       display:none;
-      width:420px;
-      max-width:calc(100vw - 24px);
+
+      width:340px; /* ✅ เล็กลงจริง */
+      max-width:min(340px, calc(100vw - 24px)); /* ✅ คุมไม่ให้ใหญ่ */
+
       background:rgba(10,16,26,.96);
       border:1px solid rgba(255,255,255,.14);
       border-radius:16px;
       box-shadow:0 18px 55px rgba(0,0,0,.55);
-      padding:12px;
+
+      padding:10px; /* ✅ ลด padding */
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       color:var(--text);
@@ -322,8 +326,8 @@
 
     .hoverTip .hdr{
       font-weight:950;
-      font-size:16px;
-      margin:0 0 10px;
+      font-size:15px;          /* ✅ ลด */
+      margin:0 0 8px;
       color:rgba(234,240,255,.95);
       white-space:nowrap;
       overflow:hidden;
@@ -334,30 +338,31 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      padding:12px 12px;
+      gap:10px;                 /* ✅ ลด */
+      padding:10px 10px;        /* ✅ ลด */
       border-radius:14px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
-      margin-bottom:10px;
+      margin-bottom:8px;        /* ✅ ลด */
     }
 
     .tipLeft{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:10px;                 /* ✅ ลด */
       font-weight:950;
       min-width:0;
     }
     .tipLabel{
-      font-size:15px;
+      font-size:14px;           /* ✅ ลด */
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
 
     .ico{
-      width:30px;height:30px;border-radius:999px;
+      width:26px;height:26px;   /* ✅ ลด */
+      border-radius:999px;
       display:grid;place-items:center;
       border:1px solid rgba(255,255,255,.16);
       flex:0 0 auto;
@@ -368,7 +373,7 @@
 
     .tipTime{
       font-weight:950;
-      font-size:16px;
+      font-size:15px;           /* ✅ ลด */
       opacity:.98;
       white-space:nowrap;
       flex:0 0 auto;
@@ -507,7 +512,7 @@
     return th[d.getDay()];
   }
 
-  // ✅ Tooltip header แบบไทยเป๊ะ: "จ. 9 ก.พ. 69"
+  // ✅ Tooltip header ไทยเป๊ะ: "จ. 9 ก.พ. 69"
   function thaiTooltipHeaderFromISO(iso){
     const [y,m,d] = String(iso).split("-").map(Number);
     const dt = new Date(y, (m||1)-1, d||1);
@@ -515,7 +520,7 @@
     const thDow = ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."][dt.getDay()];
     const thMonth = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."][dt.getMonth()];
 
-    const be2 = String((dt.getFullYear() + 543) % 100).padStart(2, "0"); // 2569 -> "69"
+    const be2 = String((dt.getFullYear() + 543) % 100).padStart(2, "0");
     const dayNum = dt.getDate();
 
     return `${thDow} ${dayNum} ${thMonth} ${be2}`;
@@ -538,7 +543,7 @@
   function buildTipHTML(dayObj){
     const times = dayObj.times || dayObj.timeMap || dayObj.sessionTimes || null;
 
-    // ✅ คืนค่าเวลาแบบ "HH:MM น." หรือ "" ถ้าไม่มี (ไม่เกิด "น. น.")
+    // ✅ เวลาเป็น "HH:MM น." (ไม่มีทางเป็น "น. น.")
     function fmtTime(v){
       if (!v) return "";
       const s = String(v).trim();
@@ -569,13 +574,13 @@
     function icon(ok){
       if (ok){
         return `
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M20 7L10.5 16.5L4 10" stroke="#30d16a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         `;
       }
       return `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="M18 6L6 18M6 6l12 12" stroke="#ff4d4d" stroke-width="2.8" stroke-linecap="round"/>
         </svg>
       `;
@@ -619,8 +624,8 @@
     if (!tipVisible) return;
     const r = anchorEl.getBoundingClientRect();
 
-    const tipW = hoverTip.offsetWidth || 420;
-    const tipH = hoverTip.offsetHeight || 220;
+    const tipW = hoverTip.offsetWidth || 340;
+    const tipH = hoverTip.offsetHeight || 210;
 
     let left = r.left + (r.width/2) - (tipW/2);
     let top  = r.bottom + 10;
@@ -694,7 +699,6 @@
         const dow = thaiShortDow(dt);
         const dayNum = dd || "";
 
-        // ✅ Tooltip header ไทยเป๊ะ
         const tipHeader = thaiTooltipHeaderFromISO(iso);
 
         const payload = encodeURIComponent(JSON.stringify({
