@@ -4,72 +4,49 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Update Daily Meditation</title>
-
   <style>
     :root{
       --bg:#0b1220; --card:rgba(255,255,255,.08); --border:rgba(255,255,255,.12);
       --text:#eaf0ff; --muted:rgba(234,240,255,.75); --input:rgba(0,0,0,.22);
+      --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
 
-      /* primary button */
-      --btn:#6aa9ff; --btnText:#081122;
-
-      /* status button (glow green) */
-      --statusBg: rgba(0,0,0,.18);
-      --statusBorder: rgba(255,255,255,.18);
-      --statusText: #eaf0ff;
-      --statusGlow: rgba(101,255,179,.95);
-      --statusGlow2: rgba(101,255,179,.28);
-
-      --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
-
-      /* popup */
       --overlay: rgba(0,0,0,.55);
+      --card-bg: rgba(40,52,62,.35);
       --card-border: rgba(255,255,255,.28);
       --green: #21b14b;
-
-      /* toast */
-      --toastBg: rgba(12,16,22,.92);
-      --toastBorder: rgba(255,255,255,.14);
-      --toastShadow: 0 22px 55px rgba(0,0,0,.55);
-      --toastRed: #ff4d4d;
-      --toastText: #eaf0ff;
-      --toastMuted: rgba(234,240,255,.75);
     }
-
-    *{box-sizing:border-box}
     body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;margin:0;background:var(--bg);color:var(--text)}
     .wrap{max-width:820px;margin:0 auto;padding:24px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
-    h1{margin:0 0 6px;font-size:22px;text-align:center;letter-spacing:.2px}
-    .muted{color:var(--muted);margin:0 0 16px;line-height:1.55;text-align:center}
+    h1{margin:0 0 6px;font-size:22px}
+    .muted{color:var(--muted);margin:0 0 16px;line-height:1.55}
     label{display:block;margin:12px 0 6px}
-
     select,input{
       width:100%;box-sizing:border-box;border-radius:14px;
       border:1px solid rgba(255,255,255,.18);
       background:var(--input);color:#fff;padding:12px 12px;outline:none
     }
-
     .grid{display:grid;grid-template-columns:1fr;gap:12px}
     @media(min-width:760px){ .grid{grid-template-columns:1fr 1fr} }
-
     button{
       margin-top:14px;width:100%;padding:12px 14px;border:0;border-radius:14px;
       background:var(--btn);color:var(--btnText);font-weight:800;cursor:pointer
     }
     button:disabled{opacity:.6;cursor:not-allowed}
-
     .msg{margin-top:12px;min-height:22px;white-space:pre-line}
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
-    .small{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
-
+    .small{font-size:12px;color:var(--muted);margin-top:10px}
     a.linkbtn{display:block;text-decoration:none}
-    option[disabled]{ color: rgba(255,255,255,.35); }
+    a.linkbtn button{
+      margin-top:10px;background:rgba(255,255,255,.10);
+      color:var(--text);border:1px solid rgba(255,255,255,.14)
+    }
 
     /* ===== Success Popup ===== */
     .success-overlay{
-      position: fixed; inset: 0;
+      position: fixed;
+      inset: 0;
       display: none;
       place-items: center;
       background: var(--overlay);
@@ -79,19 +56,28 @@
       display: grid;
       animation: overlayIn .18s ease-out forwards;
     }
-    @keyframes overlayIn{ from{opacity:0} to{opacity:1} }
+    @keyframes overlayIn{
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
 
     .success-card{
       width: min(520px, 86vw);
       height: min(280px, 46vh);
       border-radius: 10px;
-      background: linear-gradient(180deg, rgba(54, 74, 86, .35), rgba(25, 33, 41, .40));
+      background: linear-gradient(180deg,
+        rgba(54, 74, 86, .35),
+        rgba(25, 33, 41, .40)
+      );
       border: 1px solid var(--card-border);
-      box-shadow: 0 18px 55px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
+      box-shadow:
+        0 18px 55px rgba(0,0,0,.55),
+        inset 0 0 0 1px rgba(255,255,255,.05);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       position: relative;
       overflow: hidden;
+
       display: grid;
       place-items: center;
       padding: 24px;
@@ -99,219 +85,71 @@
       opacity: 0;
       animation: cardIn .22s ease-out forwards;
     }
-    @keyframes cardIn{ to{ transform: translateY(0) scale(1); opacity:1 } }
+    @keyframes cardIn{
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
 
     .success-card::before{
-      content:""; position:absolute; top:-10px; right:80px;
-      width:170px; height:18px;
-      background: radial-gradient(closest-side, rgba(135,200,255,.95), rgba(135,200,255,.25) 55%, rgba(135,200,255,0) 75%);
-      filter: blur(1.2px); opacity:.9; pointer-events:none;
+      content:"";
+      position:absolute;
+      top:-10px;
+      right: 80px;
+      width: 170px;
+      height: 18px;
+      background: radial-gradient(closest-side,
+        rgba(135, 200, 255, .95),
+        rgba(135, 200, 255, .25) 55%,
+        rgba(135, 200, 255, 0) 75%
+      );
+      filter: blur(1.2px);
+      opacity: .9;
+      pointer-events:none;
     }
     .success-card::after{
-      content:""; position:absolute; bottom:-10px; left:50%; transform:translateX(-50%);
-      width:210px; height:20px;
-      background: radial-gradient(closest-side, rgba(135,200,255,.85), rgba(135,200,255,.25) 55%, rgba(135,200,255,0) 78%);
-      filter: blur(1.4px); opacity:.85; pointer-events:none;
+      content:"";
+      position:absolute;
+      bottom:-10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 210px;
+      height: 20px;
+      background: radial-gradient(closest-side,
+        rgba(135, 200, 255, .85),
+        rgba(135, 200, 255, .25) 55%,
+        rgba(135, 200, 255, 0) 78%
+      );
+      filter: blur(1.4px);
+      opacity: .85;
+      pointer-events:none;
     }
 
-    .success-content{ text-align:center; display:grid; gap:18px; justify-items:center; transform:translateY(-4px); }
-    .success-icon{
-      width:86px;height:86px;border-radius:999px;background:var(--green);
-      display:grid;place-items:center;box-shadow:0 14px 30px rgba(33,177,75,.25);
+    .success-content{
+      text-align: center;
+      display: grid;
+      gap: 18px;
+      justify-items: center;
+      transform: translateY(-4px);
     }
+
+    .success-icon{
+      width: 86px;
+      height: 86px;
+      border-radius: 999px;
+      background: var(--green);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 14px 30px rgba(33,177,75,.25);
+    }
+
     .success-text{
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Noto Sans", Arial, sans-serif;
       font-size: clamp(22px, 2.6vw, 30px);
       font-weight: 600;
-      color: #fff;
+      color: var(--text);
       letter-spacing: .2px;
       text-shadow: 0 2px 18px rgba(0,0,0,.45);
       margin: 0;
     }
-
-    /* ===== Status Button (LASER / SHIMMER / STRONG glow) ===== */
-    .statusBtn{
-      margin-top:10px;
-      width:100%;
-      padding:12px 14px;
-      border-radius:14px;
-      font-weight:900;
-      cursor:pointer;
-
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.18);
-      color: var(--statusText);
-
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-
-      position:relative;
-      overflow:hidden;
-
-      transition: transform .12s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
-      will-change: transform, box-shadow;
-    }
-
-    /* shimmer แสงเฉียงวิ่งเบา ๆ */
-    .statusBtn::after{
-      content:"";
-      position:absolute;
-      top:-40%;
-      left:-60%;
-      width:60%;
-      height:180%;
-      background: linear-gradient(90deg,
-        rgba(255,255,255,0) 0%,
-        rgba(255,255,255,.14) 45%,
-        rgba(255,255,255,0) 100%
-      );
-      transform: rotate(18deg);
-      opacity: 0;
-      pointer-events:none;
-    }
-
-    /* เลเซอร์เส้นวิ่ง (loop) */
-    .statusBtn::before{
-      content:"";
-      position:absolute;
-      inset:-10px;
-      background:
-        linear-gradient(90deg,
-          rgba(101,255,179,0) 0%,
-          rgba(101,255,179,.95) 12%,
-          rgba(101,255,179,0) 24%
-        );
-      background-size: 220% 100%;
-      opacity: 0;
-      pointer-events:none;
-      filter: blur(.3px);
-    }
-
-    /* เส้นขอบเรืองแสง (ring) */
-    .statusBtn .ring{
-      position:absolute;
-      inset:0;
-      border-radius:14px;
-      pointer-events:none;
-      box-shadow:
-        inset 0 0 0 1px rgba(101,255,179,.22);
-      opacity:.0;
-      transition: opacity .18s ease;
-    }
-
-    @keyframes laserSweep{
-      0%   { background-position: 200% 0; }
-      100% { background-position: -60% 0; }
-    }
-
-    @keyframes shimmerSweep{
-      0%   { transform: translateX(0) rotate(18deg); }
-      100% { transform: translateX(260%) rotate(18deg); }
-    }
-
-    .statusBtn:hover{
-      border-color: rgba(101,255,179,.78);
-      box-shadow:
-        0 0 0 1px rgba(101,255,179,.42),
-        0 0 0 10px rgba(101,255,179,.16),
-        0 0 0 18px rgba(101,255,179,.08),
-        0 18px 55px rgba(0,0,0,.45),
-        0 0 46px rgba(101,255,179,.55);
-      filter: brightness(1.10);
-    }
-
-    .statusBtn:hover::before{
-      opacity: 1;
-      animation: laserSweep 1.25s linear infinite;
-    }
-    .statusBtn:hover::after{
-      opacity: .55;
-      animation: shimmerSweep 1.6s ease-in-out infinite;
-    }
-    .statusBtn:hover .ring{ opacity: 1; }
-
-    .statusBtn:active{
-      transform: translateY(1px) scale(.995);
-      box-shadow:
-        0 0 0 1px rgba(101,255,179,.48),
-        0 0 0 12px rgba(101,255,179,.14),
-        0 10px 26px rgba(0,0,0,.45),
-        0 0 36px rgba(101,255,179,.45);
-    }
-
-    .statusIcon{
-      width:22px;height:22px;flex:0 0 22px;
-      filter: drop-shadow(0 0 18px rgba(101,255,179,.65));
-    }
-
-    /* ===== Toast Error (bottom-left) ===== */
-    .toastWrap{
-      position: fixed;
-      left: 18px;
-      bottom: 18px;
-      z-index: 10000;
-      display: grid;
-      gap: 10px;
-      pointer-events: none;
-    }
-    .toast{
-      pointer-events: auto;
-      width: min(360px, calc(100vw - 36px));
-      border-radius: 14px;
-      background: var(--toastBg);
-      border: 1px solid var(--toastBorder);
-      box-shadow: var(--toastShadow);
-      display: grid;
-      grid-template-columns: 42px 1fr 26px;
-      gap: 10px;
-      padding: 12px 12px;
-      align-items: center;
-
-      transform: translateY(10px);
-      opacity: 0;
-      animation: toastIn .18s ease-out forwards;
-    }
-    @keyframes toastIn{
-      to{ transform: translateY(0); opacity:1; }
-    }
-    .toastIcon{
-      width:34px;height:34px;border-radius:999px;
-      background: rgba(255,77,77,.18);
-      display:grid;place-items:center;
-      border: 1px solid rgba(255,77,77,.25);
-    }
-    .toastTitle{
-      font-weight: 900;
-      color: var(--toastText);
-      margin: 0;
-      line-height: 1.1;
-      font-size: 16px;
-    }
-    .toastDesc{
-      margin: 4px 0 0;
-      color: var(--toastMuted);
-      font-size: 13px;
-      line-height: 1.35;
-    }
-    .toastClose{
-      width:26px;height:26px;border-radius:10px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      color: rgba(234,240,255,.9);
-      cursor: pointer;
-      display:grid;place-items:center;
-    }
-    .toastClose:hover{background: rgba(255,255,255,.10)}
-    .toastGlow{
-      position:absolute;
-      left:10px; right:10px; bottom:-2px; height:4px;
-      background: radial-gradient(closest-side, rgba(101,255,179,.55), rgba(101,255,179,0));
-      filter: blur(2px);
-      opacity:.25;
-      pointer-events:none;
-    }
-    .toastPos{position:relative}
   </style>
 </head>
 
@@ -378,8 +216,6 @@
             <label>วันที่บันทึก</label>
             <select id="logDate" name="logDate" required></select>
             <input type="hidden" id="weekdayHidden" name="weekday" value="">
-            <input type="hidden" id="clientNow" name="clientNow" value="">
-            <input type="hidden" id="tzOffsetMin" name="tzOffsetMin" value="">
           </div>
 
           <div>
@@ -402,15 +238,8 @@
 
         <button id="btn" type="submit">บันทึกข้อมูล</button>
 
-        <a class="linkbtn" href="/status.html" aria-label="ไปหน้าตรวจสอบสถานะ">
-          <button class="statusBtn" type="button">
-            <span class="ring" aria-hidden="true"></span>
-            <svg class="statusIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="rgba(234,240,255,.95)" stroke-width="2" />
-              <path d="M16.2 16.2 21 21" stroke="rgba(101,255,179,.95)" stroke-width="2.2" stroke-linecap="round"/>
-            </svg>
-            <span>ตรวจสอบสถานะการทำสมาธิ</span>
-          </button>
+        <a class="linkbtn" href="/status.html">
+          <button type="button">ตรวจสอบสถานะการทำสมาธิ</button>
         </a>
 
         <div class="msg" id="msg"></div>
@@ -419,7 +248,7 @@
     </div>
   </div>
 
-  <!-- Success Popup -->
+  <!-- ===== Success Popup ===== -->
   <div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="success-card">
       <div class="success-content">
@@ -433,30 +262,20 @@
     </div>
   </div>
 
-  <!-- Toast container -->
-  <div id="toastWrap" class="toastWrap" aria-live="polite" aria-atomic="true"></div>
-
 <script>
-  const POPUP_MS = 2500;
-  const AFTER_POPUP_RELOAD_MS = POPUP_MS + 2000;
-
+  // =========================
+  // CONFIG (Option A)
+  //  - ใช้ timezone ของ "เครื่องผู้ใช้" เป็นหลัก
+  // =========================
   const weekHeaderEl = document.getElementById("weekHeader");
-  const logDateEl = document.getElementById("logDate");
-  const weekdayHiddenEl = document.getElementById("weekdayHidden");
-  const clientNowEl = document.getElementById("clientNow");
-  const tzOffsetEl = document.getElementById("tzOffsetMin");
-
-  const toastWrap = document.getElementById("toastWrap");
-
-  const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
 
   function pad2(n){ return String(n).padStart(2,"0"); }
-  function toISODateLocal(d){
-    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-  }
+  function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
   function thaiDateLabelLocal(d){
     return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
   }
+
+  // Monday of week (local)
   function mondayOfWeekLocal(d){
     const x = new Date(d);
     x.setHours(0,0,0,0);
@@ -465,53 +284,87 @@
     x.setDate(x.getDate() + diff);
     return x;
   }
-  function dowTHFromDateLocal(d){
-    const map = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"];
-    return map[d.getDay()];
+
+  // Sunday of week (local) from monday
+  function sundayOfWeekFromMonday(mon){
+    const sun = new Date(mon);
+    sun.setDate(mon.getDate() + 6);
+    sun.setHours(0,0,0,0);
+    return sun;
   }
 
-  function showWeekHeader(){
+  // ===== Week header (ยังคง “สัปดาห์นี้” ตามจันทร์-อาทิตย์ของสัปดาห์ปัจจุบัน) =====
+  (function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
-    const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+    const sun = sundayOfWeekFromMonday(mon);
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
-  }
+  })();
 
-  function buildLogDateOptions(){
+  // =========================
+  // LogDate dropdown: 8 วัน
+  //  - อาทิตย์สัปดาห์ก่อน + จันทร์..อาทิตย์สัปดาห์นี้
+  //  - โชว์ครบ 8 วัน แต่ "วันอนาคต" disabled
+  // =========================
+  const logDateEl = document.getElementById("logDate");
+  const weekdayHiddenEl = document.getElementById("weekdayHidden");
+  const TH_DOW = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"];
+
+  function buildLogDateOptions8Days(){
     const now = new Date();
-    const mon = mondayOfWeekLocal(now);
     const todayISO = toISODateLocal(now);
 
-    const yesterday = new Date(now);
-    yesterday.setDate(now.getDate() - 1);
-    const minISO = toISODateLocal(yesterday);
+    // this week
+    const monThis = mondayOfWeekLocal(now);
+    const sunThis = sundayOfWeekFromMonday(monThis);
+
+    // previous Sunday = monThis - 1 day
+    const prevSun = new Date(monThis);
+    prevSun.setDate(monThis.getDate() - 1);
+    prevSun.setHours(0,0,0,0);
+
+    // สร้าง array 8 วัน: prevSun, monThis..sunThis
+    const days = [prevSun];
+    for (let i=0; i<7; i++){
+      const d = new Date(monThis);
+      d.setDate(monThis.getDate() + i);
+      d.setHours(0,0,0,0);
+      days.push(d);
+    }
 
     logDateEl.innerHTML = "";
 
-    for (let i=0;i<7;i++){
-      const d = new Date(mon); d.setDate(mon.getDate() + i);
+    for (const d of days){
       const iso = toISODateLocal(d);
-
-      const base = `${TH_DOW[i]} ${thaiDateLabelLocal(d)}`;
+      const dow = TH_DOW[d.getDay()];
+      const base = `${dow} ${thaiDateLabelLocal(d)}`;
       const label = (iso === todayISO) ? `${base} (วันนี้)` : base;
 
       const opt = document.createElement("option");
       opt.value = iso;
       opt.textContent = label;
-      opt.dataset.dow = dowTHFromDateLocal(d);
+      opt.dataset.dow = dow;
 
-      const isFuture = iso > todayISO;
-      const tooOld = iso < minISO;
-      if (isFuture || tooOld) opt.disabled = true;
+      // ล็อก "อนาคต" -> disabled แต่ยังโชว์
+      if (iso > todayISO){
+        opt.disabled = true;
+        opt.textContent = `${label} (ยังมาไม่ถึง)`;
+      }
 
       logDateEl.appendChild(opt);
     }
 
-    const todayOpt = Array.from(logDateEl.options).find(o => o.value === todayISO && !o.disabled);
-    if (todayOpt) logDateEl.value = todayISO;
-    else {
-      const firstOk = Array.from(logDateEl.options).find(o => !o.disabled);
-      if (firstOk) logDateEl.value = firstOk.value;
+    // ค่าเริ่มต้น = วันนี้
+    logDateEl.value = todayISO;
+
+    // ถ้าวันนี้ดันอยู่ในรายการแล้วถูก disable (ไม่น่าเกิด) ให้เลือกตัวล่าสุดที่ไม่ disabled
+    if (logDateEl.selectedOptions[0]?.disabled){
+      for (let i=logDateEl.options.length-1; i>=0; i--){
+        if (!logDateEl.options[i].disabled){
+          logDateEl.selectedIndex = i;
+          break;
+        }
+      }
     }
 
     weekdayHiddenEl.value = logDateEl.selectedOptions[0]?.dataset?.dow || "";
@@ -522,86 +375,64 @@
     weekdayHiddenEl.value = sel?.dataset?.dow || "";
   });
 
-  function setClientAuditFields(){
-    tzOffsetEl.value = String(new Date().getTimezoneOffset());
-    clientNowEl.value = new Date().toISOString();
-  }
+  buildLogDateOptions8Days();
 
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>( {
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
-  }
+  // =========================
+  // Success Popup (auto close + refresh)
+  // =========================
+  (function(){
+    const overlay = document.getElementById('successOverlay');
+    const textEl  = document.getElementById('successText');
+    let autoTimer = null;
 
-  function showToastError(title, desc, autoMs = 4500){
-    const el = document.createElement("div");
-    el.className = "toastPos";
-    el.innerHTML = `
-      <div class="toast" role="status">
-        <div class="toastIcon" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M18 6L6 18" stroke="var(--toastRed)" stroke-width="2.6" stroke-linecap="round"/>
-            <path d="M6 6L18 18" stroke="var(--toastRed)" stroke-width="2.6" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div>
-          <p class="toastTitle">${escapeHtml(title)}</p>
-          <p class="toastDesc">${escapeHtml(desc)}</p>
-        </div>
-        <button class="toastClose" aria-label="ปิด">×</button>
-      </div>
-      <div class="toastGlow" aria-hidden="true"></div>
-    `;
+    const POPUP_MS = 2500;      // ตามล่าสุดที่ตั้มใช้
+    const REFRESH_AFTER_MS = POPUP_MS + 2000;
 
-    const closeBtn = el.querySelector(".toastClose");
-    const remove = () => {
-      el.style.transition = "opacity .18s ease, transform .18s ease";
-      el.style.opacity = "0";
-      el.style.transform = "translateY(10px)";
-      setTimeout(() => el.remove(), 220);
+    window.showSuccessPopup = function(message = 'บันทึกข้อมูลเรียบร้อย', autoCloseMs = POPUP_MS){
+      textEl.textContent = message;
+
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+
+      clearTimeout(autoTimer);
+      autoTimer = setTimeout(window.hideSuccessPopup, autoCloseMs);
     };
-    closeBtn.addEventListener("click", remove);
 
-    toastWrap.appendChild(el);
-
-    if (autoMs && autoMs > 0) {
-      setTimeout(remove, autoMs);
-    }
-  }
-
-  const overlay = document.getElementById('successOverlay');
-  const textEl  = document.getElementById('successText');
-
-  function showSuccessPopup(message = 'บันทึกข้อมูลเรียบร้อย', autoCloseMs = POPUP_MS){
-    textEl.textContent = message;
-    overlay.classList.add('is-open');
-    overlay.setAttribute('aria-hidden', 'false');
-
-    setTimeout(() => {
+    window.hideSuccessPopup = function(){
       overlay.classList.remove('is-open');
       overlay.setAttribute('aria-hidden', 'true');
-    }, autoCloseMs);
-  }
+    };
 
-  showWeekHeader();
-  buildLogDateOptions();
-  setClientAuditFields();
+    // ไม่ให้คลิกพื้นหลังปิดเอง (ตัด event click overlay ออกตามที่ต้องการ)
+    // ESC ก็ไม่จำเป็น แต่คงไว้ได้ ถ้าจะตัดก็ลบ block นี้
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') window.hideSuccessPopup();
+    });
 
+    // expose refresh delay
+    window.__POPUP_MS__ = POPUP_MS;
+    window.__REFRESH_AFTER_MS__ = REFRESH_AFTER_MS;
+  })();
+
+  // =========================
+  // SUBMIT
+  // =========================
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
 
   form.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-
     btn.disabled = true;
     msg.className = "msg";
     msg.textContent = "กำลังบันทึกข้อมูล...";
 
-    setClientAuditFields();
-
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
+
+    // audit (ถ้ายังใช้)
+    payload.clientNow = new Date().toISOString();
+    payload.tzOffsetMin = new Date().getTimezoneOffset();
 
     try {
       const res = await fetch("/api/submit", {
@@ -613,21 +444,27 @@
 
       if (res.ok && out.ok) {
         msg.className = "msg ok";
-        msg.textContent = "";
+        msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
 
-        showSuccessPopup("บันทึกข้อมูลเรียบร้อย", POPUP_MS);
-        setTimeout(() => location.reload(), AFTER_POPUP_RELOAD_MS);
+        // popup
+        window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย");
+
+        // reset form
+        form.reset();
+
+        // rebuild date options (8 วัน) ให้กลับมาเป็นวันนี้ และอัปเดต weekdayHidden
+        buildLogDateOptions8Days();
+
+        // refresh หน้า หลัง popup หาย + 2 วิ
+        setTimeout(() => location.reload(), window.__REFRESH_AFTER_MS__ || 4500);
 
       } else {
-        const err = (out && out.error) ? String(out.error) : "unknown_error";
         msg.className = "msg bad";
-        msg.textContent = "";
-        showToastError("บันทึกไม่สำเร็จ", `กรุณาลองใหม่อีกครั้ง (${err})`, 5000);
+        msg.textContent = "บันทึกไม่สำเร็จ ❌ " + (out.error || "unknown_error");
       }
     } catch (e) {
       msg.className = "msg bad";
-      msg.textContent = "";
-      showToastError("บันทึกไม่สำเร็จ", `กรุณาลองใหม่อีกครั้ง (${String(e)})`, 5000);
+      msg.textContent = "บันทึกไม่สำเร็จ ❌ " + e;
     } finally {
       btn.disabled = false;
     }
