@@ -85,6 +85,7 @@
       text-align:center;
     }
 
+    /* Desktop corner updated */
     .updatedCorner{
       position:absolute;
       top:14px;
@@ -96,12 +97,13 @@
       border:1px solid rgba(255,255,255,.12);
       padding:6px 10px;
       border-radius:999px;
-      display:none;
       user-select:none;
       -webkit-user-select:none;
+      display:block;
     }
     @media (max-width:760px){
-      .updatedCorner{ display:block; }
+      /* ✅ mobile: hide corner updated (we use footer updated instead) */
+      .updatedCorner{ display:none; }
     }
 
     label{display:block;margin:12px 0 6px}
@@ -213,7 +215,6 @@
       justify-content:center;
       gap:10px;
       width:100%;
-      display:flex;
     }
     .boxTitle{
       font-weight:1000;
@@ -270,18 +271,52 @@
 
     /* ===========================
        MOBILE UX MODE (<=760px)
-       - Card view: 1 column
-       - Sticky check button bottom
+       - 1 column + Sticky bar
+       - Updated time centered under "ตรวจสอบสถานะ"
+       - "กลับหน้าบันทึกข้อมูล" moves to bottom after results
        =========================== */
     .stickyBar{ display:none; }
 
+    /* Mobile-only footer updated (under check button) */
+    .updatedFooter{
+      display:none;
+      text-align:center;
+      margin-top:8px;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.2px;
+      color:rgba(234,240,255,.72);
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    .updatedFooter .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .updatedFooter .dot{
+      width:8px;height:8px;border-radius:99px;
+      background:rgba(101,255,179,.95);
+      box-shadow:0 0 0 4px rgba(101,255,179,.18);
+    }
+
+    /* Mobile bottom back button container */
+    .bottomBack{
+      display:none;
+      margin-top:14px;
+    }
+
     @media (max-width:760px){
-      .wrap{ padding:16px; padding-bottom:92px; } /* เผื่อ sticky bar */
+      .wrap{ padding:16px; padding-bottom:110px; } /* เผื่อ sticky bar */
       .boxes{ grid-template-columns:1fr; }
       .box{ min-height:104px; padding:14px 14px; }
       .resultHeader{ position:sticky; top:0; z-index:5; backdrop-filter: blur(10px); }
 
-      /* ปุ่มเดิมซ่อนไว้บนมือถือ (ให้ใช้ sticky) */
+      /* hide desktop check button on mobile */
       #checkBtn{ display:none; }
 
       .stickyBar{
@@ -297,20 +332,29 @@
         width:min(820px, 100%);
         margin:0 auto;
         display:flex;
-        gap:10px;
+        flex-direction:column;
+        align-items:center;
+        gap:8px;
       }
-      .stickyBar button{
+      .stickyBar .inner button{
         margin-top:0;
-        flex:1;
-        border-radius:16px;
+        width:100%;
+        border-radius:18px;
         padding:14px 16px;
       }
-      .stickyHint{
-        font-size:12px;
-        color:rgba(234,240,255,.62);
-        font-weight:850;
-        text-align:center;
-        margin-top:8px;
+
+      /* show mobile updated footer */
+      .updatedFooter{ display:block; }
+
+      /* mobile bottom back button (shown only after results) */
+      .bottomBack{ display:block; }
+      .bottomBack a.btnlink button{
+        width:100%;
+        background:rgba(255,255,255,.10);
+        color:var(--text);
+        border:1px solid rgba(255,255,255,.14);
+        border-radius:18px;
+        padding:14px 16px;
       }
     }
   </style>
@@ -339,7 +383,13 @@
 
       <div class="msg" id="out"></div>
 
-      <div class="topline">
+      <!-- Desktop back button stays here -->
+      <div class="topline" id="backTop">
+        <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
+      </div>
+
+      <!-- Mobile back button will be shown at bottom AFTER results -->
+      <div class="bottomBack" id="backBottom" style="display:none;">
         <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
       </div>
 
@@ -350,6 +400,14 @@
   <div class="stickyBar" id="stickyBar">
     <div class="inner">
       <button id="checkBtnMobile" type="button">ตรวจสอบสถานะ</button>
+
+      <!-- ✅ mobile updated centered under the button -->
+      <div class="updatedFooter" id="updatedFooter">
+        <span class="pill">
+          <span class="dot" aria-hidden="true"></span>
+          <span id="updatedFooterText">อัปเดตล่าสุด —</span>
+        </span>
+      </div>
     </div>
   </div>
 
@@ -360,7 +418,12 @@
   const btnDesktop = document.getElementById("checkBtn");
   const btnMobile = document.getElementById("checkBtnMobile");
   const out = document.getElementById("out");
+
   const updatedCorner = document.getElementById("updatedCorner");
+  const updatedFooterText = document.getElementById("updatedFooterText");
+
+  const backTop = document.getElementById("backTop");
+  const backBottom = document.getElementById("backBottom");
 
   const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
 
@@ -394,7 +457,6 @@
     const todayISO = toISODateLocal(now);
     dateSel.innerHTML = "";
 
-    // previous Sunday
     {
       const iso = toISODateLocal(sunPrev);
       const opt = document.createElement("option");
@@ -403,7 +465,6 @@
       dateSel.appendChild(opt);
     }
 
-    // current week Monday..Sunday
     for (let i=0;i<7;i++){
       const d = new Date(mon); d.setDate(mon.getDate()+i);
       const iso = toISODateLocal(d);
@@ -429,9 +490,15 @@
     return dt.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"numeric" });
   }
 
-  function setUpdatedCornerNow(){
+  function setUpdatedNow(){
     const now = new Date();
-    updatedCorner.textContent = `อัปเดตล่าสุด ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+    const hhmm = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+
+    // desktop corner
+    updatedCorner.textContent = `อัปเดตล่าสุด ${hhmm}`;
+
+    // mobile footer under button
+    updatedFooterText.textContent = `อัปเดตล่าสุด ${hhmm}`;
   }
 
   function normalizeSession(v){
@@ -516,8 +583,8 @@
     `;
 
     out.className = "";
-    // มือถือ: ให้สรุปขึ้นก่อน (อ่านง่าย) / PC: คงเดิม (สรุปท้าย)
     const mobileFirst = isMobile();
+
     out.innerHTML = `
       ${headerHtml}
       <div class="boxes">
@@ -529,7 +596,13 @@
       </div>
     `;
 
-    setUpdatedCornerNow();
+    // ✅ mobile only: move back button to bottom after results
+    if (isMobile()) {
+      backTop.style.display = "none";
+      backBottom.style.display = "block";
+    }
+
+    setUpdatedNow();
   }
 
   function setLoading(isLoading, msg){
@@ -603,7 +676,7 @@
     }
   }
 
-  // ✅ Auto-check บนมือถือ: เปลี่ยนชื่อ/วันแล้วเช็คเลย (แต่ต้องเลือกชื่อก่อน)
+  // ✅ Auto-check บนมือถือ
   let autoTimer = null;
   function scheduleAutoCheck(){
     if (!isMobile()) return;
@@ -628,10 +701,18 @@
     }
   });
 
+  // ✅ ถ้ากลับมาหน้านี้ใหม่ ให้ปุ่มกลับหน้าบันทึกอยู่ตำแหน่งเดิมก่อน (mobile)
+  function resetMobileBackButton(){
+    if (!isMobile()) return;
+    backTop.style.display = "block";
+    backBottom.style.display = "none";
+  }
+  resetMobileBackButton();
+
   showWeekHeader();
   buildDateOptions();
   loadNames();
-  setUpdatedCornerNow();
+  setUpdatedNow();
 </script>
 </body>
 </html>
