@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
-  <!-- UpdatedAt: 2026-02-09 21:00 (+07:00) -->
+  <!-- UpdatedAt: 2026-02-09 18:30 (+07:00) -->
 
   <style>
     :root{
@@ -16,9 +16,10 @@
 
       --good:#30d16a;
       --mid:#f3c43a;
-
       --orange:#ff8c2a;
       --bad:#ff4d4d;
+
+      --none:rgba(255,255,255,.28);
 
       --radius:18px;
       --shadow:0 18px 60px rgba(0,0,0,.35);
@@ -139,6 +140,43 @@
     .value.good{color:var(--good)}
     .value.bad{color:var(--bad)}
 
+    /* ===== Daily lists (today) ===== */
+    .kpi .kpiHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .kpi .kpiHead .countBadge{
+      font-size:12px;font-weight:800;
+      padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(234,240,255,.9);
+      white-space:nowrap;
+    }
+    .nameSection{margin-top:10px}
+    .nameSection .secTitle{font-size:12px;color:rgba(234,240,255,.72);font-weight:800;margin-bottom:8px}
+    .nameList{
+      display:flex;flex-wrap:wrap;gap:8px;
+      max-height:160px;overflow:auto;
+      padding-right:6px;
+    }
+    .nameItem{
+      font-size:12px;font-weight:800;
+      padding:7px 10px;border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      color:rgba(234,240,255,.92);
+    }
+    .nameItem.good{border-color:rgba(48,209,106,.35);background:rgba(48,209,106,.10)}
+    .nameItem.mid{border-color:rgba(243,196,58,.35);background:rgba(243,196,58,.10)}
+    .nameItem.bad{border-color:rgba(255,77,77,.35);background:rgba(255,77,77,.10)}
+
+    /* Pie + legend (3 segments) */
+    .legend{display:grid;gap:6px}
+    .legendRow{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(234,240,255,.82)}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .dot.good{background:var(--good)}
+    .dot.bad{background:var(--bad)}
+    .dot.none{background:rgba(255,255,255,.28)}
+
+
     .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
     .pie{
       width:110px;height:110px;border-radius:999px;
@@ -240,11 +278,12 @@
       background:linear-gradient(180deg, rgba(48,209,106,.35), rgba(48,209,106,.18));
       border-color:rgba(48,209,106,.35);
     }
+    
     .daybox.s2{
       background:linear-gradient(180deg, rgba(255,140,42,.32), rgba(255,140,42,.16));
       border-color:rgba(255,140,42,.38);
     }
-    .daybox.s1{
+.daybox.s1{
       background:linear-gradient(180deg, rgba(243,196,58,.30), rgba(243,196,58,.16));
       border-color:rgba(243,196,58,.35);
     }
@@ -253,7 +292,7 @@
       border-color:rgba(255,77,77,.35);
     }
 
-.dayTop{
+    .dayTop{
       display:flex;align-items:center;justify-content:space-between;
       gap:6px;margin-bottom:8px;
     }
@@ -401,6 +440,26 @@
        ========================================================= */
     @media (max-width: 720px){
       .wrap{padding:14px 10px 22px}
+
+      /* Mobile: header stack + leave room for top-right countdown pill */
+      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:52px;}
+      .topRow > div:first-child{width:100%; text-align:center;}
+      .weekMenu{width:100%; justify-content:center;}
+
+      /* Mobile: move countdown pill to top-right */
+      .autoMini{
+        position:fixed;
+        top:calc(env(safe-area-inset-top, 0px) + 12px);
+        right:12px;
+        z-index:100000;
+        height:32px;
+        padding:6px 10px;
+        font-size:13px;
+        line-height:1;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .autoMini .dotLive{ width:10px; height:10px; }
       .kpis{grid-template-columns:1fr}
       .table thead{display:none}
       .table, .table tbody, .table tr, .table td{display:block;width:100%}
@@ -444,6 +503,39 @@
       .dayPill{font-size:11px;padding:4px 8px}
     }
 
+  
+    /* Mobile landscape: make 0/3-3/3 fit neatly (diagonal layout) */
+    @media (max-width: 900px) and (orientation: landscape){
+      .dayCount{
+        position:relative;
+        width:46px;
+        height:34px;
+        margin: 2px auto 0;
+        display:block;
+        font-weight:1000;
+        letter-spacing:.2px;
+      }
+      .dayCount .dcSep{ display:none; }
+      .dayCount .dcA, .dayCount .dcB{
+        position:absolute;
+        font-size:14px;
+        line-height:1;
+      }
+      .dayCount .dcA{ top:2px; left:4px; }
+      .dayCount .dcB{ bottom:2px; right:4px; }
+      .dayCount::before{
+        content:"";
+        position:absolute;
+        left:6px;
+        top:50%;
+        width:70px;
+        height:1px;
+        background:rgba(255,255,255,.22);
+        transform:rotate(-35deg);
+        transform-origin:left center;
+      }
+    }
+
   </style>
 </head>
 
@@ -451,9 +543,8 @@
   <div class="wrap">
     <div class="topRow">
       <div>
-        <h1>Dashboard</h1>
-        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้</div>
-      </div>
+        <h1>Dashboard Meditation</h1>
+</div>
 
       <div class="weekMenu">
         <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
@@ -468,32 +559,50 @@
       </div>
     </div>
 
+    
     <div class="kpis">
       <div class="kpi">
-        <div class="label">สัดส่วนทำครบ (สัปดาห์ที่เลือก)</div>
+        <div class="label" id="dailyPieLabel">สัดส่วนวันนี้</div>
         <div class="pieWrap">
           <div class="pie" id="pie"></div>
-          <div style="display:grid;gap:8px">
-            <div style="font-weight:900;font-size:22px" id="piePct">-</div>
-            <div class="muted" id="pieText">กำลังคำนวณ...</div>
+          <div class="legend" aria-label="legend">
+            <div class="legendRow"><span class="dot good"></span><span id="lgGood">ครบ 3 ครั้ง: -</span></div>
+            <div class="legendRow"><span class="dot bad"></span><span id="lgBad">ทำไม่ครบ: -</span></div>
+            <div class="legendRow"><span class="dot none"></span><span id="lgNone">ไม่ทำเลย: -</span></div>
           </div>
+        </div>
+        <div class="muted" style="margin-top:10px" id="pieText">กำลังคำนวณ...</div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpiHead">
+          <div class="label" id="dailyCompleteLabel">ทำครบวันนี้ (3/3)</div>
+          <div class="countBadge" id="dailyCompleteCount">-</div>
+        </div>
+        <div class="nameSection">
+          <div class="nameList" id="dailyCompleteList"><span class="muted">กำลังโหลด...</span></div>
         </div>
       </div>
 
       <div class="kpi">
-        <div class="label">ทำครบ 21/21</div>
-        <div id="kpiComplete" class="value good">-</div>
-        <div class="sub">จำนวนคนที่ครบทุกวันทุกเวลา</div>
-      </div>
+        <div class="kpiHead">
+          <div class="label" id="dailyNotCompleteLabel">ทำไม่ครบวันนี้</div>
+          <div class="countBadge" id="dailyNotCompleteCount">-</div>
+        </div>
 
-      <div class="kpi">
-        <div class="label">ทำไม่ครบ</div>
-        <div id="kpiIncomplete" class="value bad">-</div>
-        <div class="sub">จำนวนคนที่ยังไม่ครบ 21/21</div>
+        <div class="nameSection">
+          <div class="secTitle" id="partialTitle">ทำไม่ครบ (1–2 ครั้ง)</div>
+          <div class="nameList" id="dailyPartialList"><span class="muted">กำลังโหลด...</span></div>
+        </div>
+
+        <div class="nameSection">
+          <div class="secTitle" id="noneTitle">ไม่ทำเลย (0 ครั้ง)</div>
+          <div class="nameList" id="dailyNoneList"><span class="muted">กำลังโหลด...</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
+<div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
 
     <table class="table">
       <thead>
@@ -538,11 +647,20 @@
   const tbody  = document.getElementById("tbody");
 
   const pie = document.getElementById("pie");
-  const piePct = document.getElementById("piePct");
   const pieText = document.getElementById("pieText");
+  const dailyPieLabel = document.getElementById("dailyPieLabel");
+  const lgGood = document.getElementById("lgGood");
+  const lgBad  = document.getElementById("lgBad");
+  const lgNone = document.getElementById("lgNone");
 
-  const kpiComplete = document.getElementById("kpiComplete");
-  const kpiIncomplete = document.getElementById("kpiIncomplete");
+  const dailyCompleteLabel = document.getElementById("dailyCompleteLabel");
+  const dailyCompleteCount = document.getElementById("dailyCompleteCount");
+  const dailyCompleteList  = document.getElementById("dailyCompleteList");
+
+  const dailyNotCompleteLabel = document.getElementById("dailyNotCompleteLabel");
+  const dailyNotCompleteCount = document.getElementById("dailyNotCompleteCount");
+  const dailyPartialList = document.getElementById("dailyPartialList");
+  const dailyNoneList    = document.getElementById("dailyNoneList");
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
@@ -582,6 +700,8 @@
   const tipHdr = document.getElementById("tipHdr");
   const tipBody = document.getElementById("tipBody");
   let tipVisible = false;
+  let tipAnchor = null;
+  const isTouch = window.matchMedia && window.matchMedia('(hover: none)').matches;
 
   function fmtTimeHHmm(v){
     const s = String(v||"").trim();
@@ -638,6 +758,7 @@
     hoverTip.classList.add("show");
     hoverTip.setAttribute("aria-hidden","false");
     tipVisible = true;
+    tipAnchor = anchorEl;
     positionTip(anchorEl);
   }
 
@@ -645,7 +766,33 @@
     hoverTip.classList.remove("show");
     hoverTip.setAttribute("aria-hidden","true");
     tipVisible = false;
+    tipAnchor = null;
   }
+
+  
+  function toggleTip(anchorEl, headerText, dayObj){
+    if (tipVisible && tipAnchor === anchorEl){
+      hideTip();
+    } else {
+      showTip(anchorEl, headerText, dayObj);
+    }
+  }
+
+  // tap outside / scroll should close tooltip (mobile friendly)
+  document.addEventListener("pointerdown", (ev)=>{
+    if (!tipVisible) return;
+    const inTip = hoverTip.contains(ev.target);
+    const inBox = ev.target && ev.target.closest ? ev.target.closest(".daybox") : null;
+    if (!inTip && !inBox) hideTip();
+  }, { passive:true });
+
+  hoverTip.addEventListener("pointerdown", (ev)=>{
+    // tap tooltip itself to close
+    ev.stopPropagation();
+    hideTip();
+  });
+
+  window.addEventListener("scroll", ()=>{ if (tipVisible) hideTip(); }, { passive:true });
 
   function positionTip(anchorEl){
     if (!tipVisible) return;
@@ -704,18 +851,79 @@
     const w = out.week;
     elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
 
-    const thisW = (out.summary && out.summary.thisWeek) ? out.summary.thisWeek : {};
-    const peopleTotal = Number(thisW.peopleTotal || 0);
-    const completePeople = Number(thisW.completePeople || 0);
-    const incompletePeople = Number(thisW.incompletePeople || 0);
-    const completeRate = Number(thisW.completeRate || 0);
+    // ===== Daily summary (client local day) =====
+    const rowsAll = out.people || [];
+    const peopleTotal = rowsAll.length;
 
-    pie.style.background = `conic-gradient(var(--good) 0 ${completeRate}%, rgba(255,255,255,.12) ${completeRate}% 100%)`;
-    piePct.textContent = `${completeRate}%`;
-    pieText.textContent = `ครบ ${completePeople} คน / ไม่ครบ ${incompletePeople} คน (ทั้งหมด ${peopleTotal} คน)`;
+    const todayISO = (()=>{
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const da = String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${da}`;
+    })();
 
-    kpiComplete.textContent = `${completePeople} คน`;
-    kpiIncomplete.textContent = `${incompletePeople} คน`;
+    // if today not in selected week, fallback to week.startISO (makes UI still meaningful when browsing other week)
+    const inRange = (iso)=> (iso >= w.startISO && iso <= w.endISO);
+    const dayISO = inRange(todayISO) ? todayISO : w.startISO;
+
+    const dayLabelTH = thaiDateFromISO(dayISO);
+    dailyPieLabel.textContent = `สัดส่วนวันนี้ (${dayLabelTH})`;
+    dailyCompleteLabel.textContent = `ทำครบวันนี้ (3/3) · ${dayLabelTH}`;
+    dailyNotCompleteLabel.textContent = `ทำไม่ครบวันนี้ · ${dayLabelTH}`;
+
+    const completeNames = [];
+    const partialNames  = [];
+    const noneNames     = [];
+
+    for (const p of rowsAll){
+      const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+      const d = perDay.find(x => String(x.dateISO||'') === dayISO);
+      const cnt = d ? Number(d.count||0) : 0;
+      if (cnt >= 3) completeNames.push(p.name);
+      else if (cnt > 0) partialNames.push(p.name);
+      else noneNames.push(p.name);
+    }
+
+    // Sort names (Thai)
+    const thSort = (a,b)=> String(a).localeCompare(String(b),'th');
+    completeNames.sort(thSort);
+    partialNames.sort(thSort);
+    noneNames.sort(thSort);
+
+    const completeN = completeNames.length;
+    const partialN  = partialNames.length;
+    const noneN     = noneNames.length;
+
+    const pct = (n)=> peopleTotal ? (n/peopleTotal*100) : 0;
+    // keep 1 decimal for accuracy, but use conic-gradient with decimals
+    const pGood = pct(completeN);
+    const pBad  = pct(partialN);
+    const pNone = Math.max(0, 100 - pGood - pBad);
+
+    pie.style.background = `conic-gradient(var(--good) 0 ${pGood}%, var(--bad) ${pGood}% ${pGood+pBad}%, var(--none) ${pGood+pBad}% 100%)`;
+
+    lgGood.textContent = `ครบ 3 ครั้ง: ${completeN} คน (${pGood.toFixed(0)}%)`;
+    lgBad.textContent  = `ทำไม่ครบ: ${partialN} คน (${pBad.toFixed(0)}%)`;
+    lgNone.textContent = `ไม่ทำเลย: ${noneN} คน (${pNone.toFixed(0)}%)`;
+
+    pieText.textContent = `ทั้งหมด ${peopleTotal} คน · ครบ ${completeN} · ไม่ครบ ${partialN} · ไม่ทำเลย ${noneN}`;
+
+    dailyCompleteCount.textContent = `${completeN} คน`;
+    dailyNotCompleteCount.textContent = `${partialN + noneN} คน`;
+
+    const renderNameChips = (el, names, cls)=>{
+      if (!el) return;
+      if (!names.length){
+        el.innerHTML = `<span class="muted">— ไม่มี —</span>`;
+        return;
+      }
+      el.innerHTML = names.map(n=>`<span class="nameItem ${cls}">${escapeHtml(n)}</span>`).join('');
+    };
+
+    renderNameChips(dailyCompleteList, completeNames, 'good');
+    renderNameChips(dailyPartialList, partialNames, 'bad');
+    renderNameChips(dailyNoneList, noneNames, '');
 
     const rows = out.people || [];
     rows.sort((a,b)=> (b.percent||0) - (a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
@@ -749,7 +957,7 @@
               <span class="dayPill">${dayShort}</span>
               <span class="dayNum">${dayNum}</span>
             </div>
-            <div class="dayCount">${cnt}/3</div>
+            <div class="dayCount"><span class="dcA">${cnt}</span><span class="dcSep">/</span><span class="dcB">3</span></div>
           </div>
         `;
       }).join("");
@@ -777,15 +985,31 @@
 
     // bind tooltip events (after DOM updated)
     document.querySelectorAll(".daybox").forEach(el=>{
-      el.addEventListener("mouseenter", ()=>{
+      const getPayload = ()=>{
         const hdr = el.getAttribute("data-tipheader") || "-";
         const raw = el.getAttribute("data-tip") || "";
         let dayObj = {};
         try { dayObj = JSON.parse(decodeURIComponent(raw)); } catch(e){}
-        showTip(el, hdr, dayObj);
-      });
-      el.addEventListener("mousemove", ()=> positionTip(el));
-      el.addEventListener("mouseleave", hideTip);
+        return { hdr, dayObj };
+      };
+
+      if (isTouch){
+        // Mobile: tap to toggle, tap again or tap outside to close
+        el.addEventListener("click", (ev)=>{
+          ev.preventDefault();
+          ev.stopPropagation();
+          const { hdr, dayObj } = getPayload();
+          toggleTip(el, hdr, dayObj);
+        });
+      } else {
+        // Desktop: hover behavior
+        el.addEventListener("mouseenter", ()=>{
+          const { hdr, dayObj } = getPayload();
+          showTip(el, hdr, dayObj);
+        });
+        el.addEventListener("mousemove", ()=> positionTip(el));
+        el.addEventListener("mouseleave", hideTip);
+      }
     });
 
     if (!rows.length){
