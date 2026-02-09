@@ -259,7 +259,7 @@
     .sumBig.ok{ color: var(--ok); }
     .sumBig.bad{ color: var(--danger); }
 
-    /* ✅ Mobile: ไม่ sticky / จัดปุ่ม+อัปเดตให้อยู่ท้าย flow */
+    /* ✅ Mobile footer updated (not sticky) */
     .updatedFooter{
       display:none;
       text-align:center;
@@ -286,6 +286,9 @@
       box-shadow:0 0 0 4px rgba(101,255,179,.18);
     }
 
+    /* ✅ FIX: ปุ่มกลับสำหรับมือถือ ต้องไม่โผล่บน PC */
+    #backBottom{ display:none; }
+
     @media (max-width:760px){
       .wrap{ padding:16px; }
 
@@ -307,8 +310,10 @@
         padding:14px 16px;
       }
 
-      /* โชว์ปุ่มกลับเฉพาะตอนมีผลลัพธ์แล้ว */
+      /* ✅ Mobile: ซ่อนปุ่มกลับแบบ Desktop */
       #backTop{ display:none; }
+
+      /* ✅ Mobile: โชว์ปุ่มกลับเฉพาะตอนมีผลลัพธ์ */
       #backBottom{ display:none; }
       .hasResult #backBottom{ display:flex; }
     }
@@ -336,7 +341,7 @@
       <div class="actionStack" id="actionStack">
         <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
 
-        <!-- ✅ มือถือ: อัปเดตอยู่ใต้ปุ่มตรวจสอบ -->
+        <!-- ✅ Mobile: อัปเดตอยู่ใต้ปุ่มตรวจสอบ -->
         <div class="updatedFooter" id="updatedFooter">
           <span class="pill">
             <span class="dot" aria-hidden="true"></span>
@@ -344,7 +349,7 @@
           </span>
         </div>
 
-        <!-- ✅ มือถือ: ปุ่มกลับ (จะแสดงหลังจากมีผลลัพธ์แล้ว) -->
+        <!-- ✅ Mobile: ปุ่มกลับ (แสดงหลังมีผลลัพธ์แล้วเท่านั้น) -->
         <div class="topline" id="backBottom">
           <a class="btnlink" href="/"><button type="button">กลับไปบันทึกข้อมูล</button></a>
         </div>
@@ -352,7 +357,7 @@
 
       <div class="msg" id="out"></div>
 
-      <!-- Desktop back button (PC ใช้ตัวนี้) -->
+      <!-- ✅ Desktop: มีปุ่มกลับอันเดียว ไม่ซ้อน -->
       <div class="topline" id="backTop">
         <a class="btnlink" href="/"><button type="button">กลับหน้าบันทึกข้อมูล</button></a>
       </div>
@@ -626,7 +631,6 @@
   }
 
   btn.addEventListener("click", runCheck);
-
   nameSel.addEventListener("change", scheduleAutoCheck);
   dateSel.addEventListener("change", scheduleAutoCheck);
 
