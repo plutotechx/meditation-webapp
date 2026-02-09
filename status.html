@@ -161,9 +161,6 @@
       grid-template-columns:repeat(4, minmax(0,1fr));
       gap:12px;
     }
-    @media (max-width:760px){
-      .boxes{grid-template-columns:repeat(2, minmax(0,1fr))}
-    }
 
     .box{
       border-radius:16px;
@@ -197,48 +194,17 @@
       border-color:rgba(255,255,255,.12);
     }
 
-    /* summary levels */
     .box.sum.lvl0{ background:linear-gradient(180deg, var(--lvl0), rgba(0,0,0,.16)); border-color:var(--lvl0b); }
     .box.sum.lvl1{ background:linear-gradient(180deg, var(--lvl1), rgba(0,0,0,.16)); border-color:var(--lvl1b); }
     .box.sum.lvl2{ background:linear-gradient(180deg, var(--lvl2), rgba(0,0,0,.16)); border-color:var(--lvl2b); }
     .box.sum.lvl3{ background:linear-gradient(180deg, var(--lvl3), rgba(0,0,0,.16)); border-color:var(--lvl3b); }
-
-    .boxTitle{
-      font-weight:1000;
-      color:rgba(234,240,255,.96);
-      font-size:20px;
-      letter-spacing:.2px;
-      line-height:1.1;
-    }
 
     .divider{
       width:76%;
       height:1px;
       background:rgba(255,255,255,.14);
       margin-top:2px;
-      display:none;
-    }
-    .mode2 .divider{ display:block; }
-
-    .badgeCorner{
-      position:absolute;
-      top:12px;
-      right:12px;
-      width:34px;height:34px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    .badgeCorner.ok{
-      border-color:rgba(101,255,179,.44);
-      background:rgba(101,255,179,.14);
-    }
-    .badgeCorner.bad{
-      border-color:rgba(255,106,106,.44);
-      background:rgba(255,106,106,.14);
+      display:block;
     }
 
     .titleRowInline{
@@ -247,7 +213,14 @@
       justify-content:center;
       gap:10px;
       width:100%;
-      display:none;
+      display:flex;
+    }
+    .boxTitle{
+      font-weight:1000;
+      color:rgba(234,240,255,.96);
+      font-size:20px;
+      letter-spacing:.2px;
+      line-height:1.1;
     }
     .badgeInline{
       width:34px;height:34px;border-radius:999px;
@@ -257,11 +230,10 @@
     }
     .badgeInline.ok{ border-color:rgba(101,255,179,.44); background:rgba(101,255,179,.14); }
     .badgeInline.bad{ border-color:rgba(255,106,106,.44); background:rgba(255,106,106,.14); }
-    .mode2 .titleRowInline{ display:flex; }
 
     .time{
       font-weight:1100;
-      font-size:26px;
+      font-size:28px;
       letter-spacing:.2px;
       line-height:1;
     }
@@ -269,17 +241,7 @@
       color:rgba(234,240,255,.55);
       font-weight:900;
     }
-    .mode2 .time{ font-size:28px; }
 
-    .sumLabel{
-      font-weight:1000;
-      font-size:20px;
-      letter-spacing:.2px;
-      color:rgba(234,240,255,.92);
-      line-height:1.1;
-    }
-
-    /* summary layout: "ครบ" + "3/3" */
     .sumStack{
       display:flex;
       flex-direction:column;
@@ -305,6 +267,52 @@
     }
     .sumBig.ok{ color: var(--ok); }
     .sumBig.bad{ color: var(--danger); }
+
+    /* ===========================
+       MOBILE UX MODE (<=760px)
+       - Card view: 1 column
+       - Sticky check button bottom
+       =========================== */
+    .stickyBar{ display:none; }
+
+    @media (max-width:760px){
+      .wrap{ padding:16px; padding-bottom:92px; } /* เผื่อ sticky bar */
+      .boxes{ grid-template-columns:1fr; }
+      .box{ min-height:104px; padding:14px 14px; }
+      .resultHeader{ position:sticky; top:0; z-index:5; backdrop-filter: blur(10px); }
+
+      /* ปุ่มเดิมซ่อนไว้บนมือถือ (ให้ใช้ sticky) */
+      #checkBtn{ display:none; }
+
+      .stickyBar{
+        display:flex;
+        position:fixed;
+        left:0; right:0; bottom:0;
+        padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+        background:linear-gradient(180deg, rgba(11,18,32,0), rgba(11,18,32,.92) 32%, rgba(11,18,32,.98));
+        backdrop-filter: blur(10px);
+        z-index:20;
+      }
+      .stickyBar .inner{
+        width:min(820px, 100%);
+        margin:0 auto;
+        display:flex;
+        gap:10px;
+      }
+      .stickyBar button{
+        margin-top:0;
+        flex:1;
+        border-radius:16px;
+        padding:14px 16px;
+      }
+      .stickyHint{
+        font-size:12px;
+        color:rgba(234,240,255,.62);
+        font-weight:850;
+        text-align:center;
+        margin-top:8px;
+      }
+    }
   </style>
 </head>
 
@@ -314,7 +322,6 @@
 
       <div class="headerBlock">
         <div class="updatedCorner" id="updatedCorner">อัปเดตล่าสุด —</div>
-
         <h1>ตรวจสอบสถานะการทำสมาธิ</h1>
         <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
       </div>
@@ -327,6 +334,7 @@
       <label>วันที่ต้องการตรวจสอบ</label>
       <select id="dateSel"></select>
 
+      <!-- Desktop button -->
       <button id="checkBtn" type="button">ตรวจสอบสถานะ</button>
 
       <div class="msg" id="out"></div>
@@ -338,24 +346,25 @@
     </div>
   </div>
 
-<script>
-  // =========================
-  // UI MODE:
-  // 1 = icon มุมขวาบน (modern)
-  // 2 = เวลาใหญ่ + เส้นคั่น + badge อยู่แถวเดียวกับหัวข้อ
-  // =========================
-  const UI_MODE = 2;
+  <!-- Mobile Sticky Action -->
+  <div class="stickyBar" id="stickyBar">
+    <div class="inner">
+      <button id="checkBtnMobile" type="button">ตรวจสอบสถานะ</button>
+    </div>
+  </div>
 
+<script>
   const weekHeaderEl = document.getElementById("weekHeader");
   const nameSel = document.getElementById("nameSel");
   const dateSel = document.getElementById("dateSel");
-  const btn = document.getElementById("checkBtn");
+  const btnDesktop = document.getElementById("checkBtn");
+  const btnMobile = document.getElementById("checkBtnMobile");
   const out = document.getElementById("out");
   const updatedCorner = document.getElementById("updatedCorner");
 
   const TH_DOW = ["จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์","อาทิตย์"];
-  const LS_KEY_NAME = "med_status_last_name";
 
+  function isMobile(){ return window.matchMedia && window.matchMedia("(max-width: 760px)").matches; }
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
   function thaiDateLabelLocalShort(d){
@@ -376,12 +385,25 @@
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocalShort(mon)} – อาทิตย์ ${thaiDateLabelLocalShort(sun)}`;
   }
 
+  // เพิ่ม "วันอาทิตย์สัปดาห์ที่แล้ว"
   function buildDateOptions(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
-    const todayISO = toISODateLocal(now);
+    const sunPrev = new Date(mon); sunPrev.setDate(mon.getDate()-1);
 
+    const todayISO = toISODateLocal(now);
     dateSel.innerHTML = "";
+
+    // previous Sunday
+    {
+      const iso = toISODateLocal(sunPrev);
+      const opt = document.createElement("option");
+      opt.value = iso;
+      opt.textContent = `อาทิตย์ ${thaiDateLabelLocalShort(sunPrev)} (สัปดาห์ที่แล้ว)`;
+      dateSel.appendChild(opt);
+    }
+
+    // current week Monday..Sunday
     for (let i=0;i<7;i++){
       const d = new Date(mon); d.setDate(mon.getDate()+i);
       const iso = toISODateLocal(d);
@@ -391,6 +413,7 @@
       opt.textContent = label;
       dateSel.appendChild(opt);
     }
+
     dateSel.value = todayISO;
   }
 
@@ -408,18 +431,10 @@
 
   function setUpdatedCornerNow(){
     const now = new Date();
-    const hh = pad2(now.getHours());
-    const mm = pad2(now.getMinutes());
-    updatedCorner.textContent = `อัปเดตล่าสุด ${hh}:${mm}`;
+    updatedCorner.textContent = `อัปเดตล่าสุด ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
   }
 
-  // ✅ รองรับหลายรูปแบบจาก API:
-  // 1) {done:true, time:"15:38"}
-  // 2) {mark:"✅", time:"15:38"}  <-- ของตั้ม
-  // 3) "✅ 15:38"
-  // 4) "—"
   function normalizeSession(v){
-    // object formats
     if (v && typeof v === "object") {
       const mark = (v.mark ?? v.status ?? v.icon ?? "").toString().trim();
       const done =
@@ -427,21 +442,16 @@
         (mark === "✅") ||
         (/^✅$/i.test(mark)) ||
         (/ok|done|true|ครบ/i.test(mark));
-
       const time = (v.time || v.hhmm || v.local || "").toString().trim();
-      const timeText = time ? `${time} น.` : "—";
-
-      return { done, timeText };
+      return { done, timeText: time ? `${time} น.` : "—" };
     }
 
-    // string formats
     const s = (v ?? "").toString().trim();
     if (!s || s === "—" || s === "-") return { done:false, timeText:"—" };
 
     const done = /✅|ok|done|true|ครบ/i.test(s);
     const m = s.match(/(\d{1,2}:\d{2})/);
-    const timeText = m ? `${m[1]} น.` : "—";
-    return { done, timeText };
+    return { done, timeText: m ? `${m[1]} น.` : "—" };
   }
 
   function iconSvg(type){
@@ -460,7 +470,6 @@
     const s2 = normalizeSession(data.sessions?.s2);
     const s3 = normalizeSession(data.sessions?.s3);
 
-    // doneCount เชื่อ API ก่อน ถ้าไม่มีค่อยคำนวณจาก done flags
     const doneCount = Number.isFinite(Number(data.doneCount))
       ? Number(data.doneCount)
       : [s1.done, s2.done, s3.done].filter(Boolean).length;
@@ -479,26 +488,18 @@
       const cls = st.done ? "ok" : "bad";
       const timeCls = (st.timeText === "—") ? "time muted" : "time";
 
-      const inline = `
-        <div class="titleRowInline">
-          <div class="boxTitle">${escapeHtml(title)}</div>
-          <div class="badgeInline ${cls}">${iconSvg(cls)}</div>
-        </div>
-      `;
-
-      const divider = `<div class="divider"></div>`;
-      const modeClass = (UI_MODE === 1) ? "mode1" : "mode2";
-
       return `
-        <div class="box ${cls} ${modeClass}">
-          ${inline}
-          ${divider}
+        <div class="box ${cls}">
+          <div class="titleRowInline">
+            <div class="boxTitle">${escapeHtml(title)}</div>
+            <div class="badgeInline ${cls}">${iconSvg(cls)}</div>
+          </div>
+          <div class="divider"></div>
           <div class="${timeCls}">${escapeHtml(st.timeText)}</div>
         </div>
       `;
     }
 
-    // ===== Summary colors by level =====
     const lvl = Math.max(0, Math.min(3, doneCount));
     const lvlClass = ["lvl0","lvl1","lvl2","lvl3"][lvl];
     const sumText = `${lvl}/3`;
@@ -515,13 +516,16 @@
     `;
 
     out.className = "";
+    // มือถือ: ให้สรุปขึ้นก่อน (อ่านง่าย) / PC: คงเดิม (สรุปท้าย)
+    const mobileFirst = isMobile();
     out.innerHTML = `
       ${headerHtml}
       <div class="boxes">
+        ${mobileFirst ? sumBox : ""}
         ${boxHtml("ครั้งที่ 1", s1)}
         ${boxHtml("ครั้งที่ 2", s2)}
         ${boxHtml("ครั้งที่ 3", s3)}
-        ${sumBox}
+        ${mobileFirst ? "" : sumBox}
       </div>
     `;
 
@@ -529,8 +533,11 @@
   }
 
   function setLoading(isLoading, msg){
-    btn.disabled = isLoading;
-    btn.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
+    btnDesktop.disabled = isLoading;
+    btnMobile.disabled = isLoading;
+    btnDesktop.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
+    btnMobile.textContent = isLoading ? "กำลังตรวจสอบ..." : "ตรวจสอบสถานะ";
+
     if (isLoading) {
       out.className = "msg";
       out.textContent = msg || "กำลังตรวจสอบ...";
@@ -538,7 +545,7 @@
   }
 
   async function loadNames(){
-    nameSel.innerHTML = `<option value="">กำลังโหลดรายชื่อ...</option>`;
+    nameSel.innerHTML = `<option value="">— เลือกชื่อ —</option>`;
     try {
       const res = await fetch("/api/names");
       const data = await res.json().catch(()=>({}));
@@ -554,11 +561,6 @@
       nameSel.innerHTML =
         `<option value="">— เลือกชื่อ —</option>` +
         names.map(n => `<option>${escapeHtml(n)}</option>`).join("");
-
-      const last = (localStorage.getItem(LS_KEY_NAME) || "").trim();
-      if (last && names.includes(last)) {
-        nameSel.value = last;
-      }
 
     } catch (e) {
       nameSel.innerHTML = `<option value="">โหลดรายชื่อไม่สำเร็จ</option>`;
@@ -577,7 +579,6 @@
       return;
     }
 
-    localStorage.setItem(LS_KEY_NAME, name);
     setLoading(true, "กำลังตรวจสอบ...");
 
     try {
@@ -602,18 +603,29 @@
     }
   }
 
-  btn.addEventListener("click", runCheck);
+  // ✅ Auto-check บนมือถือ: เปลี่ยนชื่อ/วันแล้วเช็คเลย (แต่ต้องเลือกชื่อก่อน)
+  let autoTimer = null;
+  function scheduleAutoCheck(){
+    if (!isMobile()) return;
+    const name = (nameSel.value || "").trim();
+    const logDate = (dateSel.value || "").trim();
+    if (!name || !logDate) return;
+
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(() => runCheck(), 250);
+  }
+
+  btnDesktop.addEventListener("click", runCheck);
+  btnMobile.addEventListener("click", runCheck);
+
+  nameSel.addEventListener("change", scheduleAutoCheck);
+  dateSel.addEventListener("change", scheduleAutoCheck);
 
   document.addEventListener("keydown", (ev) => {
     if (ev.key === "Enter") {
       ev.preventDefault();
       runCheck();
     }
-  });
-
-  nameSel.addEventListener("change", () => {
-    const name = (nameSel.value || "").trim();
-    if (name) localStorage.setItem(LS_KEY_NAME, name);
   });
 
   showWeekHeader();
