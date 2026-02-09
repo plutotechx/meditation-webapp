@@ -1,3 +1,8 @@
+<!--
+  File: dashboard.html
+  Final ModifiedAt: 2026-02-09 10:01:14 +0700
+  Change: Restore tooltips (hover/tap) + constrained size + no API changes
+-->
 <!doctype html>
 <html lang="th">
 <head>
@@ -273,6 +278,16 @@
     .dayNum{opacity:.9}
     .dayCount{font-size:20px;letter-spacing:.3px}
 
+    /* Make tooltip targets feel interactive (subtle) */
+    [data-tt]{
+      outline:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    [data-tt]:focus-visible{
+      box-shadow:0 0 0 3px rgba(106,169,255,.25);
+      border-radius:12px;
+    }
+
     .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
     .btn{
       text-decoration:none;color:var(--text);
@@ -282,6 +297,54 @@
       font-weight:900;
     }
     .btn:hover{background:rgba(255,255,255,.10)}
+
+    /* ===== Tooltip (RESTORED) ===== */
+    .tt{
+      position:fixed;
+      z-index:99999;
+      left:0; top:0;
+      transform:translate(-9999px,-9999px);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .10s ease-out;
+      max-width:min(320px, calc(100vw - 24px));
+    }
+    .tt.is-open{
+      opacity:1;
+    }
+    .ttBox{
+      background:rgba(10,16,30,.92);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:14px;
+      padding:10px 12px;
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .ttTitle{
+      font-weight:950;
+      font-size:13px;
+      color:rgba(234,240,255,.96);
+      letter-spacing:.2px;
+      margin:0 0 6px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 100%;
+    }
+    .ttBody{
+      font-size:12px;
+      line-height:1.45;
+      color:rgba(234,240,255,.78);
+      margin:0;
+      white-space:pre-line;
+      word-break:break-word;
+    }
+    .ttHint{
+      margin-top:8px;
+      font-size:11px;
+      color:rgba(234,240,255,.55);
+    }
   </style>
 </head>
 
@@ -353,6 +416,15 @@
     </div>
   </div>
 
+  <!-- Tooltip element (single instance) -->
+  <div id="tt" class="tt" aria-hidden="true">
+    <div class="ttBox">
+      <div id="ttTitle" class="ttTitle"></div>
+      <div id="ttBody" class="ttBody"></div>
+      <div class="ttHint">Tip: มือถือแตะ 1 ครั้งเพื่อดู • แตะที่อื่นเพื่อปิด</div>
+    </div>
+  </div>
+
 <script>
   // ====== CONFIG ======
   const REFRESH_MS = 60_000; // 1 นาที
@@ -375,17 +447,173 @@
   const kpiComplete = document.getElementById("kpiComplete");
   const kpiIncomplete = document.getElementById("kpiIncomplete");
 
+  // ====== Tooltip (RESTORED) ======
+  const tt = document.getElementById("tt");
+  const ttTitle = document.getElementById("ttTitle");
+  const ttBody  = document.getElementById("ttBody");
+
+  let ttOpen = false;
+  let pinned = false;          // for tap
+  let lastMoveTs = 0;
+
+  function openTT(title, body){
+    ttTitle.textContent = title || "";
+    ttBody.textContent = body || "";
+    tt.classList.add("is-open");
+    tt.setAttribute("aria-hidden", "false");
+    ttOpen = true;
+  }
+  function closeTT(){
+    tt.classList.remove("is-open");
+    tt.setAttribute("aria-hidden", "true");
+    tt.style.transform = "translate(-9999px,-9999px)";
+    ttOpen = false;
+    pinned = false;
+  }
+  function moveTT(clientX, clientY){
+    // throttle a bit
+    const now = Date.now();
+    if (now - lastMoveTs < 12) return;
+    lastMoveTs = now;
+
+    const pad = 12;
+    const maxX = window.innerWidth - pad;
+    const maxY = window.innerHeight - pad;
+
+    // preferred position: right-bottom of cursor
+    let x = clientX + 14;
+    let y = clientY + 14;
+
+    // estimate tooltip size using bounding box
+    tt.style.transform = `translate(${Math.min(x, maxX)}px, ${Math.min(y, maxY)}px)`;
+    const rect = tt.getBoundingClientRect();
+
+    // if overflow right/bottom, flip
+    if (rect.right > window.innerWidth - pad){
+      x = clientX - rect.width - 14;
+    }
+    if (rect.bottom > window.innerHeight - pad){
+      y = clientY - rect.height - 14;
+    }
+
+    // clamp
+    x = Math.max(pad, Math.min(x, window.innerWidth - rect.width - pad));
+    y = Math.max(pad, Math.min(y, window.innerHeight - rect.height - pad));
+
+    tt.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  // Close when click outside (for mobile pin)
+  document.addEventListener("pointerdown", (e)=>{
+    if (!ttOpen) return;
+    const target = e.target;
+    if (tt.contains(target)) return;
+    const hit = target && target.closest && target.closest("[data-tt]");
+    if (hit) return; // handled by element
+    closeTT();
+  });
+
+  // Escape to close
+  document.addEventListener("keydown", (e)=>{
+    if (e.key === "Escape") closeTT();
+  });
+
+  // Event delegation for dynamic rows
+  function getTTNodeFromEventTarget(t){
+    if (!t || !t.closest) return null;
+    return t.closest("[data-tt]");
+  }
+
+  tbody.addEventListener("pointerover", (e)=>{
+    if (pinned) return;
+    const node = getTTNodeFromEventTarget(e.target);
+    if (!node) return;
+
+    const title = node.getAttribute("data-tt-title") || "";
+    const body  = node.getAttribute("data-tt") || "";
+    openTT(title, body);
+  });
+
+  tbody.addEventListener("pointermove", (e)=>{
+    if (!ttOpen || pinned) return;
+    moveTT(e.clientX, e.clientY);
+  });
+
+  tbody.addEventListener("pointerout", (e)=>{
+    if (pinned) return;
+    const node = getTTNodeFromEventTarget(e.target);
+    if (!node) return;
+
+    // if moving inside the same tooltip target, ignore
+    const toEl = e.relatedTarget;
+    if (toEl && node.contains(toEl)) return;
+
+    closeTT();
+  });
+
+  // Tap-to-pin for mobile/pen
+  tbody.addEventListener("pointerdown", (e)=>{
+    const node = getTTNodeFromEventTarget(e.target);
+    if (!node) return;
+
+    // only pin on touch/pen, mouse will use hover
+    if (e.pointerType === "mouse") return;
+
+    e.preventDefault();
+    const title = node.getAttribute("data-tt-title") || "";
+    const body  = node.getAttribute("data-tt") || "";
+
+    if (ttOpen && pinned){
+      closeTT();
+      return;
+    }
+
+    openTT(title, body);
+    pinned = true;
+    moveTT(e.clientX, e.clientY);
+  });
+
+  // keyboard accessibility
+  tbody.addEventListener("focusin", (e)=>{
+    if (pinned) return;
+    const node = getTTNodeFromEventTarget(e.target);
+    if (!node) return;
+
+    const title = node.getAttribute("data-tt-title") || "";
+    const body  = node.getAttribute("data-tt") || "";
+    openTT(title, body);
+
+    // place tooltip near the element center
+    const r = node.getBoundingClientRect();
+    moveTT(r.left + r.width/2, r.top + r.height/2);
+  });
+
+  tbody.addEventListener("focusout", (e)=>{
+    if (pinned) return;
+    const node = getTTNodeFromEventTarget(e.target);
+    if (!node) return;
+    closeTT();
+  });
+
   // ====== helpers ======
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[m] ));
   }
+
   function thaiDateFromISO(iso){
     const [y,m,d] = iso.split("-").map(Number);
     const dt = new Date(y, m-1, d);
     return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
   }
+
+  function thaiDateLongFromISO(iso){
+    const [y,m,d] = iso.split("-").map(Number);
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString("th-TH",{weekday:"long", day:"numeric", month:"short", year:"2-digit"});
+  }
+
   function gradeByPercent(p){
     if (p >= 90) return "good";
     if (p >= 70) return "mid";
@@ -434,6 +662,15 @@
       const g = gradeByPercent(pct);
       const chipText = (pct === 100) ? "ครบ 100%" : `${pct}%`;
       const doneDays = Number(p.doneDays || 0);
+      const totalDone = Number(p.totalDone || 0);
+      const totalSlots = Number(p.totalSlots || 21);
+
+      // Tooltip for weekly summary cell
+      const weekTTTitle = "สรุปสัปดาห์";
+      const weekTTBody =
+        `ทำได้ ${totalDone}/${totalSlots} ครั้ง\n` +
+        `ครบทั้งวัน ${doneDays}/7 วัน\n` +
+        `เปอร์เซ็นต์ ${pct}%`;
 
       const dayBoxes = (p.perDay || []).map((d)=>{
         const cnt = Number(d.count || 0);
@@ -442,8 +679,15 @@
         const dayShort = thaiDayShortFromISO(iso);
         const dayNum = dayNumFromISO(iso);
 
+        const dayTTTitle = "รายละเอียดรายวัน";
+        const dayTTBody =
+          `${thaiDateLongFromISO(iso)}\n` +
+          `ทำได้ ${cnt}/3 ครั้ง`;
+
         return `
-          <div class="daybox ${dg}">
+          <div class="daybox ${dg}" tabindex="0"
+               data-tt-title="${escapeHtml(dayTTTitle)}"
+               data-tt="${escapeHtml(dayTTBody)}">
             <div class="dayTop">
               <span class="dayPill">${dayShort}</span>
               <span class="dayNum">${dayNum}</span>
@@ -458,15 +702,19 @@
         <td class="name">${escapeHtml(p.name||"")}</td>
         <td>
           <div class="pctRow">
-            <span class="chip ${g}">
+            <span class="chip ${g}" tabindex="0"
+                  data-tt-title="${escapeHtml(weekTTTitle)}"
+                  data-tt="${escapeHtml(weekTTBody)}">
               <span class="dot"></span>
               <span>${chipText}</span>
             </span>
-            <div class="progress ${g}">
+            <div class="progress ${g}" tabindex="0"
+                 data-tt-title="${escapeHtml(weekTTTitle)}"
+                 data-tt="${escapeHtml(weekTTBody)}">
               <i style="width:${Math.max(0, Math.min(100, pct))}%"></i>
             </div>
           </div>
-          <div class="subline">ทำได้ ${p.totalDone}/${p.totalSlots} ครั้ง</div>
+          <div class="subline">ทำได้ ${totalDone}/${totalSlots} ครั้ง</div>
         </td>
         <td style="font-weight:900;font-size:16px">${doneDays}/7</td>
         <td><div class="days">${dayBoxes}</div></td>
@@ -516,6 +764,9 @@
 
     // รีเซ็ต countdown ให้รู้สึก “โหลดรอบใหม่”
     nextRefreshAt = Date.now() + REFRESH_MS;
+
+    // ปิด tooltip กันค้าง
+    closeTT();
   }
 
   btnThis.addEventListener("click", ()=> setActiveWeek(0));
@@ -552,9 +803,9 @@
     if (document.hidden){
       // ปล่อยตัวเลขค้างไว้เฉย ๆ ไม่ยิง
     } else {
-      // กลับมา: รีเซ็ตใหม่กัน “เด้งยิงทันที”
       nextRefreshAt = Date.now() + REFRESH_MS;
       load(true);
+      closeTT();
     }
   });
 
