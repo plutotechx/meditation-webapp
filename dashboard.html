@@ -396,6 +396,11 @@
     @media (max-width: 720px){
       .wrap{padding:14px 10px 22px}
 
+      /* Mobile: header stack + leave room for top-right countdown pill */
+      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:52px;}
+      .topRow > div:first-child{width:100%; text-align:center;}
+      .weekMenu{width:100%; justify-content:center;}
+
       /* Mobile: move countdown pill to top-right */
       .autoMini{
         position:fixed;
@@ -460,9 +465,8 @@
   <div class="wrap">
     <div class="topRow">
       <div>
-        <h1>Dashboard</h1>
-        <div class="muted" style="margin-top:6px">เลือกดูสัปดาห์ได้</div>
-      </div>
+        <h1>Dashboard Meditation</h1>
+</div>
 
       <div class="weekMenu">
         <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
