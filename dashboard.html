@@ -204,9 +204,114 @@
     }
     .wkStat .wkNum{display:inline-block; min-width:22px; text-align:right;}
     .wkStat .wkPct{opacity:.75; margin-left:6px;}
+    /* Weekly complete summary + mini bars */
+    .wkTop{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin:10px 0 10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+    }
+    .wkTop .wkMeta{
+      display:flex;flex-direction:column;gap:4px;min-width:0;
+    }
+    .wkTop .wkMeta .wkMetaTitle{
+      font-size:12px;font-weight:950;color:rgba(234,240,255,.82);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .wkTop .wkMeta .wkMetaSub{
+      font-size:12px;color:rgba(234,240,255,.62);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .wkTop .wkBadges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .wkBadge{
+      font-size:12px;font-weight:950;
+      padding:7px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      color:rgba(234,240,255,.9);
+      white-space:nowrap;
+    }
+    .wkBadge.good{border-color:rgba(48,209,106,.35);background:rgba(48,209,106,.10)}
+    .wkBadge.bad{border-color:rgba(255,77,77,.35);background:rgba(255,77,77,.10)}
+
+    .wkBars{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+    }
+    .wkBars .wkBarsHead{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      margin-bottom:10px;
+      color:rgba(234,240,255,.72);
+      font-weight:900;
+      font-size:12px;
+    }
+    .wkBars .bars{
+      display:flex;align-items:flex-end;gap:10px;
+      height:78px;
+    }
+    .wkBars .bar{
+      flex:1 1 0;
+      min-width:0;
+      display:flex;flex-direction:column;align-items:center;gap:6px;
+    }
+    .wkBars .bar i{
+      width:100%;
+      height:10px;
+      border-radius:10px 10px 6px 6px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      position:relative;
+    }
+    .wkBars .bar i::after{
+      content:"";
+      position:absolute;left:0;right:0;bottom:0;
+      height:var(--h, 0%);
+      background:linear-gradient(180deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
+      border-radius:10px 10px 6px 6px;
+    }
+    .wkBars .bar.bad i::after{background:linear-gradient(180deg, rgba(255,77,77,.95), rgba(255,77,77,.35))}
+    .wkBars .bar.mid i::after{background:linear-gradient(180deg, rgba(243,196,58,.95), rgba(243,196,58,.35))}
+    .wkBars .bar span{
+      font-size:11px;
+      color:rgba(234,240,255,.75);
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .wkBars .bar em{
+      font-style:normal;
+      font-size:11px;
+      color:rgba(234,240,255,.55);
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    @media (max-width:720px){
+      .wkTop{flex-direction:column;align-items:flex-start}
+      .wkTop .wkBadges{justify-content:flex-start}
+      .wkBars .bars{height:64px;gap:8px}
+      .wkBars .bar span, .wkBars .bar em{font-size:10px}
+    }
+
+
     @media (max-width: 720px){
       .wkList{max-height:unset}
-      .wkRow{grid-template-columns:64px 1fr 78px}
+      .wkRow{
+        grid-template-columns:60px 1fr;
+        grid-template-rows:auto auto;
+        row-gap:6px;
+      }
+      .wkStat{
+        grid-column:2;
+        justify-self:start;
+        padding:6px 10px;
+      }
+      .wkBar{ margin-top:2px; }
     }
 
 /* Pie + legend (3 segments) */
@@ -558,6 +663,12 @@
       }
       .autoMini .dotLive{ width:10px; height:10px; }
       .kpis{grid-template-columns:1fr}
+
+      /* Mobile: smooth compare panel (avoid overlap) */
+      .cmpWrap{flex-direction:column; align-items:flex-start}
+      .cmpGrid{grid-template-columns:1fr; gap:10px}
+      .cmpTitle{white-space:normal}
+      .cmpPill{width:100%; justify-content:space-between}
       .table thead{display:none}
       .table, .table tbody, .table tr, .table td{display:block;width:100%}
       .table{background:transparent;border:none;box-shadow:none}
@@ -698,9 +809,30 @@
           <div class="label" id="weeklyCompleteLabel">สรุป “ครบ 3 ครั้ง” รายวัน</div>
           <div class="countBadge" id="weeklyCompleteMeta">-</div>
         </div>
+
+        <div class="wkTop" id="weeklyCompleteTop">
+          <div class="wkMeta">
+            <div class="wkMetaTitle" id="weeklyCompleteTopTitle">ภาพรวมสัปดาห์</div>
+            <div class="wkMetaSub" id="weeklyCompleteTopSub">กำลังคำนวณ...</div>
+          </div>
+          <div class="wkBadges">
+            <span class="wkBadge good" id="weeklyBestDay">วันเด่น: -</span>
+            <span class="wkBadge bad" id="weeklyWorstDay">วันน้อยสุด: -</span>
+          </div>
+        </div>
+
         <div class="wkList" id="weeklyCompleteList">
           <span class="muted">กำลังโหลด...</span>
         </div>
+
+        <div class="wkBars" id="weeklyBars">
+          <div class="wkBarsHead">
+            <span>กราฟรายวัน (ครบ 3 ครั้ง)</span>
+            <span id="weeklyBarsNote">-</span>
+          </div>
+          <div class="bars" id="weeklyBarsInner"></div>
+        </div>
+
         <div class="sub" id="weeklyCompleteSub" style="margin-top:10px">—</div>
       </div>
 
@@ -781,6 +913,12 @@
   const weeklyCompleteMeta  = document.getElementById("weeklyCompleteMeta");
   const weeklyCompleteList  = document.getElementById("weeklyCompleteList");
   const weeklyCompleteSub   = document.getElementById("weeklyCompleteSub");
+  const weeklyCompleteTopTitle = document.getElementById("weeklyCompleteTopTitle");
+  const weeklyCompleteTopSub   = document.getElementById("weeklyCompleteTopSub");
+  const weeklyBestDay          = document.getElementById("weeklyBestDay");
+  const weeklyWorstDay         = document.getElementById("weeklyWorstDay");
+  const weeklyBarsNote         = document.getElementById("weeklyBarsNote");
+  const weeklyBarsInner        = document.getElementById("weeklyBarsInner");
   const cmpTodayLabel = document.getElementById("cmpTodayLabel");
   const cmpPrevLabel  = document.getElementById("cmpPrevLabel");
   const cmpTodayPct   = document.getElementById("cmpTodayPct");
@@ -1098,6 +1236,50 @@
         `;
       }).join("");
     }
+
+    // Weekly (Mon-Sun) overview + mini bars
+    const weekTotal = dailyCompleteCounts.reduce((a,b)=>a+b,0); // people·day
+    const avgPct = peopleTotal ? (weekTotal/(peopleTotal*7)*100) : 0;
+
+    if (weeklyCompleteTopTitle) weeklyCompleteTopTitle.textContent = "สรุปครบ 3 ครั้ง (รายวัน)";
+    if (weeklyCompleteTopSub) weeklyCompleteTopSub.textContent = `รวม ${weekTotal} คน·วัน · เฉลี่ย ${avgPct.toFixed(0)}% ต่อวัน`;
+
+    const maxC = Math.max(...dailyCompleteCounts);
+    const minC = Math.min(...dailyCompleteCounts);
+    const bestIdx = dailyCompleteCounts.indexOf(maxC);
+    const worstIdx = dailyCompleteCounts.indexOf(minC);
+
+    const bestISO = daysISO[bestIdx];
+    const worstISO = daysISO[worstIdx];
+    const bestPct = peopleTotal ? (maxC/peopleTotal*100) : 0;
+    const worstPct = peopleTotal ? (minC/peopleTotal*100) : 0;
+
+    if (weeklyBestDay){
+      weeklyBestDay.textContent = `วันเด่น: ${thaiDayShortFromISO(bestISO)} ${thaiDateFromISO(bestISO)} · ${maxC} คน (${bestPct.toFixed(0)}%)`;
+      weeklyBestDay.classList.add("good");
+    }
+    if (weeklyWorstDay){
+      weeklyWorstDay.textContent = `วันน้อยสุด: ${thaiDayShortFromISO(worstISO)} ${thaiDateFromISO(worstISO)} · ${minC} คน (${worstPct.toFixed(0)}%)`;
+      weeklyWorstDay.classList.add("bad");
+    }
+
+    if (weeklyBarsInner){
+      if (weeklyBarsNote) weeklyBarsNote.textContent = peopleTotal ? `ฐาน ${peopleTotal} คน` : "-";
+      weeklyBarsInner.innerHTML = daysISO.map((iso,i)=>{
+        const c = dailyCompleteCounts[i];
+        const pDay = peopleTotal ? (c/peopleTotal*100) : 0;
+        const g = gradeByPercent(pDay);
+        const h = Math.max(0, Math.min(100, pDay)).toFixed(2) + "%";
+        return `
+          <div class="bar ${g}" style="--h:${h}">
+            <i aria-hidden="true"></i>
+            <span>${thaiDayShortFromISO(iso)}</span>
+            <em>${pDay.toFixed(0)}%</em>
+          </div>
+        `;
+      }).join("");
+    }
+
 
     if (weeklyCompleteSub){
       weeklyCompleteSub.textContent = `รวมครบทั้งสัปดาห์: ${dailyCompleteCounts.reduce((a,b)=>a+b,0)} ครั้ง (นับคน·วัน)`;
