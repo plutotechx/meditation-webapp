@@ -675,19 +675,32 @@
 @media (min-width: 821px){
   /* Desktop: keep numbers readable and make bars properly wide */
   .wkRow{
-    grid-template-columns: minmax(210px, 260px) minmax(420px, 1fr) 170px;
+    /* โซน: วัน | แถบสถานะ | จำนวนคน/เปอร์เซ็นต์ */
+    grid-template-columns: minmax(210px, 260px) 1fr 190px;
     gap: 14px;
   }
   .wkDay{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .wkBar{
     height: 12px;
+    /* ทำให้แถบอยู่ “ตรงกลาง” ของคอลัมน์กลาง ไม่ไปชิดขวา และยาวพอดี ๆ */
+    width: min(680px, 100%);
+    justify-self: center;
     max-width: none;          /* let it expand on large screens */
-    min-width: 360px;
+    min-width: 420px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.10);
   }
   .wkBar > i{
     background: linear-gradient(90deg, rgba(48,209,106,.98), rgba(48,209,106,.55));
   }
-  .wkStat{ min-width: 170px; }
+  .wkStat{
+    min-width: 190px;
+    justify-self: end;
+    padding: 6px 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.16);
+  }
   .wkNum{ white-space: nowrap; }
   .wkPct{ white-space: nowrap; }
 }
