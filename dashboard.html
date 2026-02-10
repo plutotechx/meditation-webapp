@@ -173,7 +173,7 @@
     .wkList{margin-top:10px; display:grid; gap:8px; max-height:260px; overflow:auto; padding-right:6px;}
     .wkRow{
       display:grid;
-      grid-template-columns: minmax(150px, 1.2fr) 1fr 92px;
+      grid-template-columns:minmax(170px, 1.5fr) minmax(300px, 2fr) 110px;
       align-items:center;
       gap:10px;
       padding:10px 12px;
@@ -219,10 +219,6 @@
     }
     .wkStat .wkNum{display:inline-block; min-width:22px; text-align:right;}
     .wkStat .wkPct{opacity:.75; margin-left:6px;}
-    @media (max-width: 720px){
-      .wkList{max-height:unset}
-      .wkRow{grid-template-columns:64px 1fr 78px}
-    }
 
 /* Pie + legend (3 segments) */
     .legend{display:grid;gap:6px}
@@ -1177,7 +1173,7 @@ function render(out){
           <div class="wkRow">
             <div class="wkDay">${dayShort} ${dateShort}</div>
             <div class="wkBar"><i style="width:${Math.max(0, Math.min(100, pDay)).toFixed(2)}%"></i></div>
-            <div class="wkStat"><span class="wkNum">${c}</span><span class="wkPct">${pDay.toFixed(0)}%</span></div>
+            <div class="wkStat"><span class="wkNum">${c} คน</span><span class="wkPct">${pDay.toFixed(0)}%</span></div>
           </div>
         `;
       }).join("");
