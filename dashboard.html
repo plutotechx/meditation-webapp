@@ -48,29 +48,22 @@
       margin-bottom:12px;
     }
     h1{margin:0;font-size:24px;font-weight:900;letter-spacing:.2px}
-
-    .titleRow{
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .updatedNow{
+    .titleRow{display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-wrap:wrap}
+    .lastUpd{
       height:34px;
       padding:6px 12px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(0,0,0,.18);
       font-weight:900;
-      color:rgba(234,240,255,.90);
+      color:rgba(234,240,255,.85);
       display:flex;
       align-items:center;
       gap:10px;
       white-space:nowrap;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow:0 12px 34px rgba(0,0,0,.22);
     }
+
 
     .weekMenu{
       display:flex;
@@ -103,20 +96,7 @@
       box-shadow:0 10px 24px rgba(106,169,255,.22);
     }
 
-    .autoMini{
-      height:38px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
-      font-weight:900;
-      color:rgba(234,240,255,.85);
-      display:flex;
-      align-items:center;
-      gap:10px;
-      white-space:nowrap;
-    }
-    .dotLive{
+        .dotLive{
       width:10px;height:10px;border-radius:999px;
       background:var(--good);
       box-shadow:0 0 0 0 rgba(48,209,106,.55);
@@ -582,10 +562,10 @@
       .wrap{padding:14px 10px 22px}
 
       /* Mobile: header stack + leave room for top-right countdown pill */
-      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:10px;}
+      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:0px;}
       .topRow > div:first-child{width:100%; text-align:center;}
       .weekMenu{width:100%; justify-content:center;}
-
+      .autoMini .dotLive{ width:10px; height:10px; }
       .kpis{grid-template-columns:1fr}
       .table thead{display:none}
       .table, .table tbody, .table tr, .table td{display:block;width:100%}
@@ -669,13 +649,12 @@
   <div class="wrap">
     <div class="topRow">
       <div>
-        <div class="titleRow">
-          <h1>Dashboard Meditation</h1>
-          <div class="updatedNow" aria-live="polite" title="เวลาอัปเดตล่าสุด">
-            <span class="dotLive" aria-hidden="true"></span>
-            <span>อัปเดตล่าสุด <span id="lastUpdated">--:--</span> น.</span>
-          </div>
-        </div>
+        <div class="titleRow"><h1>Dashboard Meditation</h1>
+  <div class="lastUpd" aria-live="polite" title="อัปเดตล่าสุด">
+    <span class="dotLive"></span>
+    <span>อัปเดตล่าสุด <span id="lastUpdated">--:--</span> น.</span>
+  </div>
+</div>
       </div>
 
       <div class="weekMenu">
@@ -840,12 +819,14 @@
   const dailyNotCompleteCount = document.getElementById("dailyNotCompleteCount");
   const dailyPartialList = document.getElementById("dailyPartialList");
   const dailyNoneList    = document.getElementById("dailyNoneList");
-  const lastUpdatedEl = document.getElementById("lastUpdated");
 
-  function setLastUpdatedNow(){
-    if (!lastUpdatedEl) return;
-    const t = new Date();
-    lastUpdatedEl.textContent = t.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
+
+  function setLastUpdated(){
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    const el = document.getElementById("lastUpdated");
+    if (el) el.textContent = `${hh}:${mm}`;
   }
 
   function escapeHtml(s){
@@ -1339,7 +1320,7 @@ function render(out){
         return;
       }
       render(out);
-      setLastUpdatedNow();
+      setLastUpdated();
     } finally{
       inFlight = false;
     }
@@ -1368,9 +1349,8 @@ function render(out){
   function startAuto(){
     stopAuto();
     nextRefreshAt = Date.now() + REFRESH_MS;
-      countdownEl.textContent = String(Math.ceil(leftMs/1000));
-    }, 250);
 
+    // initial load timestamp will be set after load()
     refreshTimer = setInterval(async ()=>{
       if (document.hidden) return;
       await load(true);
@@ -1393,7 +1373,6 @@ function render(out){
 
   (function init(){
     setActiveWeek(0);
-    setLastUpdatedNow();
     startAuto();
   })();
 </script>
