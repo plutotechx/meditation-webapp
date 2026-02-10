@@ -170,12 +170,12 @@
 
     
     /* ===== Weekly complete breakdown (per day) ===== */
-    .wkList{margin-top:10px; display:grid; gap:8px; max-height:260px; overflow:auto; padding-right:6px;}
+    .wkList{margin-top:10px; display:grid; gap:8px; max-height:260px; overflow:auto; overflow-x:hidden; padding-right:6px;}
     .wkRow{
       display:grid;
-      grid-template-columns:minmax(170px, 1.5fr) minmax(300px, 2fr) 110px;
+      grid-template-columns:minmax(170px, 1.4fr) minmax(280px, 2.2fr) 120px;
       align-items:center;
-      gap:10px;
+      gap:12px;
       padding:10px 12px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.10);
@@ -184,11 +184,15 @@
     .wkDay{font-weight:950; color:rgba(234,240,255,.92); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
     .wkBar{
-      height:10px;
+      height:12px;
+      width:100%;
+      max-width:520px; /* PC: ยาวขึ้น แต่ยังไม่ล้น */
       border-radius:999px;
       background:rgba(255,255,255,.10);
       border:1px solid rgba(255,255,255,.10);
       overflow:hidden;
+      position:relative;
+      justify-self:start; /* ไม่จัดกลางจนดูสั้น */
     }
     .wkBar > i{
       display:block;
