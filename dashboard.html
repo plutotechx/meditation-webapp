@@ -170,7 +170,8 @@
 
     
     /* ===== Weekly complete breakdown (per day) ===== */
-    .wkList{margin-top:10px; display:grid; gap:8px; max-height:260px; overflow:auto; overflow-x:hidden; padding-right:6px;}
+    .wkList{margin-top:10px; display:grid; gap:8px; max-height:260px; overflow-y:auto;
+      overflow-x:hidden; overflow-x:hidden; padding-right:6px;}
     .wkRow{
       display:grid;
       grid-template-columns:minmax(170px, 1.4fr) minmax(280px, 2.2fr) 120px;
@@ -199,7 +200,9 @@
       height:100%;
       width:0%;
       background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
-    }
+      box-shadow: 0 0 0 1px rgba(0,0,0,.18) inset;
+}
+
     .wkStat{
       text-align:right;
       font-weight:950;
@@ -668,11 +671,25 @@
 
   
 /* === Desktop enhancement: make weekly bars longer === */
+
 @media (min-width: 821px){
+  /* Desktop: keep numbers readable and make bars properly wide */
   .wkRow{
-    grid-template-columns: minmax(220px, 1.4fr) 2fr 110px;
+    grid-template-columns: minmax(210px, 260px) minmax(420px, 1fr) 170px;
+    gap: 14px;
   }
-  .wkBar{ height:12px; }
+  .wkDay{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wkBar{
+    height: 12px;
+    max-width: none;          /* let it expand on large screens */
+    min-width: 360px;
+  }
+  .wkBar > i{
+    background: linear-gradient(90deg, rgba(48,209,106,.98), rgba(48,209,106,.55));
+  }
+  .wkStat{ min-width: 170px; }
+  .wkNum{ white-space: nowrap; }
+  .wkPct{ white-space: nowrap; }
 }
 
 </style>
