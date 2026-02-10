@@ -221,28 +221,13 @@
 
     /* ✅ Premium Donut with center label */
     .pie{
-      width:118px;height:118px;border-radius:999px;
+      width:116px;height:116px;border-radius:999px;
+      background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
       border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 16px 45px rgba(0,0,0,.35);
+      box-shadow:0 16px 45px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06);
       position:relative;
       flex:0 0 auto;
-      display:grid;
-      place-items:center;
-      background:rgba(255,255,255,.03);
-      overflow:hidden;
-    }
-    .pieSvg{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      transform:rotate(-90deg);
-      filter: drop-shadow(0 10px 22px rgba(0,0,0,.35));
-    }
-    .pieTrack{ stroke: rgba(255,255,255,.10); }
-    .pieSeg{
-      stroke-linecap: round;
-      transition: stroke-dasharray .45s ease, stroke-dashoffset .45s ease;
+      transition: background 260ms ease;
     }
 
     .pieInner{
@@ -261,6 +246,25 @@
       pointer-events:none;
       gap:2px;
     }
+
+    /* SVG donut (smooth, crisp) */
+    .pieSvg{ width:100%; height:100%; display:block; transform:rotate(-90deg); }
+    .pieTrack{
+      fill:none;
+      stroke:rgba(255,255,255,.10);
+      stroke-width:14;
+    }
+    .pieSeg{
+      fill:none;
+      stroke-width:14;
+      stroke-linecap:butt;
+      stroke-dasharray:0 999;
+      stroke-dashoffset:0;
+      transition: stroke-dasharray .45s ease, stroke-dashoffset .45s ease;
+    }
+    .pieSeg.good{ stroke:var(--good); }
+    .pieSeg.bad{  stroke:var(--bad); }
+    .pieSeg.none{ stroke:var(--none); }
     .pieCenterBig{
       font-size:26px;
       font-weight:1000;
@@ -675,7 +679,20 @@
         <div class="label" id="dailyPieLabel">สัดส่วนวันนี้</div>
         <div class="pieWrap">
           <div class="pie" id="pie" role="img" aria-label="สัดส่วนวันนี้">
-            <div class="pieInner" aria-hidden="true"></div>
+            <svg class="pieSvg" viewBox="0 0 120 120" aria-hidden="true">
+  <defs>
+    <filter id="pieShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="rgba(0,0,0,.45)"/>
+    </filter>
+  </defs>
+  <!-- track -->
+  <circle class="pieTrack" cx="60" cy="60" r="46"></circle>
+
+  <!-- segments (order: good -> bad -> none) -->
+  <circle id="pieSegGood" class="pieSeg good" cx="60" cy="60" r="46" filter="url(#pieShadow)"></circle>
+  <circle id="pieSegBad"  class="pieSeg bad"  cx="60" cy="60" r="46" filter="url(#pieShadow)"></circle>
+  <circle id="pieSegNone" class="pieSeg none" cx="60" cy="60" r="46" filter="url(#pieShadow)"></circle>
+</svg>
             <div class="pieCenter" aria-hidden="true">
               <div class="pieCenterBig" id="pieCenterBig">--%</div>
               <div class="pieCenterSub" id="pieCenterSub">ครบ 3 ครั้ง</div>
@@ -787,6 +804,10 @@
   const pieCenterSub = document.getElementById("pieCenterSub");
   const pieCenterTiny = document.getElementById("pieCenterTiny");
 
+  const pieSegGood = document.getElementById("pieSegGood");
+  const pieSegBad  = document.getElementById("pieSegBad");
+  const pieSegNone = document.getElementById("pieSegNone");
+
   const dailyPieLabel = document.getElementById("dailyPieLabel");
   const lgGood = document.getElementById("lgGood");
   const lgBad  = document.getElementById("lgBad");
@@ -808,34 +829,6 @@
   const dailyNotCompleteCount = document.getElementById("dailyNotCompleteCount");
   const dailyPartialList = document.getElementById("dailyPartialList");
   const dailyNoneList    = document.getElementById("dailyNoneList");
-
-  // Smooth SVG donut (3 segments) — avoids jagged conic edges on some browsers
-  const segGood = document.getElementById("segGood");
-  const segBad  = document.getElementById("segBad");
-  const segNone = document.getElementById("segNone");
-  const DONUT_R = 46;
-  const DONUT_C = 2 * Math.PI * DONUT_R;
-
-  function setSeg(el, len, offset){
-    if (!el) return;
-    const L = Math.max(0, Math.min(DONUT_C, len));
-    el.style.strokeDasharray = `${L} ${Math.max(0, DONUT_C - L)}`;
-    el.style.strokeDashoffset = `${-offset}`;
-  }
-
-  function setDonut(pGood, pBad, pNone){
-    // Percent -> length. Add tiny gap so the joins look clean/premium.
-    const gap = DONUT_C * 0.006; // ~0.6%
-    const goodLen = DONUT_C * (pGood/100);
-    const badLen  = DONUT_C * (pBad/100);
-    const noneLen = DONUT_C * (pNone/100);
-
-    // Order: none -> bad -> good (good stays on top visually)
-    let cur = 0;
-    setSeg(segNone, Math.max(0, noneLen - gap), cur); cur += noneLen;
-    setSeg(segBad,  Math.max(0, badLen  - gap), cur); cur += badLen;
-    setSeg(segGood, Math.max(0, goodLen - gap), cur);
-  }
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
@@ -1021,7 +1014,31 @@
     return "bad";
   }
 
-  function render(out){
+  function updatePieSVG(pGood, pBad, pNone){
+    // pGood+pBad+pNone ~ 100
+    const r = 46;
+    const C = 2 * Math.PI * r;
+
+    const lenGood = Math.max(0, Math.min(100, pGood)) / 100 * C;
+    const lenBad  = Math.max(0, Math.min(100, pBad))  / 100 * C;
+    const lenNone = Math.max(0, Math.min(100, pNone)) / 100 * C;
+
+    const offGood = 0;
+    const offBad  = lenGood;
+    const offNone = lenGood + lenBad;
+
+    const setSeg = (el, len, off)=>{
+      if (!el) return;
+      el.style.strokeDasharray = `${len} ${C}`;
+      el.style.strokeDashoffset = `${-off}`;
+    };
+
+    setSeg(pieSegGood, lenGood, offGood);
+    setSeg(pieSegBad,  lenBad,  offBad);
+    setSeg(pieSegNone, lenNone, offNone);
+  }
+
+function render(out){
     const w = out.week;
     elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
 
@@ -1072,8 +1089,9 @@
     const pBad  = pct(partialN);
     const pNone = Math.max(0, 100 - pGood - pBad);
 
-    setDonut(pGood, pBad, pNone);
-// ✅ Center label (premium)
+        updatePieSVG(pGood, pBad, pNone);
+
+    // ✅ Center label (premium)
     pieCenterBig.textContent = `${pGood.toFixed(0)}%`;
     pieCenterSub.textContent = `ครบ 3 ครั้ง`;
     pieCenterTiny.textContent = `${completeN}/${peopleTotal} คน`;
