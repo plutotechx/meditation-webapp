@@ -221,13 +221,28 @@
 
     /* ✅ Premium Donut with center label */
     .pie{
-      width:116px;height:116px;border-radius:999px;
-      background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
+      width:118px;height:118px;border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
-      box-shadow:0 16px 45px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06);
+      box-shadow:0 16px 45px rgba(0,0,0,.35);
       position:relative;
       flex:0 0 auto;
-      transition: background 260ms ease;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.03);
+      overflow:hidden;
+    }
+    .pieSvg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      transform:rotate(-90deg);
+      filter: drop-shadow(0 10px 22px rgba(0,0,0,.35));
+    }
+    .pieTrack{ stroke: rgba(255,255,255,.10); }
+    .pieSeg{
+      stroke-linecap: round;
+      transition: stroke-dasharray .45s ease, stroke-dashoffset .45s ease;
     }
 
     .pieInner{
@@ -794,6 +809,34 @@
   const dailyPartialList = document.getElementById("dailyPartialList");
   const dailyNoneList    = document.getElementById("dailyNoneList");
 
+  // Smooth SVG donut (3 segments) — avoids jagged conic edges on some browsers
+  const segGood = document.getElementById("segGood");
+  const segBad  = document.getElementById("segBad");
+  const segNone = document.getElementById("segNone");
+  const DONUT_R = 46;
+  const DONUT_C = 2 * Math.PI * DONUT_R;
+
+  function setSeg(el, len, offset){
+    if (!el) return;
+    const L = Math.max(0, Math.min(DONUT_C, len));
+    el.style.strokeDasharray = `${L} ${Math.max(0, DONUT_C - L)}`;
+    el.style.strokeDashoffset = `${-offset}`;
+  }
+
+  function setDonut(pGood, pBad, pNone){
+    // Percent -> length. Add tiny gap so the joins look clean/premium.
+    const gap = DONUT_C * 0.006; // ~0.6%
+    const goodLen = DONUT_C * (pGood/100);
+    const badLen  = DONUT_C * (pBad/100);
+    const noneLen = DONUT_C * (pNone/100);
+
+    // Order: none -> bad -> good (good stays on top visually)
+    let cur = 0;
+    setSeg(segNone, Math.max(0, noneLen - gap), cur); cur += noneLen;
+    setSeg(segBad,  Math.max(0, badLen  - gap), cur); cur += badLen;
+    setSeg(segGood, Math.max(0, goodLen - gap), cur);
+  }
+
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -1029,9 +1072,8 @@
     const pBad  = pct(partialN);
     const pNone = Math.max(0, 100 - pGood - pBad);
 
-    pie.style.background = `conic-gradient(var(--good) 0 ${pGood}%, var(--bad) ${pGood}% ${pGood+pBad}%, var(--none) ${pGood+pBad}% 100%)`;
-
-    // ✅ Center label (premium)
+    setDonut(pGood, pBad, pNone);
+// ✅ Center label (premium)
     pieCenterBig.textContent = `${pGood.toFixed(0)}%`;
     pieCenterSub.textContent = `ครบ 3 ครั้ง`;
     pieCenterTiny.textContent = `${completeN}/${peopleTotal} คน`;
