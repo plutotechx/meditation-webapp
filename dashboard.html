@@ -168,7 +168,48 @@
     .nameItem.mid{border-color:rgba(243,196,58,.35);background:rgba(243,196,58,.10)}
     .nameItem.bad{border-color:rgba(255,77,77,.35);background:rgba(255,77,77,.10)}
 
-    /* Pie + legend (3 segments) */
+    
+    /* ===== Weekly complete breakdown (per day) ===== */
+    .wkList{margin-top:10px; display:grid; gap:8px; max-height:260px; overflow:auto; padding-right:6px;}
+    .wkRow{
+      display:grid;
+      grid-template-columns:64px 1fr 82px;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+    }
+    .wkDay{font-weight:950; color:rgba(234,240,255,.92); font-size:13px; white-space:nowrap;}
+    .wkBar{
+      height:10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .wkBar > i{
+      display:block;
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
+    }
+    .wkStat{
+      text-align:right;
+      font-weight:950;
+      font-size:12px;
+      color:rgba(234,240,255,.86);
+      white-space:nowrap;
+    }
+    .wkStat .wkNum{display:inline-block; min-width:22px; text-align:right;}
+    .wkStat .wkPct{opacity:.75; margin-left:6px;}
+    @media (max-width: 720px){
+      .wkList{max-height:unset}
+      .wkRow{grid-template-columns:64px 1fr 78px}
+    }
+
+/* Pie + legend (3 segments) */
     .legend{display:grid;gap:6px}
     .legendRow{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(234,240,255,.82)}
     .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
@@ -224,7 +265,34 @@
       color:rgba(234,240,255,.62);
     }
 
-    .table{
+    
+    /* ===== Compare today vs previous day (within selected week) ===== */
+    .cmpWrap{
+      margin-top:12px;
+      padding:12px 12px 10px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+    }
+    .cmpTitle{font-size:12px;font-weight:900;color:rgba(234,240,255,.78);margin-bottom:10px}
+    .cmpGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .cmpLbl{font-size:12px;font-weight:950;color:rgba(234,240,255,.90);margin-bottom:6px}
+    .cmpBar{
+      height:10px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .cmpBar > i{
+      display:block;height:100%;width:0%;
+      background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
+    }
+    .cmpVal{margin-top:6px;font-size:12px;font-weight:950;color:rgba(234,240,255,.84)}
+    .cmpDelta{margin-top:10px;font-size:12px;font-weight:950;color:rgba(234,240,255,.86)}
+    .cmpDelta .up{color:var(--good)}
+    .cmpDelta .down{color:var(--bad)}
+
+.table{
       width:100%;
       border-collapse:separate;
       border-spacing:0;
@@ -607,16 +675,33 @@
           </div>
         </div>
         <div class="muted" style="margin-top:10px" id="pieText">กำลังคำนวณ...</div>
+        <div class="cmpWrap" aria-label="compare">
+          <div class="cmpTitle">เทียบ “ครบ 3 ครั้ง” วันนี้ vs เมื่อวาน</div>
+          <div class="cmpGrid">
+            <div class="cmpCol">
+              <div class="cmpLbl" id="cmpTodayLabel">วันนี้</div>
+              <div class="cmpBar"><i id="cmpBarToday"></i></div>
+              <div class="cmpVal"><span id="cmpTodayPct">-</span></div>
+            </div>
+            <div class="cmpCol">
+              <div class="cmpLbl" id="cmpPrevLabel">เมื่อวาน</div>
+              <div class="cmpBar"><i id="cmpBarPrev"></i></div>
+              <div class="cmpVal"><span id="cmpPrevPct">-</span></div>
+            </div>
+          </div>
+          <div class="cmpDelta" id="cmpDelta">—</div>
+        </div>
       </div>
 
-      <div class="kpi">
+            <div class="kpi">
         <div class="kpiHead">
-          <div class="label" id="dailyCompleteLabel">ทำครบวันนี้ (3/3)</div>
-          <div class="countBadge" id="dailyCompleteCount">-</div>
+          <div class="label" id="weeklyCompleteLabel">สรุป “ครบ 3 ครั้ง” รายวัน</div>
+          <div class="countBadge" id="weeklyCompleteMeta">-</div>
         </div>
-        <div class="nameSection">
-          <div class="nameList" id="dailyCompleteList"><span class="muted">กำลังโหลด...</span></div>
+        <div class="wkList" id="weeklyCompleteList">
+          <span class="muted">กำลังโหลด...</span>
         </div>
+        <div class="sub" id="weeklyCompleteSub" style="margin-top:10px">—</div>
       </div>
 
       <div class="kpi">
@@ -692,9 +777,17 @@
   const lgBad  = document.getElementById("lgBad");
   const lgNone = document.getElementById("lgNone");
 
-  const dailyCompleteLabel = document.getElementById("dailyCompleteLabel");
-  const dailyCompleteCount = document.getElementById("dailyCompleteCount");
-  const dailyCompleteList  = document.getElementById("dailyCompleteList");
+  const weeklyCompleteLabel = document.getElementById("weeklyCompleteLabel");
+  const weeklyCompleteMeta  = document.getElementById("weeklyCompleteMeta");
+  const weeklyCompleteList  = document.getElementById("weeklyCompleteList");
+  const weeklyCompleteSub   = document.getElementById("weeklyCompleteSub");
+  const cmpTodayLabel = document.getElementById("cmpTodayLabel");
+  const cmpPrevLabel  = document.getElementById("cmpPrevLabel");
+  const cmpTodayPct   = document.getElementById("cmpTodayPct");
+  const cmpPrevPct    = document.getElementById("cmpPrevPct");
+  const cmpBarToday   = document.getElementById("cmpBarToday");
+  const cmpBarPrev    = document.getElementById("cmpBarPrev");
+  const cmpDelta      = document.getElementById("cmpDelta");
 
   const dailyNotCompleteLabel = document.getElementById("dailyNotCompleteLabel");
   const dailyNotCompleteCount = document.getElementById("dailyNotCompleteCount");
@@ -947,12 +1040,12 @@
     lgBad.textContent  = `ทำไม่ครบ: ${partialN} คน (${pBad.toFixed(0)}%)`;
     lgNone.textContent = `ไม่ทำเลย: ${noneN} คน (${pNone.toFixed(0)}%)`;
 
-    pieText.textContent = `ทั้งหมด ${peopleTotal} คน · ครบ ${completeN} · ไม่ครบ ${partialN} · ไม่ทำเลย ${noneN}`;
+        pieText.textContent = `ทั้งหมด ${peopleTotal} คน · ครบ ${completeN} · ไม่ครบ ${partialN} · ไม่ทำเลย ${noneN}`;
 
-    dailyCompleteCount.textContent = `${completeN} คน`;
+    // Right box (incomplete)
     dailyNotCompleteCount.textContent = `${partialN + noneN} คน`;
 
-    const renderNameChips = (el, names, cls)=>{
+    const renderNameChips = (el, names, cls)=> {
       if (!el) return;
       if (!names.length){
         el.innerHTML = `<span class="muted">— ไม่มี —</span>`;
@@ -961,9 +1054,104 @@
       el.innerHTML = names.map(n=>`<span class="nameItem ${cls}">${escapeHtml(n)}</span>`).join('');
     };
 
-    renderNameChips(dailyCompleteList, completeNames, 'good');
+    // Middle box: weekly breakdown of "complete 3/3" per day
+    const daysISO = [];
+    {
+      const [sy,sm,sd] = w.startISO.split("-").map(Number);
+      const base = new Date(sy, sm-1, sd);
+      for (let i=0;i<7;i++){
+        const d = new Date(base);
+        d.setDate(base.getDate()+i);
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const da = String(d.getDate()).padStart(2,'0');
+        daysISO.push(`${y}-${m}-${da}`);
+      }
+    }
+
+    const dailyCompleteCounts = daysISO.map(iso=>{
+      let c = 0;
+      for (const p of rowsAll){
+        const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+        const dd = perDay.find(x => String(x.dateISO||'') === iso);
+        const cnt = dd ? Number(dd.count||0) : 0;
+        if (cnt >= 3) c++;
+      }
+      return c;
+    });
+
+    const avgPct = peopleTotal ? (dailyCompleteCounts.reduce((a,b)=>a+b,0) / (peopleTotal*7) * 100) : 0;
+    if (weeklyCompleteMeta) weeklyCompleteMeta.textContent = `เฉลี่ย ${avgPct.toFixed(0)}%/วัน`;
+
+    if (weeklyCompleteList){
+      weeklyCompleteList.innerHTML = daysISO.map((iso, i)=>{
+        const c = dailyCompleteCounts[i];
+        const pDay = peopleTotal ? (c/peopleTotal*100) : 0;
+        const dayShort = thaiDayShortFromISO(iso);
+        const dateShort = thaiDateFromISO(iso);
+        return `
+          <div class="wkRow">
+            <div class="wkDay">${dayShort} ${dateShort}</div>
+            <div class="wkBar"><i style="width:${Math.max(0, Math.min(100, pDay)).toFixed(2)}%"></i></div>
+            <div class="wkStat"><span class="wkNum">${c}</span><span class="wkPct">${pDay.toFixed(0)}%</span></div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    if (weeklyCompleteSub){
+      weeklyCompleteSub.textContent = `รวมครบทั้งสัปดาห์: ${dailyCompleteCounts.reduce((a,b)=>a+b,0)} ครั้ง (นับคน·วัน)`;
+    }
+
+    // Right lists
     renderNameChips(dailyPartialList, partialNames, 'bad');
     renderNameChips(dailyNoneList, noneNames, '');
+
+    // Compare today vs previous day (within selected week)
+    const prevISO = (()=> {
+      const [yy,mm,dd] = dayISO.split("-").map(Number);
+      const d = new Date(yy, mm-1, dd);
+      d.setDate(d.getDate()-1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const da = String(d.getDate()).padStart(2,'0');
+      const iso = `${y}-${m}-${da}`;
+      return inRange(iso) ? iso : dayISO;
+    })();
+
+    const prevCompleteN = (()=> {
+      let c=0;
+      for (const p of rowsAll){
+        const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+        const dd = perDay.find(x => String(x.dateISO||'') === prevISO);
+        const cnt = dd ? Number(dd.count||0) : 0;
+        if (cnt >= 3) c++;
+      }
+      return c;
+    })();
+
+    const pToday = peopleTotal ? (completeN/peopleTotal*100) : 0;
+    const pPrev  = peopleTotal ? (prevCompleteN/peopleTotal*100) : 0;
+
+    if (cmpTodayLabel) cmpTodayLabel.textContent = `วันนี้ (${thaiDateFromISO(dayISO)})`;
+    if (cmpPrevLabel)  cmpPrevLabel.textContent  = (prevISO===dayISO) ? `เมื่อวาน (—)` : `เมื่อวาน (${thaiDateFromISO(prevISO)})`;
+    if (cmpTodayPct)   cmpTodayPct.textContent   = `${completeN} คน (${pToday.toFixed(0)}%)`;
+    if (cmpPrevPct)    cmpPrevPct.textContent    = `${prevCompleteN} คน (${pPrev.toFixed(0)}%)`;
+    if (cmpBarToday)   cmpBarToday.style.width   = `${Math.max(0, Math.min(100, pToday)).toFixed(2)}%`;
+    if (cmpBarPrev)    cmpBarPrev.style.width    = `${Math.max(0, Math.min(100, pPrev)).toFixed(2)}%`;
+
+    const delta = pToday - pPrev;
+    if (cmpDelta){
+      if (prevISO===dayISO){
+        cmpDelta.textContent = `เทียบวันก่อนหน้า: — (อยู่นอกช่วงวันที่เลือก)`;
+      } else if (Math.abs(delta) < 0.5){
+        cmpDelta.textContent = `เทียบเมื่อวาน: แทบไม่เปลี่ยน (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
+      } else if (delta > 0){
+        cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="up">ดีขึ้น</span> (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
+      } else {
+        cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="down">ลดลง</span> (${delta.toFixed(0)}%)`;
+      }
+    }
 
     const rows = out.people || [];
     rows.sort((a,b)=> (b.percent||0) - (a.percent||0) || String(a.name).localeCompare(String(b.name),"th"));
