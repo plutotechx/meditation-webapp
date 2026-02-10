@@ -49,6 +49,29 @@
     }
     h1{margin:0;font-size:24px;font-weight:900;letter-spacing:.2px}
 
+    .titleRow{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .updatedNow{
+      height:34px;
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      font-weight:900;
+      color:rgba(234,240,255,.90);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      white-space:nowrap;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
     .weekMenu{
       display:flex;
       gap:10px;
@@ -559,24 +582,10 @@
       .wrap{padding:14px 10px 22px}
 
       /* Mobile: header stack + leave room for top-right countdown pill */
-      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:52px;}
+      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:10px;}
       .topRow > div:first-child{width:100%; text-align:center;}
       .weekMenu{width:100%; justify-content:center;}
 
-      /* Mobile: move countdown pill to top-right */
-      .autoMini{
-        position:fixed;
-        top:calc(env(safe-area-inset-top, 0px) + 12px);
-        right:12px;
-        z-index:100000;
-        height:32px;
-        padding:6px 10px;
-        font-size:13px;
-        line-height:1;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-      }
-      .autoMini .dotLive{ width:10px; height:10px; }
       .kpis{grid-template-columns:1fr}
       .table thead{display:none}
       .table, .table tbody, .table tr, .table td{display:block;width:100%}
@@ -660,7 +669,13 @@
   <div class="wrap">
     <div class="topRow">
       <div>
-        <h1>Dashboard Meditation</h1>
+        <div class="titleRow">
+          <h1>Dashboard Meditation</h1>
+          <div class="updatedNow" aria-live="polite" title="เวลาอัปเดตล่าสุด">
+            <span class="dotLive" aria-hidden="true"></span>
+            <span>อัปเดตล่าสุด <span id="lastUpdated">--:--</span> น.</span>
+          </div>
+        </div>
       </div>
 
       <div class="weekMenu">
@@ -668,12 +683,7 @@
           <button id="btnThis" class="active" role="tab" aria-selected="true">สัปดาห์นี้</button>
           <button id="btnLast" role="tab" aria-selected="false">สัปดาห์ที่แล้ว</button>
         </div>
-
-        <div class="autoMini" aria-live="polite" title="รีเฟรชอัตโนมัติ">
-          <span class="dotLive"></span>
-          <span>รีเฟรชใน <span id="countdown">--</span> วิ</span>
-        </div>
-      </div>
+</div>
     </div>
 
     <div class="kpis">
@@ -795,7 +805,6 @@
   // UI refs
   const btnThis = document.getElementById("btnThis");
   const btnLast = document.getElementById("btnLast");
-  const countdownEl = document.getElementById("countdown");
 
   const elWeek = document.getElementById("weekHeader");
   const tbody  = document.getElementById("tbody");
@@ -831,6 +840,13 @@
   const dailyNotCompleteCount = document.getElementById("dailyNotCompleteCount");
   const dailyPartialList = document.getElementById("dailyPartialList");
   const dailyNoneList    = document.getElementById("dailyNoneList");
+  const lastUpdatedEl = document.getElementById("lastUpdated");
+
+  function setLastUpdatedNow(){
+    if (!lastUpdatedEl) return;
+    const t = new Date();
+    lastUpdatedEl.textContent = t.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
+  }
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
@@ -1323,6 +1339,7 @@ function render(out){
         return;
       }
       render(out);
+      setLastUpdatedNow();
     } finally{
       inFlight = false;
     }
@@ -1346,16 +1363,11 @@ function render(out){
   btnLast.addEventListener("click", ()=> setActiveWeek(-1));
 
   let nextRefreshAt = Date.now() + REFRESH_MS;
-  let tickTimer = null;
   let refreshTimer = null;
 
   function startAuto(){
     stopAuto();
     nextRefreshAt = Date.now() + REFRESH_MS;
-
-    tickTimer = setInterval(()=>{
-      if (document.hidden) return;
-      const leftMs = Math.max(0, nextRefreshAt - Date.now());
       countdownEl.textContent = String(Math.ceil(leftMs/1000));
     }, 250);
 
@@ -1368,7 +1380,6 @@ function render(out){
   }
 
   function stopAuto(){
-    if (tickTimer){ clearInterval(tickTimer); tickTimer=null; }
     if (refreshTimer){ clearInterval(refreshTimer); refreshTimer=null; }
   }
 
@@ -1382,6 +1393,7 @@ function render(out){
 
   (function init(){
     setActiveWeek(0);
+    setLastUpdatedNow();
     startAuto();
   })();
 </script>
