@@ -887,6 +887,14 @@
   // ====== CONFIG ======
   const REFRESH_MS = 60_000; // 1 นาที
 
+
+  // ✅ Fallback: direct GAS endpoint (use when /api/dashboard is not available)
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzYwVPwA8NStSBGiK7Ub_BYJGurQ1LV1Wumfw-6NhPBQy-6-DMgIMPX0TTkIUxJbRGtag/exec";
+  const SECRET  = "TumTum5583";
+  // If your site has Cloudflare Functions at /api/dashboard keep API_MODE="cf".
+  // If not sure, set API_MODE="auto" (tries /api/dashboard then falls back to GAS).
+  const API_MODE = "auto"; // "auto" | "cf" | "gas"
+
   // state: weekOffset (0=this, -1=last)
   let weekOffset = 0;
 
@@ -1430,19 +1438,60 @@
     if (inFlight) return;
     inFlight = true;
 
+    // lightweight error banner (top of table area)
+    const showError = (msg)=>{
+      console.error(msg);
+      tbody.innerHTML = `<tr><td colspan="4" class="muted">โหลดไม่สำเร็จ: ${escapeHtml(msg)}</td></tr>`;
+      elWeek.textContent = "โหลดช่วงสัปดาห์ไม่สำเร็จ";
+      // Also reflect on KPI placeholders
+      pieText.textContent = "โหลดไม่สำเร็จ (ตรวจสอบ API)";
+    };
+
     if (!isAuto){
       tbody.innerHTML = `<tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>`;
+      elWeek.textContent = "กำลังโหลดช่วงสัปดาห์...";
     }
 
     try{
-      const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(weekOffset))}`, { cache:"no-store" });
-      const out = await res.json().catch(()=>({}));
+      const qs = `weekOffset=${encodeURIComponent(String(weekOffset))}`;
+      let res, out;
 
-      if (!res.ok || !out.ok){
-        tbody.innerHTML = `<tr><td colspan="4" class="muted">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
-        return;
+      // --- 1) Try Cloudflare Functions (/api/dashboard) ---
+      const tryCF = async ()=>{
+        const r = await fetch(`/api/dashboard?${qs}`, { cache:"no-store" });
+        const j = await r.json().catch(()=>({}));
+        if (!r.ok) throw new Error(j && j.error ? j.error : `http_${r.status}`);
+        if (!j || !j.ok) throw new Error(j && j.error ? j.error : "bad_response");
+        return j;
+      };
+
+      // --- 2) Try direct GAS endpoint ---
+      const tryGAS = async ()=>{
+        const url = `${GAS_URL}?action=dashboard&secret=${encodeURIComponent(SECRET)}&${qs}`;
+        const r = await fetch(url, { cache:"no-store" });
+        const j = await r.json().catch(()=>({}));
+        if (!r.ok) throw new Error(j && j.error ? j.error : `http_${r.status}`);
+        if (!j || !j.ok) throw new Error(j && j.error ? j.error : "bad_response");
+        return j;
+      };
+
+      if (API_MODE === "cf"){
+        out = await tryCF();
+      } else if (API_MODE === "gas"){
+        out = await tryGAS();
+      } else {
+        // auto: try CF first, then GAS
+        try{
+          out = await tryCF();
+        } catch (e1){
+          console.warn("CF API failed, fallback to GAS:", e1);
+          out = await tryGAS();
+        }
       }
+
       render(out);
+    } catch (err){
+      showError(err && err.message ? err.message : String(err||"unknown_error"));
     } finally{
       inFlight = false;
     }
