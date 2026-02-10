@@ -666,7 +666,16 @@
       }
     }
 
-  </style>
+  
+/* === Desktop enhancement: make weekly bars longer === */
+@media (min-width: 821px){
+  .wkRow{
+    grid-template-columns: minmax(220px, 1.4fr) 2fr 110px;
+  }
+  .wkBar{ height:12px; }
+}
+
+</style>
 </head>
 
 <body>
