@@ -339,28 +339,22 @@
   })();
 
   // =========================
-  // LogDate dropdown: 8 วัน
-  //  - อาทิตย์สัปดาห์ก่อน + จันทร์..อาทิตย์สัปดาห์นี้
-  //  - โชว์ครบ 8 วัน แต่ "วันอนาคต" disabled
+  // LogDate dropdown: 7 วัน (จันทร์-อาทิตย์ของสัปดาห์นี้)
+  //  - ตัดอาทิตย์สัปดาห์ก่อนออก
+  //  - ไม่ให้เลือกวันย้อนหลังและวันอนาคต (ยังโชว์ในรายการแต่ disabled)
   // =========================
   const logDateEl = document.getElementById("logDate");
   const weekdayHiddenEl = document.getElementById("weekdayHidden");
   const TH_DOW = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"];
 
-  function buildLogDateOptions8Days(){
+  function buildLogDateOptions7DaysNoPast(){
     const now = new Date();
     const todayISO = toISODateLocal(now);
 
-    // this week
+    // this week (Mon..Sun) — no previous Sunday
     const monThis = mondayOfWeekLocal(now);
 
-    // previous Sunday = monThis - 1 day
-    const prevSun = new Date(monThis);
-    prevSun.setDate(monThis.getDate() - 1);
-    prevSun.setHours(0,0,0,0);
-
-    // สร้าง array 8 วัน: prevSun, monThis..sunThis
-    const days = [prevSun];
+    const days = [];
     for (let i=0; i<7; i++){
       const d = new Date(monThis);
       d.setDate(monThis.getDate() + i);
@@ -381,8 +375,11 @@
       opt.textContent = label;
       opt.dataset.dow = dow;
 
-      // ล็อก "อนาคต" -> disabled แต่ยังโชว์
-      if (iso > todayISO){
+      // ✅ ไม่ให้เลือกวันย้อนหลัง (ก่อนวันปัจจุบัน) และไม่ให้เลือกวันอนาคต
+      if (iso < todayISO){
+        opt.disabled = true;
+        opt.textContent = `${label} (ผ่านมาแล้ว)`;
+      } else if (iso > todayISO){
         opt.disabled = true;
         opt.textContent = `${label} (ยังมาไม่ถึง)`;
       }
@@ -390,12 +387,12 @@
       logDateEl.appendChild(opt);
     }
 
-    // ค่าเริ่มต้น = วันนี้
-    logDateEl.value = todayISO;
-
-    // ถ้าวันนี้ดันอยู่ในรายการแล้วถูก disable (ไม่น่าเกิด) ให้เลือกตัวล่าสุดที่ไม่ disabled
-    if (logDateEl.selectedOptions[0]?.disabled){
-      for (let i=logDateEl.options.length-1; i>=0; i--){
+    // ค่าเริ่มต้น = วันนี้ (ถ้าอยู่ในช่วง จันทร์-อาทิตย์ของสัปดาห์นี้)
+    if ([...logDateEl.options].some(o => o.value === todayISO)){
+      logDateEl.value = todayISO;
+    } else {
+      // fallback: เลือกตัวแรกที่ไม่ disabled (กรณีเข้าเว็บข้ามเขตเวลาแปลก ๆ)
+      for (let i=0; i<logDateEl.options.length; i++){
         if (!logDateEl.options[i].disabled){
           logDateEl.selectedIndex = i;
           break;
@@ -406,12 +403,12 @@
     weekdayHiddenEl.value = logDateEl.selectedOptions[0]?.dataset?.dow || "";
   }
 
-  logDateEl.addEventListener("change", () => {
+  logDateEl.addEventListener("change", () => {("change", () => {
     const sel = logDateEl.selectedOptions[0];
     weekdayHiddenEl.value = sel?.dataset?.dow || "";
   });
 
-  buildLogDateOptions8Days();
+  buildLogDateOptions7DaysNoPast();
 
   // =========================
   // Success Popup (auto close + refresh)
@@ -487,7 +484,7 @@
         form.reset();
 
         // rebuild date options (8 วัน)
-        buildLogDateOptions8Days();
+        buildLogDateOptions7DaysNoPast();
 
         // refresh หน้า หลัง popup หาย + 2 วิ
         setTimeout(() => location.reload(), window.__REFRESH_AFTER_MS__ || 4500);
