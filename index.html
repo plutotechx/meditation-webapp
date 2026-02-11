@@ -403,7 +403,7 @@
     weekdayHiddenEl.value = logDateEl.selectedOptions[0]?.dataset?.dow || "";
   }
 
-  logDateEl.addEventListener("change", () => {("change", () => {
+  logDateEl.addEventListener("change", () => {
     const sel = logDateEl.selectedOptions[0];
     weekdayHiddenEl.value = sel?.dataset?.dow || "";
   });
