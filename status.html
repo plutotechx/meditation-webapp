@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Status - Daily Meditation</title>
+  <!-- UpdatedAt: 2026-02-12 00:00 (+07:00) | Change: remove previous Sunday option -->
 
   <style>
     :root{
@@ -332,7 +333,6 @@
       <div class="headerBlock">
         <div class="updatedCorner" id="updatedCorner">อัปเดตล่าสุด —</div>
 
-        <!-- ✅ เปลี่ยนหัวเรื่องเป็นอังกฤษ -->
         <h1>Check meditation status</h1>
 
         <p class="muted" id="weekHeader">กำลังคำนวณช่วงสัปดาห์...</p>
@@ -410,19 +410,11 @@
   function buildDateOptions(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
-    const sunPrev = new Date(mon); sunPrev.setDate(mon.getDate()-1);
 
     const todayISO = toISODateLocal(now);
     dateSel.innerHTML = "";
 
-    {
-      const iso = toISODateLocal(sunPrev);
-      const opt = document.createElement("option");
-      opt.value = iso;
-      opt.textContent = `อาทิตย์ ${thaiDateLabelLocalShort(sunPrev)} (สัปดาห์ที่แล้ว)`;
-      dateSel.appendChild(opt);
-    }
-
+    // ✅ เหลือแค่ จันทร์ - อาทิตย์ ของสัปดาห์ปัจจุบัน (ลบอาทิตย์สัปดาห์ที่แล้วออก)
     for (let i=0;i<7;i++){
       const d = new Date(mon); d.setDate(mon.getDate()+i);
       const iso = toISODateLocal(d);
