@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Executive Meditation Report</title>
+<style>
+  :root{
+    --bg0:#050b16;
+    --bg1:#0b1630;
+    --stroke: rgba(255,255,255,.12);
+    --stroke2: rgba(255,255,255,.18);
+    --txt: rgba(255,255,255,.92);
+    --muted: rgba(255,255,255,.68);
+    --muted2: rgba(255,255,255,.55);
+    --good:#2ecc71;
+    --warn:#f1c40f;
+    --mid:#ff8a3d;
+    --bad:#ff5b5b;
+    --shadow: 0 14px 50px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Noto Sans", sans-serif;
+    color:var(--txt);
+    background:
+      radial-gradient(1100px 700px at 22% 18%, rgba(120,170,255,.22), transparent 60%),
+      radial-gradient(900px 600px at 78% 18%, rgba(130,255,210,.12), transparent 55%),
+      radial-gradient(900px 700px at 55% 92%, rgba(255,120,180,.10), transparent 55%),
+      linear-gradient(180deg, var(--bg1), var(--bg0) 70%);
+    min-height:100vh;
+    padding:28px 18px 36px;
+  }
+  .wrap{max-width:1200px;margin:0 auto;}
+  .top{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .title{display:flex; flex-direction:column; gap:6px;}
+  h1{
+    margin:0; font-weight:800; letter-spacing:.2px;
+    font-size: clamp(22px, 3.2vw, 34px);
+  }
+  .subrow{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    color:var(--muted);
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 12px; border-radius:999px;
+    background: rgba(255,255,255,.06);
+    border:1px solid var(--stroke);
+    backdrop-filter: blur(10px);
+  }
+  .dot{
+    width:10px;height:10px;border-radius:99px;background:var(--good);
+    box-shadow: 0 0 0 6px rgba(46,204,113,.13);
+    animation: pulse 1.6s infinite;
+  }
+  @keyframes pulse{
+    0%{transform:scale(1); box-shadow:0 0 0 6px rgba(46,204,113,.14)}
+    50%{transform:scale(1.05); box-shadow:0 0 0 12px rgba(46,204,113,.06)}
+    100%{transform:scale(1); box-shadow:0 0 0 6px rgba(46,204,113,.14)}
+  }
+  .actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .btn{
+    border:1px solid var(--stroke2);
+    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
+    color:var(--txt);
+    padding:10px 14px;
+    border-radius:12px;
+    cursor:pointer;
+    box-shadow: 0 10px 26px rgba(0,0,0,.35);
+    backdrop-filter: blur(12px);
+    font-weight:650;
+  }
+  .btn:active{transform: translateY(1px)}
+  .grid{
+    display:grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap:14px;
+  }
+  @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+    border:1px solid var(--stroke);
+    border-radius:22px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(12px);
+    overflow:hidden;
+  }
+  .card .hd{
+    padding:14px 16px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .card .hd h2{ margin:0; font-size:16px; font-weight:800; letter-spacing:.2px; }
+  .card .bd{padding:14px 16px;}
+  .kpis{display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;}
+  @media (max-width: 680px){ .kpis{grid-template-columns: repeat(2, 1fr);} }
+  .kpi{
+    background: rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:18px;
+    padding:12px;
+    min-height:86px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .kpi .l{font-size:12px;color:var(--muted);font-weight:700}
+  .kpi .v{font-size:22px;font-weight:900;letter-spacing:.2px}
+  .kpi .s{font-size:12px;color:var(--muted2)}
+  .kpi.good{outline:1px solid rgba(46,204,113,.25)}
+  .kpi.warn{outline:1px solid rgba(241,196,15,.25)}
+  .kpi.mid{outline:1px solid rgba(255,138,61,.25)}
+  .kpi.bad{outline:1px solid rgba(255,91,91,.22)}
+  .row{display:grid; grid-template-columns: 1.1fr 1fr; gap:14px; margin-top:12px;}
+  @media (max-width: 980px){ .row{grid-template-columns:1fr} }
+  .list{display:flex; flex-wrap:wrap; gap:8px;}
+  .pill{
+    background: rgba(46,204,113,.12);
+    border: 1px solid rgba(46,204,113,.22);
+    padding:6px 10px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:12px;
+    color:rgba(255,255,255,.88);
+  }
+  .pill.gray{
+    background: rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.10);
+    color: rgba(255,255,255,.82);
+  }
+  .tableWrap{
+    overflow:auto;
+    border-radius:18px;
+    border:1px solid rgba(255,255,255,.10);
+    background: rgba(0,0,0,.10);
+  }
+  table{ width:100%; border-collapse:collapse; min-width: 620px; }
+  thead th{
+    text-align:left; font-size:12px; color: rgba(255,255,255,.74);
+    padding:12px; border-bottom:1px solid rgba(255,255,255,.10);
+    position:sticky; top:0;
+    background: rgba(10,18,40,.92);
+    backdrop-filter: blur(10px);
+  }
+  tbody td{
+    padding:12px; border-bottom:1px solid rgba(255,255,255,.07);
+    font-size:13px; color: rgba(255,255,255,.88);
+  }
+  tbody tr:hover{background: rgba(255,255,255,.04)}
+  .chip{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 10px; border-radius:999px;
+    font-weight:800; font-size:12px;
+    border:1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+  }
+  .chip.good{border-color:rgba(46,204,113,.22); background:rgba(46,204,113,.10)}
+  .chip.warn{border-color:rgba(241,196,15,.22); background:rgba(241,196,15,.10)}
+  .chip.mid{border-color:rgba(255,138,61,.22); background:rgba(255,138,61,.10)}
+  .chip.bad{border-color:rgba(255,91,91,.20); background:rgba(255,91,91,.08)}
+  .bar{
+    height:10px; border-radius:999px;
+    background: rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.10);
+    overflow:hidden;
+  }
+  .bar > i{
+    display:block; height:100%;
+    width:0%;
+    background: linear-gradient(90deg, rgba(46,204,113,.92), rgba(46,204,113,.55));
+  }
+  .muted{color:var(--muted)}
+  .note{font-size:12px;color:var(--muted2); line-height:1.45}
+
+  @media print{
+    body{padding:0; background:#fff; color:#111}
+    .btn,.actions{display:none!important}
+    .card{box-shadow:none; backdrop-filter:none}
+    .badge{border-color:#ddd;background:#f7f7f7}
+    .dot{animation:none; box-shadow:none}
+    .wrap{max-width:none;margin:0;padding:0}
+    .card{border-color:#ddd}
+    thead th{background:#f3f3f3;color:#333}
+    .kpi,.pill,.chip{border-color:#ddd;background:#f7f7f7;color:#111; outline:none}
+    .bar{border-color:#ddd;background:#eee}
+    .bar>i{background:#666}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="title">
+      <h1>Dashboard Meditation — Executive Report</h1>
+      <div class="subrow">
+        <span class="badge" id="weekRange">กำลังโหลดช่วงสัปดาห์…</span>
+        <span class="badge"><span class="dot"></span><span id="lastUpdated">อัปเดตล่าสุด —</span></span>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btnPrint">Export PDF</button>
+      <button class="btn" id="btnReload">รีเฟรชข้อมูล</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <section class="card">
+      <div class="hd">
+        <h2>ภาพรวม Integrity (ตามสัปดาห์ที่เลือก)</h2>
+        <span class="muted" id="peopleTotalTxt">—</span>
+      </div>
+      <div class="bd">
+        <div class="kpis">
+          <div class="kpi good">
+            <div class="l">ระดับ 1 · 100%</div>
+            <div class="v" id="kpi100">—</div>
+            <div class="s">ทำครบทุกครั้ง</div>
+          </div>
+          <div class="kpi warn">
+            <div class="l">ระดับ 2 · 90–99%</div>
+            <div class="v" id="kpi90">—</div>
+            <div class="s">ใกล้เคียงมาก</div>
+          </div>
+          <div class="kpi mid">
+            <div class="l">ระดับ 3 · 80–89%</div>
+            <div class="v" id="kpi80">—</div>
+            <div class="s">ยังมีช่องพัฒนา</div>
+          </div>
+          <div class="kpi bad">
+            <div class="l">ต่ำกว่า 80%</div>
+            <div class="v" id="kpiLow">—</div>
+            <div class="s">ควรติดตามเพิ่ม</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="card" style="box-shadow:none">
+            <div class="hd">
+              <h2>รายชื่อผู้ทำครบ 100%</h2>
+              <span class="muted" id="count100Txt">—</span>
+            </div>
+            <div class="bd">
+              <div class="list" id="list100"><span class="muted">กำลังโหลด…</span></div>
+              <div class="note" style="margin-top:10px">
+                อิงรูปแบบ “Integrity Check List” ที่ใช้สรุปกลุ่ม 100% ในรายงานตัวอย่าง
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="box-shadow:none">
+            <div class="hd">
+              <h2>ทำสมาธิต่อเนื่องครบ 1 เดือน</h2>
+              <span class="muted" id="weekPerfectTxt">—</span>
+            </div>
+            <div class="bd">
+              <div class="list" id="weekPerfectList">
+                <span class="pill gray">—</span>
+              </div>
+              <div class="note" style="margin-top:10px">
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <div class="hd">
+        <h2>รายชื่อผู้ที่ทำสมาธิไม่ครบ 100%</h2>
+        <span class="muted" id="countNon100Txt">—</span>
+      </div>
+      <div class="bd">
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40%">ชื่อ</th>
+                <th style="width:18%">เปอร์เซ็นต์</th>
+                <th style="width:22%">ขาด (ครั้ง)</th>
+                <th style="width:20%">แถบสรุป</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyNon100">
+              <tr><td colspan="4" class="muted">กำลังโหลด…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note" style="margin-top:10px">
+          ตารางนี้ออกแบบให้คล้าย “รายชื่อผู้ที่ทำสมาธิไม่ครบ 100%” ในไฟล์ตัวอย่าง (แสดงชื่อ + เปอร์เซ็นต์ + จำนวนที่ขาด) เพื่อส่งผู้บริหารอ่านง่าย
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div style="margin-top:14px" class="card">
+    <div class="hd">
+      <h2>หมายเหตุ (สำหรับผู้บริหาร)</h2>
+      <span class="muted">สรุปแบบอ่านเร็ว</span>
+    </div>
+    <div class="bd">
+      <div class="note" id="execNote">กำลังสร้างสรุป…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const $ = (id)=>document.getElementById(id);
+
+  $("btnPrint").addEventListener("click", ()=> window.print());
+  $("btnReload").addEventListener("click", ()=> load());
+
+  function thaiDateFromISO(iso){
+    const parts = String(iso||"").split("-");
+    if (parts.length!==3) return "-";
+    const y=Number(parts[0]), m=Number(parts[1]), d=Number(parts[2]);
+    if (!y||!m||!d) return "-";
+    const dt = new Date(y, m-1, d);
+    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
+  }
+
+  function gradeChip(pct){
+    if (pct === 100) return ["good","100%"];
+    if (pct >= 90) return ["warn","90–99%"];
+    if (pct >= 80) return ["mid","80–89%"];
+    return ["bad","<80%"];
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+  }
+
+  function computeFromPerson(p){
+    const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+    let total = 0;
+    for (const d of perDay) total += Number(d.count||0);
+    const totalSlots = Number(p.totalSlots || 21);
+    const totalDone = Number.isFinite(Number(p.totalDone)) ? Number(p.totalDone) : total;
+    const pct = Number.isFinite(Number(p.percent)) ? Number(p.percent) : (totalSlots ? Math.round((totalDone/totalSlots)*10000)/100 : 0);
+    const missing = Math.max(0, totalSlots - totalDone);
+    return { totalSlots, totalDone, pct, missing };
+  }
+
+  function setList(el, names, cls){
+    if (!names || !names.length){
+      el.innerHTML = '<span class="muted">— ไม่มี —</span>';
+      return;
+    }
+    const thSort = (a,b)=> String(a).localeCompare(String(b),'th');
+    names = [...names].sort(thSort);
+    el.innerHTML = names.map(n=>`<span class="pill ${cls||""}">${escapeHtml(n)}</span>`).join("");
+  }
+
+  function setLastUpdated(out){
+    const t = out && (out.lastUpdated || out.updatedAt || out.serverNowISO);
+    let txt = "";
+    if (t){
+      const d = new Date(t);
+      if (!isNaN(d.getTime())){
+        txt = d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
+      }
+    }
+    if (!txt){
+      const d = new Date();
+      txt = d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
+    }
+    $("lastUpdated").textContent = `อัปเดตล่าสุด ${txt} น.`;
+  }
+
+  async function load(){
+    try{
+      $("tbodyNon100").innerHTML = `<tr><td colspan="4" class="muted">กำลังโหลด…</td></tr>`;
+      $("list100").innerHTML = `<span class="muted">กำลังโหลด…</span>`;
+
+      const res = await fetch("/api/dashboard?weekOffset=0", { cache:"no-store" });
+      const out = await res.json();
+
+      const w = out.week || {};
+      $("weekRange").textContent = w.startISO
+        ? `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`
+        : "ช่วงสัปดาห์: —";
+
+      setLastUpdated(out);
+
+      const people = Array.isArray(out.people) ? out.people : [];
+      const totalPeople = people.length;
+      $("peopleTotalTxt").textContent = `${totalPeople} คน`;
+
+      const level100 = [];
+      const level90 = [];
+      const level80 = [];
+      const levelLow = [];
+      const non100 = [];
+
+      for (const p of people){
+        const name = p.name || "-";
+        const { pct, missing, totalSlots, totalDone } = computeFromPerson(p);
+        if (pct === 100) level100.push(name);
+        else non100.push({ name, pct, missing, totalSlots, totalDone });
+
+        if (pct >= 90 && pct < 100) level90.push(name);
+        if (pct >= 80 && pct < 90) level80.push(name);
+        if (pct < 80) levelLow.push(name);
+      }
+
+      $("kpi100").textContent = level100.length;
+      $("kpi90").textContent  = level90.length;
+      $("kpi80").textContent  = level80.length;
+      $("kpiLow").textContent = levelLow.length;
+
+      $("count100Txt").textContent = `${level100.length} คน`;
+      setList($("list100"), level100);
+
+      $("countNon100Txt").textContent = `${non100.length} คน`;
+
+      non100.sort((a,b)=> (a.pct - b.pct) || String(a.name).localeCompare(String(b.name),"th"));
+
+      if (!non100.length){
+        $("tbodyNon100").innerHTML = `<tr><td colspan="4" class="muted">— ไม่มี —</td></tr>`;
+      }else{
+        $("tbodyNon100").innerHTML = non100.map(r=>{
+          const [cls] = gradeChip(r.pct);
+          const width = Math.max(0, Math.min(100, r.pct));
+          return `
+            <tr>
+              <td><b>${escapeHtml(r.name)}</b></td>
+              <td><span class="chip ${cls}">${r.pct.toFixed(2)}%</span></td>
+              <td>${r.missing} ครั้ง</td>
+              <td>
+                <div class="bar" title="${r.totalDone}/${r.totalSlots}">
+                  <i style="width:${width}%"></i>
+                </div>
+              </td>
+            </tr>`;
+        }).join("");
+      }
+
+      const weekPerfectNames = [];
+      for (const p of people){
+        const doneDays = Number(p.doneDays || 0);
+        // doneDays is count of days with 3/3 in the selected week
+        if (doneDays >= 7) weekPerfectNames.push(p.name);
+      }
+      weekPerfectNames.sort((a,b)=>String(a).localeCompare(String(b),'th'));
+      $("weekPerfectTxt").textContent = `${weekPerfectNames.length} คน`;
+      $("weekPerfectList").innerHTML = weekPerfectNames.length
+        ? weekPerfectNames.map(n=>`<span class="pill green">${esc(n)}</span>`).join("")
+        : `<span class="pill gray">— ไม่มี —</span>`;
+
+
+      const pct100 = totalPeople ? Math.round((level100.length/totalPeople)*100) : 0;
+      const risk = levelLow.length;
+      $("execNote").innerHTML = [
+        `สัปดาห์นี้มีผู้ทำสมาธิครบ 100% จำนวน <b>${level100.length}</b> คน (${pct100}%).`,
+        `กลุ่มใกล้เคียง 100% (90–99%) จำนวน <b>${level90.length}</b> คน — “ดันอีกนิดถึง 100%”.`,
+        `กลุ่มที่ควรติดตามเป็นพิเศษ (<80%) จำนวน <b>${risk}</b> คน.`
+      ].join(" ");
+
+    }catch(e){
+      $("weekRange").textContent = "โหลดข้อมูลไม่สำเร็จ";
+      $("execNote").textContent = "เกิดข้อผิดพลาดในการดึงข้อมูล /api/dashboard";
+      $("tbodyNon100").innerHTML = `<tr><td colspan="4" class="muted">โหลดข้อมูลไม่สำเร็จ</td></tr>`;
+      $("list100").innerHTML = `<span class="muted">โหลดข้อมูลไม่สำเร็จ</span>`;
+      console.error(e);
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
