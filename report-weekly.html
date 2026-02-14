@@ -188,6 +188,67 @@
     .bar{border-color:#ddd;background:#eee}
     .bar>i{background:#666}
   }
+
+  /* =========================
+     PRINT: Fit to 1 page A4
+     ========================= */
+  @page{
+    size: A4 portrait;
+    margin: 10mm;
+  }
+  @media print{
+    html,body{height:auto}
+    body{
+      padding:0 !important;
+      background:#fff !important;
+      color:#111 !important;
+    }
+    .wrap{max-width:none !important; margin:0 !important;}
+
+    /* Compact overall spacing */
+    .top{margin-bottom:10px !important}
+    .card .hd{padding:10px 12px !important}
+    .card .bd{padding:10px 12px !important}
+    .grid{gap:10px !important}
+    .row{gap:10px !important; margin-top:10px !important}
+    .kpis{gap:8px !important}
+    .kpi{min-height:auto !important; padding:10px !important}
+    .kpi .v{font-size:18px !important}
+    h1{font-size:22px !important}
+    .badge{padding:6px 10px !important}
+
+    /* Reduce table footprint */
+    table{min-width:0 !important}
+    thead th{padding:9px 10px !important; font-size:11px !important}
+    tbody td{padding:9px 10px !important; font-size:11px !important}
+
+    /* Chips/pills smaller */
+    .pill{padding:5px 8px !important; font-size:11px !important}
+    .chip{padding:5px 8px !important; font-size:11px !important}
+    .note{font-size:11px !important}
+
+    /* Try to keep everything on one page */
+    .card{break-inside:avoid; page-break-inside:avoid;}
+    .tableWrap{max-height:none !important; overflow:visible !important;}
+    .list{max-height:none !important; overflow:visible !important;}
+
+    /* If still long, clamp name lists to avoid spilling to page 2 */
+    #list100, #streak30List{
+      max-height:110px !important;
+      overflow:hidden !important;
+    }
+
+    /* Hide hover effects, keep crisp */
+    tbody tr:hover{background:transparent !important}
+
+    /* Optional: slightly scale down whole page content if needed */
+    .wrap{
+      transform: scale(.96);
+      transform-origin: top left;
+      width: calc(100% / .96);
+    }
+  }
+
 </style>
 </head>
 <body>
