@@ -1,533 +1,726 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Executive Meditation Report</title>
-<style>
-  :root{
-    --bg0:#050b16;
-    --bg1:#0b1630;
-    --stroke: rgba(255,255,255,.12);
-    --stroke2: rgba(255,255,255,.18);
-    --txt: rgba(255,255,255,.92);
-    --muted: rgba(255,255,255,.68);
-    --muted2: rgba(255,255,255,.55);
-    --good:#2ecc71;
-    --warn:#f1c40f;
-    --mid:#ff8a3d;
-    --bad:#ff5b5b;
-    --shadow: 0 14px 50px rgba(0,0,0,.55);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Noto Sans", sans-serif;
-    color:var(--txt);
-    background:
-      radial-gradient(1100px 700px at 22% 18%, rgba(120,170,255,.22), transparent 60%),
-      radial-gradient(900px 600px at 78% 18%, rgba(130,255,210,.12), transparent 55%),
-      radial-gradient(900px 700px at 55% 92%, rgba(255,120,180,.10), transparent 55%),
-      linear-gradient(180deg, var(--bg1), var(--bg0) 70%);
-    min-height:100vh;
-    padding:28px 18px 36px;
-  }
-  .wrap{max-width:1200px;margin:0 auto;}
-  .top{
-    display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;
-    margin-bottom:16px;
-  }
-  .title{display:flex; flex-direction:column; gap:6px;}
-  h1{
-    margin:0; font-weight:800; letter-spacing:.2px;
-    font-size: clamp(22px, 3.2vw, 34px);
-  }
-  .subrow{
-    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-    color:var(--muted);
-  }
-  .badge{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:8px 12px; border-radius:999px;
-    background: rgba(255,255,255,.06);
-    border:1px solid var(--stroke);
-    backdrop-filter: blur(10px);
-  }
-  .dot{
-    width:10px;height:10px;border-radius:99px;background:var(--good);
-    box-shadow: 0 0 0 6px rgba(46,204,113,.13);
-    animation: pulse 1.6s infinite;
-  }
-  @keyframes pulse{
-    0%{transform:scale(1); box-shadow:0 0 0 6px rgba(46,204,113,.14)}
-    50%{transform:scale(1.05); box-shadow:0 0 0 12px rgba(46,204,113,.06)}
-    100%{transform:scale(1); box-shadow:0 0 0 6px rgba(46,204,113,.14)}
-  }
-  .actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  .btn{
-    border:1px solid var(--stroke2);
-    background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.06));
-    color:var(--txt);
-    padding:10px 14px;
-    border-radius:12px;
-    cursor:pointer;
-    box-shadow: 0 10px 26px rgba(0,0,0,.35);
-    backdrop-filter: blur(12px);
-    font-weight:650;
-  }
-  .btn:active{transform: translateY(1px)}
-  .grid{
-    display:grid;
-    grid-template-columns: 1.2fr .8fr;
-    gap:14px;
-  }
-  @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
-  .card{
-    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
-    border:1px solid var(--stroke);
-    border-radius:22px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(12px);
-    overflow:hidden;
-  }
-  .card .hd{
-    padding:14px 16px;
-    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
-    border-bottom:1px solid rgba(255,255,255,.08);
-  }
-  .card .hd h2{ margin:0; font-size:16px; font-weight:800; letter-spacing:.2px; }
-  .card .bd{padding:14px 16px;}
-  .kpis{display:grid; grid-template-columns: repeat(4, 1fr); gap:10px;}
-  @media (max-width: 680px){ .kpis{grid-template-columns: repeat(2, 1fr);} }
-  .kpi{
-    background: rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.10);
-    border-radius:18px;
-    padding:12px;
-    min-height:86px;
-    display:flex; flex-direction:column; justify-content:space-between;
-  }
-  .kpi .l{font-size:12px;color:var(--muted);font-weight:700}
-  .kpi .v{font-size:22px;font-weight:900;letter-spacing:.2px}
-  .kpi .s{font-size:12px;color:var(--muted2)}
-  .kpi.good{outline:1px solid rgba(46,204,113,.25)}
-  .kpi.warn{outline:1px solid rgba(241,196,15,.25)}
-  .kpi.mid{outline:1px solid rgba(255,138,61,.25)}
-  .kpi.bad{outline:1px solid rgba(255,91,91,.22)}
-  .row{display:grid; grid-template-columns: 1.1fr 1fr; gap:14px; margin-top:12px;}
-  @media (max-width: 980px){ .row{grid-template-columns:1fr} }
-  .list{display:flex; flex-wrap:wrap; gap:8px;}
-  .pill{
-    background: rgba(46,204,113,.12);
-    border: 1px solid rgba(46,204,113,.22);
-    padding:6px 10px;
-    border-radius:999px;
-    font-weight:700;
-    font-size:12px;
-    color:rgba(255,255,255,.88);
-  }
-  .pill.gray{
-    background: rgba(255,255,255,.07);
-    border:1px solid rgba(255,255,255,.10);
-    color: rgba(255,255,255,.82);
-  }
-  .tableWrap{
-    overflow:auto;
-    border-radius:18px;
-    border:1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.10);
-  }
-  table{ width:100%; border-collapse:collapse; min-width: 620px; }
-  thead th{
-    text-align:left; font-size:12px; color: rgba(255,255,255,.74);
-    padding:12px; border-bottom:1px solid rgba(255,255,255,.10);
-    position:sticky; top:0;
-    background: rgba(10,18,40,.92);
-    backdrop-filter: blur(10px);
-  }
-  tbody td{
-    padding:12px; border-bottom:1px solid rgba(255,255,255,.07);
-    font-size:13px; color: rgba(255,255,255,.88);
-  }
-  tbody tr:hover{background: rgba(255,255,255,.04)}
-  .chip{
-    display:inline-flex; align-items:center; gap:8px;
-    padding:6px 10px; border-radius:999px;
-    font-weight:800; font-size:12px;
-    border:1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.06);
-  }
-  .chip.good{border-color:rgba(46,204,113,.22); background:rgba(46,204,113,.10)}
-  .chip.warn{border-color:rgba(241,196,15,.22); background:rgba(241,196,15,.10)}
-  .chip.mid{border-color:rgba(255,138,61,.22); background:rgba(255,138,61,.10)}
-  .chip.bad{border-color:rgba(255,91,91,.20); background:rgba(255,91,91,.08)}
-  .bar{
-    height:10px; border-radius:999px;
-    background: rgba(255,255,255,.10);
-    border:1px solid rgba(255,255,255,.10);
-    overflow:hidden;
-  }
-  .bar > i{
-    display:block; height:100%;
-    width:0%;
-    background: linear-gradient(90deg, rgba(46,204,113,.92), rgba(46,204,113,.55));
-  }
-  .muted{color:var(--muted)}
-  .note{font-size:12px;color:var(--muted2); line-height:1.45}
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Executive Weekly Report - Meditation</title>
+  <!-- UpdatedAt: 2026-02-15 00:00 (+07:00) -->
 
-  @media print{
-    body{padding:0; background:#fff; color:#111}
-    .btn,.actions{display:none!important}
-    .card{box-shadow:none; backdrop-filter:none}
-    .badge{border-color:#ddd;background:#f7f7f7}
-    .dot{animation:none; box-shadow:none}
-    .wrap{max-width:none;margin:0;padding:0}
-    .card{border-color:#ddd}
-    thead th{background:#f3f3f3;color:#333}
-    .kpi,.pill,.chip{border-color:#ddd;background:#f7f7f7;color:#111; outline:none}
-    .bar{border-color:#ddd;background:#eee}
-    .bar>i{background:#666}
-  }
+  <style>
+    :root{
+      --bg:#0a1322;
+      --card:rgba(255,255,255,.07);
+      --border:rgba(255,255,255,.12);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.72);
 
-  /* =========================
-     PRINT: Fit to 1 page A4
-     ========================= */
-  @page{
-    size: A4 portrait;
-    margin: 10mm;
-  }
-  @media print{
-    html,body{height:auto}
+      --good:#30d16a;
+      --mid:#f3c43a;
+      --orange:#ff8c2a;
+      --bad:#ff4d4d;
+      --none:rgba(255,255,255,.30);
+
+      --radius:16px;
+      --shadow:0 18px 60px rgba(0,0,0,.30);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
     body{
-      padding:0 !important;
-      background:#fff !important;
-      color:#111 !important;
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 560px at 18% 0%, rgba(88,140,255,.14), transparent 60%),
+        radial-gradient(900px 520px at 85% 12%, rgba(0,240,255,.10), transparent 55%),
+        linear-gradient(180deg, #081224 0%, #070f1e 100%);
+      min-height:100vh;
+      padding:14px;
     }
-    .wrap{max-width:none !important; margin:0 !important;}
-
-    /* Compact overall spacing */
-    .top{margin-bottom:10px !important}
-    .card .hd{padding:10px 12px !important}
-    .card .bd{padding:10px 12px !important}
-    .grid{gap:10px !important}
-    .row{gap:10px !important; margin-top:10px !important}
-    .kpis{gap:8px !important}
-    .kpi{min-height:auto !important; padding:10px !important}
-    .kpi .v{font-size:18px !important}
-    h1{font-size:22px !important}
-    .badge{padding:6px 10px !important}
-
-    /* Reduce table footprint */
-    table{min-width:0 !important}
-    thead th{padding:9px 10px !important; font-size:11px !important}
-    tbody td{padding:9px 10px !important; font-size:11px !important}
-
-    /* Chips/pills smaller */
-    .pill{padding:5px 8px !important; font-size:11px !important}
-    .chip{padding:5px 8px !important; font-size:11px !important}
-    .note{font-size:11px !important}
-
-    /* Try to keep everything on one page */
-    .card{break-inside:avoid; page-break-inside:avoid;}
-    .tableWrap{max-height:none !important; overflow:visible !important;}
-    .list{max-height:none !important; overflow:visible !important;}
-
-    /* If still long, clamp name lists to avoid spilling to page 2 */
-    #list100, #streak30List{
-      max-height:110px !important;
-      overflow:hidden !important;
+    .page{
+      width:min(1080px, 100%);
+      margin:0 auto;
     }
 
-    /* Hide hover effects, keep crisp */
-    tbody tr:hover{background:transparent !important}
-
-    /* Optional: slightly scale down whole page content if needed */
-    .wrap{
-      transform: scale(.96);
-      transform-origin: top left;
-      width: calc(100% / .96);
+    .hdr{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; flex-wrap:wrap;
+      margin-bottom:10px;
     }
-  }
+    .title{display:flex; flex-direction:column; gap:4px;}
+    h1{
+      margin:0;
+      font-size:20px;
+      font-weight:950;
+      letter-spacing:.2px;
+      line-height:1.1;
+    }
+    .sub{
+      display:flex; gap:10px; flex-wrap:wrap;
+      font-size:12px; color:var(--muted);
+      align-items:center;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      white-space:nowrap;
+    }
+    .dotLive{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--good);
+      box-shadow:0 0 0 0 rgba(48,209,106,.55);
+      animation:pulseG 1.2s infinite;
+      flex:0 0 auto;
+    }
+    @keyframes pulseG{
+      0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
+      70%{ box-shadow:0 0 0 10px rgba(48,209,106,0) }
+      100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
+    }
 
-</style>
+    .actions{
+      display:flex; gap:10px; align-items:center; justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:9px 12px;
+      border-radius:12px;
+      font-weight:900;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .btn:hover{background:rgba(255,255,255,.10)}
+    .btn.primary{
+      background:rgba(106,169,255,.92);
+      color:#071120;
+      border-color:rgba(106,169,255,.35);
+      box-shadow:0 14px 28px rgba(106,169,255,.18);
+    }
+
+    .grid{display:grid; grid-template-columns: 1fr; gap:10px;}
+    .row2{display:grid; grid-template-columns: 1.1fr .9fr; gap:10px; align-items:stretch;}
+    .rowBottom{display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:stretch;}
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:radial-gradient(closest-side at 60% 0%, rgba(120,200,255,.18), transparent 70%);
+      pointer-events:none;
+    }
+    .cardHd{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+    .cardHd .h{margin:0;font-size:13px;font-weight:950;color:rgba(234,240,255,.90);}
+    .cardHd .m{font-size:11px;color:rgba(234,240,255,.66);margin-top:2px;}
+    .cardBd{padding:10px 12px; position:relative; z-index:1;}
+
+    .kpis{display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px;}
+    .kpi{
+      background:rgba(0,0,0,.20);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:10px;
+      min-height:76px;
+    }
+    .kpi .l{font-size:11px; color:rgba(234,240,255,.70); font-weight:900}
+    .kpi .v{
+      margin-top:6px;
+      font-size:18px;
+      font-weight:1000;
+      line-height:1.05;
+      display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
+    }
+    .kpi .v .big{font-size:22px}
+    .kpi .s{margin-top:6px; font-size:11px; color:rgba(234,240,255,.62)}
+    .kpi .tag{
+      font-size:11px; font-weight:950;
+      padding:4px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+    .tag.good{border-color:rgba(48,209,106,.38); background:rgba(48,209,106,.10)}
+    .tag.bad{border-color:rgba(255,77,77,.38); background:rgba(255,77,77,.10)}
+    .tag.mid{border-color:rgba(243,196,58,.38); background:rgba(243,196,58,.10)}
+    .tag.orange{border-color:rgba(255,140,42,.40); background:rgba(255,140,42,.10)}
+
+    .trendWrap{display:grid; gap:8px}
+    .trend{
+      display:grid;
+      grid-template-columns: repeat(7, minmax(0,1fr));
+      gap:6px;
+      align-items:end;
+      height:110px;
+      padding-top:6px;
+    }
+    .barCol{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
+    .bar{
+      width:100%;
+      height:90px;
+      border-radius:12px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      display:flex;
+      align-items:flex-end;
+    }
+    .bar > i{
+      display:block;
+      width:100%;
+      height:0%;
+      background:linear-gradient(180deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
+    }
+    .barLbl{font-size:11px;font-weight:950;color:rgba(234,240,255,.85);line-height:1;white-space:nowrap;}
+    .barVal{font-size:10px;color:rgba(234,240,255,.66);line-height:1;font-family:var(--mono);}
+
+    .dist{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .donut{width:120px;height:120px;flex:0 0 auto;}
+    .centerText{font-size:14px;font-weight:1000;fill:#eaf0ff;}
+    .centerSub{font-size:9px;fill:rgba(234,240,255,.70);}
+    .legend{display:grid;gap:6px;min-width:180px}
+    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:rgba(234,240,255,.84)}
+    .legLeft{display:flex;align-items:center;gap:8px;min-width:0}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .dot.good{background:var(--good)}
+    .dot.mid{background:var(--mid)}
+    .dot.orange{background:var(--orange)}
+    .dot.bad{background:var(--bad)}
+    .dot.none{background:var(--none)}
+    .legName{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .legVal{font-family:var(--mono);color:rgba(234,240,255,.70);white-space:nowrap}
+
+    .list{display:flex;flex-wrap:wrap;gap:6px;}
+    .namePill{
+      font-size:11px;font-weight:950;
+      padding:6px 9px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:rgba(234,240,255,.92);
+      max-width:100%;
+    }
+    .namePill.bad{border-color:rgba(255,77,77,.35); background:rgba(255,77,77,.10)}
+    .namePill.good{border-color:rgba(48,209,106,.35); background:rgba(48,209,106,.10)}
+    .namePill.gray{border-color:rgba(255,255,255,.16); background:rgba(0,0,0,.16); color:rgba(234,240,255,.75)}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:14px;
+      overflow:hidden;
+    }
+    thead th{
+      text-align:left;
+      padding:8px 10px;
+      font-size:11px;
+      color:rgba(234,240,255,.78);
+      font-weight:1000;
+      background:rgba(0,0,0,.22);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      white-space:nowrap;
+    }
+    tbody td{
+      padding:8px 10px;
+      font-size:11px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      vertical-align:middle;
+    }
+    tbody tr:last-child td{border-bottom:none}
+    .pctChip{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:4px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.16);
+      font-weight:1000;
+      font-family:var(--mono);
+      min-width:78px;
+    }
+    .pctChip.good{border-color:rgba(48,209,106,.30); background:rgba(48,209,106,.10)}
+    .pctChip.mid{border-color:rgba(243,196,58,.30); background:rgba(243,196,58,.10)}
+    .pctChip.orange{border-color:rgba(255,140,42,.32); background:rgba(255,140,42,.10)}
+    .pctChip.bad{border-color:rgba(255,77,77,.32); background:rgba(255,77,77,.10)}
+    .miniBar{
+      height:8px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .miniBar>i{display:block;height:100%;width:0%;background:linear-gradient(90deg, rgba(255,77,77,.85), rgba(255,140,42,.65));}
+
+    .note{margin-top:8px;font-size:10.5px;color:rgba(234,240,255,.62);}
+
+    @media (max-width: 900px){
+      .row2{grid-template-columns:1fr}
+      .rowBottom{grid-template-columns:1fr}
+      .kpis{grid-template-columns:repeat(2, minmax(0,1fr))}
+    }
+
+    @page{ size: A4 portrait; margin: 8mm; }
+    @media print{
+      body{padding:0 !important; background:#fff !important; color:#111 !important;}
+      .btn,.actions{display:none !important;}
+      .page{width:auto !important; margin:0 !important;}
+      .dotLive{animation:none !important; box-shadow:none !important;}
+      .card, .kpi, table{box-shadow:none !important;}
+      .card{border-color:#ddd !important;}
+      .kpi{background:#f6f6f6 !important; border-color:#ddd !important;}
+      table{border-color:#ddd !important; background:#fff !important;}
+      thead th{background:#f3f3f3 !important; color:#333 !important; border-bottom-color:#e6e6e6 !important;}
+      tbody td{border-bottom-color:#eee !important;}
+      .pctChip{border-color:#ddd !important; background:#f7f7f7 !important; color:#111 !important;}
+      .namePill{border-color:#ddd !important; background:#f7f7f7 !important; color:#111 !important;}
+      .namePill.bad{border-color:#e3b3b3 !important; background:#fff1f1 !important;}
+      .namePill.good{border-color:#b9e7c9 !important; background:#effbf3 !important;}
+      .namePill.gray{background:#f3f3f3 !important; color:#333 !important;}
+      h1{font-size:18px !important;}
+      .sub{font-size:11px !important;}
+      .cardHd{padding:8px 10px !important;}
+      .cardBd{padding:8px 10px !important;}
+      .kpi .v .big{font-size:20px !important;}
+      .trend{height:100px !important;}
+      .bar{height:84px !important;}
+      .note{font-size:10px !important;}
+      .page{transform: scale(.94); transform-origin: top left; width: calc(100% / .94);}
+    }
+  </style>
 </head>
+
 <body>
-<div class="wrap">
-  <div class="top">
-    <div class="title">
-      <h1>Dashboard Meditation — Executive Report</h1>
-      <div class="subrow">
-        <span class="badge" id="weekRange">กำลังโหลดช่วงสัปดาห์…</span>
-        <span class="badge"><span class="dot"></span><span id="lastUpdated">อัปเดตล่าสุด —</span></span>
+  <div class="page">
+    <div class="hdr">
+      <div class="title">
+        <h1>Dashboard Meditation — Executive Weekly Report</h1>
+        <div class="sub">
+          <span class="pill" id="weekPill">สัปดาห์: กำลังโหลด…</span>
+          <span class="pill"><span class="dotLive"></span><span id="updatedPill">อัปเดตล่าสุด: —</span></span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn" href="/dashboard.html">กลับไป Dashboard</a>
+        <button class="btn primary" id="btnPrint">Export PDF (A4)</button>
       </div>
     </div>
-    <div class="actions">
-      <button class="btn" id="btnPrint">Export PDF</button>
-      <button class="btn" id="btnReload">รีเฟรชข้อมูล</button>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="cardHd">
+          <div>
+            <div class="h">ภาพรวมสัปดาห์นี้ (จันทร์–อาทิตย์)</div>
+            <div class="m">สรุปแบบ 1 หน้า สำหรับผู้บริหาร</div>
+          </div>
+          <div class="pill" id="memberPill">สมาชิก: — คน</div>
+        </div>
+        <div class="cardBd">
+          <div class="kpis">
+            <div class="kpi">
+              <div class="l">Perfect Week (7/7 วันครบ 3/3)</div>
+              <div class="v"><span class="big" id="kPerfectN">—</span><span>คน</span><span class="tag good" id="kPerfectPct">—%</span></div>
+              <div class="s">ครบทุกวันในสัปดาห์</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Compliance Rate (เฉลี่ยทั้งองค์กร)</div>
+              <div class="v"><span class="big" id="kCompliance">—</span><span>%</span><span class="tag mid" id="kCompTag">—</span></div>
+              <div class="s">อิงจากจำนวนครั้งที่ทำได้ / ทั้งหมด</div>
+            </div>
+            <div class="kpi">
+              <div class="l">At Risk (&lt;80%)</div>
+              <div class="v"><span class="big" id="kRiskN">—</span><span>คน</span><span class="tag bad" id="kRiskPct">—%</span></div>
+              <div class="s">ควรติดตามเป็นพิเศษ</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Today completion (3/3 วันนี้)</div>
+              <div class="v"><span class="big" id="kTodayN">—</span><span>คน</span><span class="tag orange" id="kTodayPct">—%</span></div>
+              <div class="s" id="kTodayLabel">อิง “วันนี้” ตามเครื่องผู้เปิดรายงาน</div>
+            </div>
+          </div>
+          <div class="note" id="kpiNote">*รายงานนี้ยึดข้อมูลสัปดาห์ปัจจุบันเท่านั้น (weekOffset=0)</div>
+        </div>
+      </div>
+
+      <div class="row2">
+
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="h">Weekly Trend</div>
+              <div class="m">% คนที่ “ครบ 3/3” ต่อวัน (จ.-อา.)</div>
+            </div>
+            <div class="pill" id="trendAvg">เฉลี่ย: —%</div>
+          </div>
+          <div class="cardBd">
+            <div class="trendWrap">
+              <div class="trend" id="trendBars"></div>
+              <div class="note">อ่านง่าย: แท่งสูง = คนครบ 3/3 เยอะในวันนั้น</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="h">Distribution (ระดับ % ต่อสัปดาห์)</div>
+              <div class="m">แบ่งกลุ่ม 4 ระดับ เพื่อเห็นภาพรวมเร็ว</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="dist">
+              <svg class="donut" viewBox="0 0 120 120" aria-label="donut">
+                <defs>
+                  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="1.6" result="blur"/>
+                    <feMerge>
+                      <feMergeNode in="blur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                <circle cx="60" cy="60" r="44" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="14"/>
+                <g id="donutSegs" filter="url(#glow)"></g>
+                <text x="60" y="58" text-anchor="middle" class="centerText" id="donutCenter">—%</text>
+                <text x="60" y="74" text-anchor="middle" class="centerSub">Compliance</text>
+              </svg>
+
+              <div class="legend" id="legend"></div>
+            </div>
+            <div class="note">ระดับ: 100% / 90–99% / 80–89% / &lt;80%</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="rowBottom">
+
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="h">Top Follow-up (ต่ำสุด) — สูงสุด 10 คน</div>
+              <div class="m">สำหรับติดตาม/สนับสนุนให้ทำต่อเนื่อง</div>
+            </div>
+            <div class="pill" id="non100Pill">ไม่ครบ 100%: — คน</div>
+          </div>
+          <div class="cardBd">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:44%">ชื่อ</th>
+                  <th style="width:18%">% สัปดาห์</th>
+                  <th style="width:16%">ขาด</th>
+                  <th>แถบ</th>
+                </tr>
+              </thead>
+              <tbody id="tbFollow">
+                <tr><td colspan="4" style="color:rgba(234,240,255,.66)">กำลังโหลด…</td></tr>
+              </tbody>
+            </table>
+            <div class="note" id="followNote">*แสดงเฉพาะ 10 คน “ต่ำสุด” เพื่อคุมให้อยู่ใน 1 หน้า A4</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="h">Perfect Week (7/7 วันครบ 3/3) — สูงสุด 10 คน</div>
+              <div class="m">ถ้ามากกว่า 10 จะสรุปเป็น “+N คน”</div>
+            </div>
+            <div class="pill" id="perfectPill">Perfect: — คน</div>
+          </div>
+          <div class="cardBd">
+            <div class="list" id="listPerfect"><span style="color:rgba(234,240,255,.66)">กำลังโหลด…</span></div>
+            <div class="note" id="perfectNote">*รายชื่อเรียงตามตัวอักษร (ไทย)</div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
-
-  <div class="grid">
-    <section class="card">
-      <div class="hd">
-        <h2>ภาพรวม Integrity (ตามสัปดาห์ที่เลือก)</h2>
-        <span class="muted" id="peopleTotalTxt">—</span>
-      </div>
-      <div class="bd">
-        <div class="kpis">
-          <div class="kpi good">
-            <div class="l">ระดับ 1 · 100%</div>
-            <div class="v" id="kpi100">—</div>
-            <div class="s">ทำครบทุกครั้ง</div>
-          </div>
-          <div class="kpi warn">
-            <div class="l">ระดับ 2 · 90–99%</div>
-            <div class="v" id="kpi90">—</div>
-            <div class="s">ใกล้เคียงมาก</div>
-          </div>
-          <div class="kpi mid">
-            <div class="l">ระดับ 3 · 80–89%</div>
-            <div class="v" id="kpi80">—</div>
-            <div class="s">ยังมีช่องพัฒนา</div>
-          </div>
-          <div class="kpi bad">
-            <div class="l">ต่ำกว่า 80%</div>
-            <div class="v" id="kpiLow">—</div>
-            <div class="s">ควรติดตามเพิ่ม</div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="card" style="box-shadow:none">
-            <div class="hd">
-              <h2>รายชื่อผู้ทำครบ 100%</h2>
-              <span class="muted" id="count100Txt">—</span>
-            </div>
-            <div class="bd">
-              <div class="list" id="list100"><span class="muted">กำลังโหลด…</span></div>
-              <div class="note" style="margin-top:10px">
-                อิงรูปแบบ “Integrity Check List” ที่ใช้สรุปกลุ่ม 100% ในรายงานตัวอย่าง
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="box-shadow:none">
-            <div class="hd">
-              <h2>ทำสมาธิต่อเนื่องครบ 1 เดือน</h2>
-              <span class="muted" id="weekPerfectTxt">—</span>
-            </div>
-            <div class="bd">
-              <div class="list" id="weekPerfectList">
-                <span class="pill gray">—</span>
-              </div>
-              <div class="note" style="margin-top:10px">
-                </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <aside class="card">
-      <div class="hd">
-        <h2>รายชื่อผู้ที่ทำสมาธิไม่ครบ 100%</h2>
-        <span class="muted" id="countNon100Txt">—</span>
-      </div>
-      <div class="bd">
-        <div class="tableWrap">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:40%">ชื่อ</th>
-                <th style="width:18%">เปอร์เซ็นต์</th>
-                <th style="width:22%">ขาด (ครั้ง)</th>
-                <th style="width:20%">แถบสรุป</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyNon100">
-              <tr><td colspan="4" class="muted">กำลังโหลด…</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="note" style="margin-top:10px">
-          ตารางนี้ออกแบบให้คล้าย “รายชื่อผู้ที่ทำสมาธิไม่ครบ 100%” ในไฟล์ตัวอย่าง (แสดงชื่อ + เปอร์เซ็นต์ + จำนวนที่ขาด) เพื่อส่งผู้บริหารอ่านง่าย
-        </div>
-      </div>
-    </aside>
-  </div>
-
-  <div style="margin-top:14px" class="card">
-    <div class="hd">
-      <h2>หมายเหตุ (สำหรับผู้บริหาร)</h2>
-      <span class="muted">สรุปแบบอ่านเร็ว</span>
-    </div>
-    <div class="bd">
-      <div class="note" id="execNote">กำลังสร้างสรุป…</div>
-    </div>
-  </div>
-</div>
 
 <script>
-  const $ = (id)=>document.getElementById(id);
-
-  $("btnPrint").addEventListener("click", ()=> window.print());
-  $("btnReload").addEventListener("click", ()=> load());
-
-  function thaiDateFromISO(iso){
-    const parts = String(iso||"").split("-");
-    if (parts.length!==3) return "-";
-    const y=Number(parts[0]), m=Number(parts[1]), d=Number(parts[2]);
-    if (!y||!m||!d) return "-";
-    const dt = new Date(y, m-1, d);
-    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
-  }
-
-  function gradeChip(pct){
-    if (pct === 100) return ["good","100%"];
-    if (pct >= 90) return ["warn","90–99%"];
-    if (pct >= 80) return ["mid","80–89%"];
-    return ["bad","<80%"];
-  }
+  const WEEK_OFFSET = 0;
+  const MAX_LIST = 10;
+  const MAX_FOLLOW = 10;
+  const $ = (id)=> document.getElementById(id);
 
   function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, (m)=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+    return String(s).replace(/[&<>"']/g, (m)=>( {
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m] ));
   }
-
-  function computeFromPerson(p){
-    const perDay = Array.isArray(p.perDay) ? p.perDay : [];
-    let total = 0;
-    for (const d of perDay) total += Number(d.count||0);
-    const totalSlots = Number(p.totalSlots || 21);
-    const totalDone = Number.isFinite(Number(p.totalDone)) ? Number(p.totalDone) : total;
-    const pct = Number.isFinite(Number(p.percent)) ? Number(p.percent) : (totalSlots ? Math.round((totalDone/totalSlots)*10000)/100 : 0);
-    const missing = Math.max(0, totalSlots - totalDone);
-    return { totalSlots, totalDone, pct, missing };
+  function thaiDateFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if(!y||!m||!d) return "-";
+    const dt = new Date(y,m-1,d);
+    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
   }
+  function nowHHmmTH(){
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mm = String(d.getMinutes()).padStart(2,"0");
+    return `${hh}:${mm}`;
+  }
+  function pct(n, total){ return total ? (n/total*100) : 0; }
+  function gradeChip(p){
+    if (p >= 100) return ["good"];
+    if (p >= 90) return ["mid"];
+    if (p >= 80) return ["orange"];
+    return ["bad"];
+  }
+  function isPerfectWeek(perDay){
+    const arr = Array.isArray(perDay) ? perDay : [];
+    if (arr.length < 7) return false;
+    return arr.every(d => Number(d.count||0) === 3);
+  }
+  function localTodayISO(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${da}`;
+  }
+  function buildTrend(peopleRows, week){
+    const days = [];
+    const [sy,sm,sd] = week.startISO.split("-").map(Number);
+    const start = new Date(sy,sm-1,sd); start.setHours(0,0,0,0);
+    for(let i=0;i<7;i++){
+      const d = new Date(start); d.setDate(start.getDate()+i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      days.push(iso);
+    }
+    const total = peopleRows.length;
+    return days.map(iso=>{
+      let c=0;
+      for(const p of peopleRows){
+        const dd = (p.perDay||[]).find(x=>String(x.dateISO||"")===iso);
+        if (dd && Number(dd.count||0)===3) c++;
+      }
+      return { iso, complete:c, pct: pct(c,total) };
+    });
+  }
+  function renderTrend(tr){
+    const host = $("trendBars");
+    host.innerHTML = tr.map(x=>{
+      const dayShort = new Date(x.iso).toLocaleDateString("th-TH",{weekday:"short"});
+      const h = Math.max(0, Math.min(100, x.pct));
+      return `
+        <div class="barCol" title="${dayShort} ${thaiDateFromISO(x.iso)}: ${x.complete} คน (${x.pct.toFixed(0)}%)">
+          <div class="bar"><i style="height:${h}%"></i></div>
+          <div class="barLbl">${escapeHtml(dayShort)}</div>
+          <div class="barVal">${x.pct.toFixed(0)}%</div>
+        </div>
+      `;
+    }).join("");
+    const avg = tr.reduce((s,x)=>s+x.pct,0)/(tr.length||1);
+    $("trendAvg").textContent = `เฉลี่ย: ${avg.toFixed(0)}%`;
+  }
+  function getCSS(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#999";
+  }
+  function renderDonut(buckets, compliancePct){
+    const segHost = $("donutSegs");
+    segHost.innerHTML = "";
+    const r = 44;
+    const c = 2 * Math.PI * r;
 
-  function setList(el, names, cls){
-    if (!names || !names.length){
-      el.innerHTML = '<span class="muted">— ไม่มี —</span>';
+    const segs = [
+      { color:getCSS("--good"), pct:buckets.p100.pct },
+      { color:getCSS("--mid"), pct:buckets.p90.pct },
+      { color:getCSS("--orange"), pct:buckets.p80.pct },
+      { color:getCSS("--bad"), pct:buckets.pLow.pct },
+    ];
+
+    let offset = 0;
+    segs.forEach(s=>{
+      const len = (Math.max(0, s.pct) / 100) * c;
+      const dash = `${len} ${c - len}`;
+      const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      circle.setAttribute("cx","60");
+      circle.setAttribute("cy","60");
+      circle.setAttribute("r", String(r));
+      circle.setAttribute("fill","none");
+      circle.setAttribute("stroke", s.color);
+      circle.setAttribute("stroke-width","14");
+      circle.setAttribute("stroke-linecap","round");
+      circle.setAttribute("stroke-dasharray", dash);
+      circle.setAttribute("stroke-dashoffset", String(-offset));
+      circle.setAttribute("transform","rotate(-90 60 60)");
+      segHost.appendChild(circle);
+      offset += len;
+    });
+
+    $("donutCenter").textContent = `${Number(compliancePct||0).toFixed(0)}%`;
+
+    const leg = $("legend");
+    const rows = [
+      { label:"100%", dot:"good", val:`${buckets.p100.count} คน (${buckets.p100.pct.toFixed(0)}%)` },
+      { label:"90–99%", dot:"mid", val:`${buckets.p90.count} คน (${buckets.p90.pct.toFixed(0)}%)` },
+      { label:"80–89%", dot:"orange", val:`${buckets.p80.count} คน (${buckets.p80.pct.toFixed(0)}%)` },
+      { label:"<80%", dot:"bad", val:`${buckets.pLow.count} คน (${buckets.pLow.pct.toFixed(0)}%)` },
+    ];
+    leg.innerHTML = rows.map(r=>`
+      <div class="legRow">
+        <div class="legLeft">
+          <span class="dot ${r.dot}"></span>
+          <span class="legName">${r.label}</span>
+        </div>
+        <span class="legVal">${escapeHtml(r.val)}</span>
+      </div>
+    `).join("");
+  }
+  function renderLists(perfectNames, followRows, totals){
+    $("perfectPill").textContent = `Perfect: ${totals.perfect} คน`;
+    const list = $("listPerfect");
+    if (!perfectNames.length){
+      list.innerHTML = `<span class="namePill gray">— ไม่มี —</span>`;
+    } else {
+      const top = perfectNames.slice(0, MAX_LIST);
+      const rest = Math.max(0, perfectNames.length - top.length);
+      list.innerHTML = top.map(n=>`<span class="namePill good">${escapeHtml(n)}</span>`).join("");
+      if (rest>0) list.innerHTML += `<span class="namePill gray">+${rest} คน</span>`;
+    }
+
+    $("non100Pill").textContent = `ไม่ครบ 100%: ${totals.non100} คน`;
+    const tb = $("tbFollow");
+    if (!followRows.length){
+      tb.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.66)">— ไม่มี —</td></tr>`;
       return;
     }
-    const thSort = (a,b)=> String(a).localeCompare(String(b),'th');
-    names = [...names].sort(thSort);
-    el.innerHTML = names.map(n=>`<span class="pill ${cls||""}">${escapeHtml(n)}</span>`).join("");
+    tb.innerHTML = followRows.slice(0, MAX_FOLLOW).map(r=>{
+      const [cls] = gradeChip(r.pct);
+      const width = Math.max(0, Math.min(100, r.pct));
+      return `
+        <tr>
+          <td><b>${escapeHtml(r.name)}</b></td>
+          <td><span class="pctChip ${cls}">${r.pct.toFixed(0)}%</span></td>
+          <td>${r.missing} ครั้ง</td>
+          <td><div class="miniBar" title="${r.totalDone}/${r.totalSlots}"><i style="width:${width}%"></i></div></td>
+        </tr>
+      `;
+    }).join("");
+    const rest = Math.max(0, followRows.length - MAX_FOLLOW);
+    if (rest>0){
+      tb.innerHTML += `<tr><td colspan="4" style="color:rgba(234,240,255,.60)">… และอีก ${rest} รายชื่อ</td></tr>`;
+    }
   }
 
-  function setLastUpdated(out){
-    const t = out && (out.lastUpdated || out.updatedAt || out.serverNowISO);
-    let txt = "";
-    if (t){
-      const d = new Date(t);
-      if (!isNaN(d.getTime())){
-        txt = d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
-      }
+  function compute(out){
+    const people = Array.isArray(out.people) ? out.people : [];
+    const totalMembers = people.length;
+    const week = out.week || { startISO:"-", endISO:"-" };
+    const sum = out.summary && out.summary.thisWeek ? out.summary.thisWeek : null;
+
+    let totalDoneAll = 0, totalSlots = totalMembers * 21;
+    if (sum && Number.isFinite(Number(sum.totalDoneAll))) totalDoneAll = Number(sum.totalDoneAll);
+    else totalDoneAll = people.reduce((s,p)=> s + Number(p.totalDone||0), 0);
+
+    if (sum && Number.isFinite(Number(sum.totalSlots))) totalSlots = Number(sum.totalSlots);
+    else totalSlots = people.reduce((s,p)=> s + Number(p.totalSlots||21), 0);
+
+    const compliance = totalSlots ? (totalDoneAll/totalSlots*100) : 0;
+
+    const buckets = { p100:{count:0,pct:0}, p90:{count:0,pct:0}, p80:{count:0,pct:0}, pLow:{count:0,pct:0} };
+    const risk = [];
+    const non100 = [];
+    const perfectNames = [];
+
+    const todayISO = localTodayISO();
+    const dayISO = (todayISO >= week.startISO && todayISO <= week.endISO) ? todayISO : week.startISO;
+    let todayComplete = 0;
+
+    for (const p of people){
+      const wp = Number(p.percent||0);
+      if (wp >= 100) buckets.p100.count++;
+      else if (wp >= 90) buckets.p90.count++;
+      else if (wp >= 80) buckets.p80.count++;
+      else buckets.pLow.count++;
+
+      if (wp < 100) non100.push(p);
+      if (wp < 80) risk.push(p);
+
+      if (isPerfectWeek(p.perDay)) perfectNames.push(p.name);
+
+      const dd = (p.perDay||[]).find(x=>String(x.dateISO||"")===dayISO);
+      if (dd && Number(dd.count||0)===3) todayComplete++;
     }
-    if (!txt){
-      const d = new Date();
-      txt = d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
-    }
-    $("lastUpdated").textContent = `อัปเดตล่าสุด ${txt} น.`;
+    buckets.p100.pct = pct(buckets.p100.count, totalMembers);
+    buckets.p90.pct  = pct(buckets.p90.count, totalMembers);
+    buckets.p80.pct  = pct(buckets.p80.count, totalMembers);
+    buckets.pLow.pct = pct(buckets.pLow.count, totalMembers);
+
+    const follow = non100.map(p=>{
+      const totalDone = Number(p.totalDone||0);
+      const slots = Number(p.totalSlots||21);
+      const missing = Math.max(0, slots - totalDone);
+      return { name:p.name, pct:Number(p.percent||0), totalDone, totalSlots:slots, missing };
+    }).sort((a,b)=> (a.pct-b.pct) || String(a.name).localeCompare(String(b.name),"th"));
+
+    perfectNames.sort((a,b)=> String(a).localeCompare(String(b),"th"));
+    const trend = buildTrend(people, week);
+
+    return { week,totalMembers,compliance,buckets,perfectNames,follow,riskN:risk.length,todayComplete,dayISO,perfectN:perfectNames.length,non100N:non100.length,trend };
+  }
+
+  function renderAll(out){
+    const c = compute(out);
+
+    $("weekPill").textContent = `สัปดาห์: จ. ${thaiDateFromISO(c.week.startISO)} – อา. ${thaiDateFromISO(c.week.endISO)}`;
+    $("memberPill").textContent = `สมาชิก: ${c.totalMembers} คน`;
+    $("updatedPill").textContent = `อัปเดตล่าสุด: ${nowHHmmTH()} น.`;
+    $("kTodayLabel").textContent = `อิง “วันนี้” (${thaiDateFromISO(c.dayISO)})`;
+
+    $("kPerfectN").textContent = c.perfectN;
+    $("kPerfectPct").textContent = `${pct(c.perfectN, c.totalMembers).toFixed(0)}%`;
+
+    $("kCompliance").textContent = c.compliance.toFixed(0);
+    const compTag = c.compliance >= 90 ? ["good","ดีมาก"] : c.compliance >= 80 ? ["mid","พอใช้"] : ["bad","เสี่ยง"];
+    $("kCompTag").className = `tag ${compTag[0]}`;
+    $("kCompTag").textContent = compTag[1];
+
+    $("kRiskN").textContent = c.riskN;
+    $("kRiskPct").textContent = `${pct(c.riskN, c.totalMembers).toFixed(0)}%`;
+
+    $("kTodayN").textContent = c.todayComplete;
+    $("kTodayPct").textContent = `${pct(c.todayComplete, c.totalMembers).toFixed(0)}%`;
+
+    renderTrend(c.trend);
+    renderDonut(c.buckets, c.compliance);
+    renderLists(c.perfectNames, c.follow, { perfect:c.perfectN, non100:c.non100N });
   }
 
   async function load(){
-    try{
-      $("tbodyNon100").innerHTML = `<tr><td colspan="4" class="muted">กำลังโหลด…</td></tr>`;
-      $("list100").innerHTML = `<span class="muted">กำลังโหลด…</span>`;
-
-      const res = await fetch("/api/dashboard?weekOffset=0", { cache:"no-store" });
-      const out = await res.json();
-
-      const w = out.week || {};
-      $("weekRange").textContent = w.startISO
-        ? `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`
-        : "ช่วงสัปดาห์: —";
-
-      setLastUpdated(out);
-
-      const people = Array.isArray(out.people) ? out.people : [];
-      const totalPeople = people.length;
-      $("peopleTotalTxt").textContent = `${totalPeople} คน`;
-
-      const level100 = [];
-      const level90 = [];
-      const level80 = [];
-      const levelLow = [];
-      const non100 = [];
-
-      for (const p of people){
-        const name = p.name || "-";
-        const { pct, missing, totalSlots, totalDone } = computeFromPerson(p);
-        if (pct === 100) level100.push(name);
-        else non100.push({ name, pct, missing, totalSlots, totalDone });
-
-        if (pct >= 90 && pct < 100) level90.push(name);
-        if (pct >= 80 && pct < 90) level80.push(name);
-        if (pct < 80) levelLow.push(name);
-      }
-
-      $("kpi100").textContent = level100.length;
-      $("kpi90").textContent  = level90.length;
-      $("kpi80").textContent  = level80.length;
-      $("kpiLow").textContent = levelLow.length;
-
-      $("count100Txt").textContent = `${level100.length} คน`;
-      setList($("list100"), level100);
-
-      $("countNon100Txt").textContent = `${non100.length} คน`;
-
-      non100.sort((a,b)=> (a.pct - b.pct) || String(a.name).localeCompare(String(b.name),"th"));
-
-      if (!non100.length){
-        $("tbodyNon100").innerHTML = `<tr><td colspan="4" class="muted">— ไม่มี —</td></tr>`;
-      }else{
-        $("tbodyNon100").innerHTML = non100.map(r=>{
-          const [cls] = gradeChip(r.pct);
-          const width = Math.max(0, Math.min(100, r.pct));
-          return `
-            <tr>
-              <td><b>${escapeHtml(r.name)}</b></td>
-              <td><span class="chip ${cls}">${r.pct.toFixed(2)}%</span></td>
-              <td>${r.missing} ครั้ง</td>
-              <td>
-                <div class="bar" title="${r.totalDone}/${r.totalSlots}">
-                  <i style="width:${width}%"></i>
-                </div>
-              </td>
-            </tr>`;
-        }).join("");
-      }
-
-      const weekPerfectNames = [];
-      for (const p of people){
-        const doneDays = Number(p.doneDays || 0);
-        // doneDays is count of days with 3/3 in the selected week
-        if (doneDays >= 7) weekPerfectNames.push(p.name);
-      }
-      weekPerfectNames.sort((a,b)=>String(a).localeCompare(String(b),'th'));
-      $("weekPerfectTxt").textContent = `${weekPerfectNames.length} คน`;
-      $("weekPerfectList").innerHTML = weekPerfectNames.length
-        ? weekPerfectNames.map(n=>`<span class="pill green">${esc(n)}</span>`).join("")
-        : `<span class="pill gray">— ไม่มี —</span>`;
-
-
-      const pct100 = totalPeople ? Math.round((level100.length/totalPeople)*100) : 0;
-      const risk = levelLow.length;
-      $("execNote").innerHTML = [
-        `สัปดาห์นี้มีผู้ทำสมาธิครบ 100% จำนวน <b>${level100.length}</b> คน (${pct100}%).`,
-        `กลุ่มใกล้เคียง 100% (90–99%) จำนวน <b>${level90.length}</b> คน — “ดันอีกนิดถึง 100%”.`,
-        `กลุ่มที่ควรติดตามเป็นพิเศษ (<80%) จำนวน <b>${risk}</b> คน.`
-      ].join(" ");
-
-    }catch(e){
-      $("weekRange").textContent = "โหลดข้อมูลไม่สำเร็จ";
-      $("execNote").textContent = "เกิดข้อผิดพลาดในการดึงข้อมูล /api/dashboard";
-      $("tbodyNon100").innerHTML = `<tr><td colspan="4" class="muted">โหลดข้อมูลไม่สำเร็จ</td></tr>`;
-      $("list100").innerHTML = `<span class="muted">โหลดข้อมูลไม่สำเร็จ</span>`;
-      console.error(e);
+    const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(WEEK_OFFSET))}`, { cache:"no-store" });
+    const out = await res.json().catch(()=>({}));
+    if (!res.ok || !out.ok){
+      $("tbFollow").innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.66)">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
+      $("listPerfect").innerHTML = `<span class="namePill gray">โหลดไม่สำเร็จ</span>`;
+      return;
     }
+    renderAll(out);
   }
 
+  $("btnPrint").addEventListener("click", ()=> window.print());
   load();
 </script>
 </body>
