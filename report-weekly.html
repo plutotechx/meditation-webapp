@@ -198,37 +198,42 @@
       color:rgba(234,240,255,.66);
       display:-webkit-box;
       -webkit-box-orient:vertical;
-      -webkit-line-clamp:3;
+      -webkit-line-clamp:4;
       overflow:hidden;
-      min-height:44px;
+      min-height:56px;
     }
     .bucketMeta{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
     .bucketMeta .count{ font-weight:1000; font-size:11px; color:rgba(234,240,255,.86); }
     .bucketMeta .pct{ font-family:var(--mono); font-weight:1000; font-size:11px; color:rgba(234,240,255,.72); }
     .bucketList{
+      display:flex; flex-wrap:wrap; gap:6px;
+      align-content:flex-start;
+      flex:1 1 auto;
+      overflow:auto;
+      max-height:190px;
+      padding-right:6px; /* room for scrollbar */
+    }
+
+    /* Bucket 1: make the name pills look orderly (2-column grid) */
+    #b1List{
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:6px 8px;
+      gap:6px;
       align-content:start;
-      flex:1 1 auto;
-      overflow:visible;
-      max-height:none;
-      padding-right:0;
-      min-width:0;
     }
+    #b1List .namePill{
+      display:block;
+      width:100%;
+    }
+
 
     /* Print: avoid scrollbars; keep layout stable */
     @media print{
-      .bucketList{ overflow:visible !important; }
+      .bucketList{ overflow:hidden !important; }
     }
     .namePill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:9.8px;
-      font-weight:950;
-      padding:4px 7px;
-      border-radius:999px;
+      font-size:10.5px;font-weight:950;
+      padding:5px 8px;border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
       color:rgba(234,240,255,.92);
