@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Executive Weekly Report - Meditation</title>
+  <!-- UpdatedAt: 2026-02-15 00:00 (+07:00) -->
+
+  <style>
+    :root{
+      --bg:#0a1322;
+      --card:rgba(255,255,255,.07);
+      --border:rgba(255,255,255,.12);
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.72);
+
+      --good:#30d16a;
+      --mid:#f3c43a;
+      --orange:#ff8c2a;
+      --bad:#ff4d4d;
+      --none:rgba(255,255,255,.30);
+
+      --radius:16px;
+      --shadow:0 18px 60px rgba(0,0,0,.30);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 560px at 18% 0%, rgba(88,140,255,.14), transparent 60%),
+        radial-gradient(900px 520px at 85% 12%, rgba(0,240,255,.10), transparent 55%),
+        linear-gradient(180deg, #081224 0%, #070f1e 100%);
+      min-height:100vh;
+      padding:14px;
+    }
+    .page{ width:min(1080px, 100%); margin:0 auto; }
+
+    .hdr{
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px; flex-wrap:wrap; margin-bottom:10px;
+    }
+    .title{display:flex; flex-direction:column; gap:4px;}
+    h1{ margin:0; font-size:20px; font-weight:950; letter-spacing:.2px; line-height:1.1; }
+    .sub{ display:flex; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--muted); align-items:center; }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      white-space:nowrap;
+    }
+    .dotLive{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--good);
+      box-shadow:0 0 0 0 rgba(48,209,106,.55);
+      animation:pulseG 1.2s infinite;
+      flex:0 0 auto;
+    }
+    @keyframes pulseG{
+      0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
+      70%{ box-shadow:0 0 0 10px rgba(48,209,106,0) }
+      100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
+    }
+
+    .actions{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
+    .btn{
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.08);
+      color:var(--text);
+      padding:9px 12px; border-radius:12px;
+      font-weight:900; cursor:pointer; text-decoration:none;
+    }
+    .btn:hover{background:rgba(255,255,255,.10)}
+    .btn.primary{
+      background:rgba(106,169,255,.92);
+      color:#071120;
+      border-color:rgba(106,169,255,.35);
+      box-shadow:0 14px 28px rgba(106,169,255,.18);
+    }
+
+    .grid{display:grid; grid-template-columns: 1fr; gap:10px;}
+    .row2{display:grid; grid-template-columns: 1.1fr .9fr; gap:10px; align-items:stretch;}
+    .rowBottom5{display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:8px; align-items:stretch;}
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+      min-height:120px;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:radial-gradient(closest-side at 60% 0%, rgba(120,200,255,.18), transparent 70%);
+      pointer-events:none;
+    }
+    .cardHd{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      position:relative;
+      z-index:1;
+    }
+    .cardHd .h{margin:0;font-size:13px;font-weight:950;color:rgba(234,240,255,.90);}
+    .cardHd .m{font-size:11px;color:rgba(234,240,255,.66);margin-top:2px;line-height:1.25}
+    .cardBd{padding:10px 12px; position:relative; z-index:1;}
+
+    .kpis{display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px;}
+    .kpi{
+      background:rgba(0,0,0,.20);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:10px;
+      min-height:76px;
+    }
+    .kpi .l{font-size:11px; color:rgba(234,240,255,.70); font-weight:900}
+    .kpi .v{
+      margin-top:6px; font-size:18px; font-weight:1000; line-height:1.05;
+      display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
+    }
+    .kpi .v .big{font-size:22px}
+    .kpi .s{margin-top:6px; font-size:11px; color:rgba(234,240,255,.62)}
+    .kpi .tag{
+      font-size:11px; font-weight:950;
+      padding:4px 8px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+    .tag.good{border-color:rgba(48,209,106,.38); background:rgba(48,209,106,.10)}
+    .tag.bad{border-color:rgba(255,77,77,.38); background:rgba(255,77,77,.10)}
+    .tag.mid{border-color:rgba(243,196,58,.38); background:rgba(243,196,58,.10)}
+    .tag.orange{border-color:rgba(255,140,42,.40); background:rgba(255,140,42,.10)}
+
+    .trendWrap{display:grid; gap:8px}
+    .trend{
+      display:grid;
+      grid-template-columns: repeat(7, minmax(0,1fr));
+      gap:6px;
+      align-items:end;
+      height:110px;
+      padding-top:6px;
+    }
+    .barCol{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
+    .bar{
+      width:100%;
+      height:90px;
+      border-radius:12px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+      display:flex;
+      align-items:flex-end;
+    }
+    .bar > i{
+      display:block; width:100%; height:0%;
+      background:linear-gradient(180deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
+    }
+    .barLbl{font-size:11px;font-weight:950;color:rgba(234,240,255,.85);line-height:1;white-space:nowrap;}
+    .barVal{font-size:10px;color:rgba(234,240,255,.66);line-height:1;font-family:var(--mono);}
+
+    .dist{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .donut{width:120px;height:120px;flex:0 0 auto;}
+    .centerText{font-size:14px;font-weight:1000;fill:#eaf0ff;}
+    .centerSub{font-size:9px;fill:rgba(234,240,255,.70);}
+    .legend{display:grid;gap:6px;min-width:180px}
+    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:rgba(234,240,255,.84)}
+    .legLeft{display:flex;align-items:center;gap:8px;min-width:0}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .dot.good{background:var(--good)}
+    .dot.mid{background:var(--mid)}
+    .dot.orange{background:var(--orange)}
+    .dot.bad{background:var(--bad)}
+    .dot.none{background:var(--none)}
+    .legName{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .legVal{font-family:var(--mono);color:rgba(234,240,255,.70);white-space:nowrap}
+
+    /* ===== 5 bucket cards ===== */
+    .bucketCard{ min-height:220px; display:flex; flex-direction:column; }
+    .bucketCard .cardBd{ padding:10px 10px 10px; display:flex; flex-direction:column; gap:8px; flex:1 1 auto; }
+    .bucketDesc{ font-size:10.6px; line-height:1.28; color:rgba(234,240,255,.66); }
+    .bucketMeta{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+    .bucketMeta .count{ font-weight:1000; font-size:11px; color:rgba(234,240,255,.86); }
+    .bucketMeta .pct{ font-family:var(--mono); font-weight:1000; font-size:11px; color:rgba(234,240,255,.72); }
+    .bucketList{
+      display:flex; flex-wrap:wrap; gap:6px;
+      align-content:flex-start;
+      flex:1 1 auto;
+      overflow:hidden; /* keep 1-page */
+      max-height:120px;
+    }
+    .namePill{
+      font-size:10.5px;font-weight:950;
+      padding:5px 8px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:rgba(234,240,255,.92);
+      max-width:100%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .namePill.l1{border-color:rgba(48,209,106,.36); background:rgba(48,209,106,.10)}
+    .namePill.l2{border-color:rgba(243,196,58,.38); background:rgba(243,196,58,.10)}
+    .namePill.l3{border-color:rgba(255,140,42,.40); background:rgba(255,140,42,.10)}
+    .namePill.l4{border-color:rgba(255,77,77,.30); background:rgba(255,77,77,.08)}
+    .namePill.l5{border-color:rgba(255,77,77,.44); background:rgba(255,77,77,.12)}
+    .namePill.gray{border-color:rgba(255,255,255,.16); background:rgba(0,0,0,.16); color:rgba(234,240,255,.75)}
+
+    .note{margin-top:8px;font-size:10.3px;color:rgba(234,240,255,.62);}
+
+    @media (max-width: 980px){
+      .row2{grid-template-columns:1fr}
+      .kpis{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .rowBottom5{grid-template-columns:1fr; gap:10px;} /* mobile: stack */
+      .bucketCard{min-height:unset}
+      .bucketList{max-height:unset; overflow:visible;}
+    }
+
+    @page{ size: A4 landscape; margin: 8mm; }
+    @media print{
+      body{padding:0 !important; background:#fff !important; color:#111 !important;}
+      .btn,.actions{display:none !important;}
+      .page{width:auto !important; margin:0 !important;}
+      .dotLive{animation:none !important; box-shadow:none !important;}
+      .card, .kpi{box-shadow:none !important;}
+      .card{border-color:#ddd !important;}
+      .kpi{background:#f6f6f6 !important; border-color:#ddd !important;}
+      h1{font-size:18px !important;}
+      .sub{font-size:11px !important;}
+      .cardHd{padding:8px 10px !important;}
+      .cardBd{padding:8px 10px !important;}
+      .kpi .v .big{font-size:20px !important;}
+      .trend{height:100px !important;}
+      .bar{height:84px !important;}
+      .bucketDesc{color:#444 !important;}
+      .bucketList{max-height:118px !important;} /* keep single page */
+      .namePill{border-color:#ddd !important; background:#f7f7f7 !important; color:#111 !important;}
+      .namePill.l1{border-color:#b9e7c9 !important; background:#effbf3 !important;}
+      .namePill.l5{border-color:#e3b3b3 !important; background:#fff1f1 !important;}
+      .namePill.gray{background:#f3f3f3 !important; color:#333 !important;}
+      .page{transform: scale(.93); transform-origin: top left; width: calc(100% / .93);}
+    }
+  
+    .seg{
+      display:inline-flex;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      padding:6px;
+      gap:6px;
+      box-shadow:0 12px 34px rgba(0,0,0,.20);
+    }
+    .segBtn{
+      border:0;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:950;
+      color:rgba(234,240,255,.86);
+      background:transparent;
+      cursor:pointer;
+      white-space:nowrap;
+      font-size:12px;
+    }
+    .segBtn.active{
+      color:#071120;
+      background:rgba(106,169,255,.95);
+      box-shadow:0 10px 24px rgba(106,169,255,.18);
+    }
+
+    /* show more names (screen) */
+    .bucketList{
+      max-height:150px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .bucketList::-webkit-scrollbar{height:8px;width:8px}
+    .bucketList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px}
+
+    @media print{
+      /* keep landscape & fit more names */
+      .bucketDesc{font-size:10.2px !important;}
+      .bucketList{max-height:165px !important; overflow:hidden !important; padding-right:0 !important;}
+      .namePill{font-size:9.6px !important; padding:3px 6px !important;}
+      .rowBottom5{gap:6px !important;}
+      .cardHd .h{font-size:12px !important;}
+      .cardHd .m{font-size:10.5px !important;}
+      .page{transform: scale(.92) !important; transform-origin: top left !important; width: calc(100% / .92) !important;}
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="hdr">
+      <div class="title">
+        <h1>Dashboard Meditation — Executive Weekly Report</h1>
+        <div class="sub">
+          <span class="pill" id="weekPill">สัปดาห์: กำลังโหลด…</span>
+          <span class="pill"><span class="dotLive"></span><span id="updatedPill">อัปเดตล่าสุด: —</span></span>
+        </div>
+      </div>
+
+      <div class="actions">
+
+        <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
+          <button class="segBtn active" id="btnThis" role="tab" aria-selected="true">สัปดาห์นี้</button>
+          <button class="segBtn" id="btnLast" role="tab" aria-selected="false">สัปดาห์ที่แล้ว</button>
+        </div>
+
+        <a class="btn" href="/dashboard.html">กลับไป Dashboard</a>
+        <button class="btn primary" id="btnPrint">Export PDF (A4 แนวนอน)</button>
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="cardHd">
+          <div>
+            <div class="h">ภาพรวมสัปดาห์นี้ (จันทร์–อาทิตย์)</div>
+            <div class="m">สรุปแบบ 1 หน้า สำหรับผู้บริหาร</div>
+          </div>
+          <div class="pill" id="memberPill">สมาชิก: — คน</div>
+        </div>
+        <div class="cardBd">
+          <div class="kpis">
+            <div class="kpi">
+              <div class="l">Perfect Week (7/7 วันครบ 3/3)</div>
+              <div class="v"><span class="big" id="kPerfectN">—</span><span>คน</span><span class="tag good" id="kPerfectPct">—%</span></div>
+              <div class="s">ครบทุกวันในสัปดาห์</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Compliance Rate (เฉลี่ยทั้งองค์กร)</div>
+              <div class="v"><span class="big" id="kCompliance">—</span><span>%</span><span class="tag mid" id="kCompTag">—</span></div>
+              <div class="s">อิงจากจำนวนครั้งที่ทำได้ / ทั้งหมด</div>
+            </div>
+            <div class="kpi">
+              <div class="l">At Risk (&lt;80%)</div>
+              <div class="v"><span class="big" id="kRiskN">—</span><span>คน</span><span class="tag bad" id="kRiskPct">—%</span></div>
+              <div class="s">ควรติดตามเป็นพิเศษ</div>
+            </div>
+            <div class="kpi">
+              <div class="l">Today completion (3/3 วันนี้)</div>
+              <div class="v"><span class="big" id="kTodayN">—</span><span>คน</span><span class="tag orange" id="kTodayPct">—%</span></div>
+              <div class="s" id="kTodayLabel">อิง “วันนี้” ตามเครื่องผู้เปิดรายงาน</div>
+            </div>
+          </div>
+          <div class="note">*รายงานนี้ยึดข้อมูลสัปดาห์ปัจจุบันเท่านั้น (weekOffset=0)</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="h">Weekly Trend</div>
+              <div class="m">% คนที่ “ครบ 3/3” ต่อวัน (จ.-อา.)</div>
+            </div>
+            <div class="pill" id="trendAvg">เฉลี่ย: —%</div>
+          </div>
+          <div class="cardBd">
+            <div class="trendWrap">
+              <div class="trend" id="trendBars"></div>
+              <div class="note">แท่งสูง = คนครบ 3/3 เยอะในวันนั้น</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHd">
+            <div>
+              <div class="h">Distribution (ระดับ % ต่อสัปดาห์)</div>
+              <div class="m">ภาพรวมเร็ว: 100 / 90–99 / 80–89 / 70–79 / &lt;69</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="dist">
+              <svg class="donut" viewBox="0 0 120 120" aria-label="donut">
+                <defs>
+                  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="1.6" result="blur"/>
+                    <feMerge>
+                      <feMergeNode in="blur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                <circle cx="60" cy="60" r="44" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="14"/>
+                <g id="donutSegs" filter="url(#glow)"></g>
+                <text x="60" y="58" text-anchor="middle" class="centerText" id="donutCenter">—%</text>
+                <text x="60" y="74" text-anchor="middle" class="centerSub">Compliance</text>
+              </svg>
+
+              <div class="legend" id="legend"></div>
+            </div>
+            <div class="note">*โดนัทเป็นภาพรวม “จำนวนคน” ต่อระดับ (% ต่อสัปดาห์)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== Bottom: 5 buckets ===== -->
+      <div class="rowBottom5">
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 1 — Perfect Integrity (100%)</div>
+              <div class="m">ทำสมาธิได้สมบูรณ์แบบ</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ที่ยอดเยี่ยม แสดงถึงความสามารถในการนั่งสมาธิที่เข้าถึงอย่างสมบูรณ์ ทั้งในด้านความสงบ ความตั้งมั่น และการมีสติ</div>
+            <div class="bucketMeta">
+              <div class="count" id="b1Count">— คน</div>
+              <div class="pct" id="b1Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b1List"></div>
+          </div>
+        </div>
+
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 2 — Excellent (90–99%)</div>
+              <div class="m">ดีมาก ใกล้เคียง 100%</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในการทำสมาธิ ถึงจะไม่ได้ผลลัพธ์สูงสุด 100% แต่ก็ใกล้เคียงมาก แสดงถึงการมีสมาธิที่ดีและความตั้งมั่น จงตั้งใจพัฒนาตนเองต่อไปเพื่อให้ผลลัพธ์ดีขึ้น</div>
+            <div class="bucketMeta">
+              <div class="count" id="b2Count">— คน</div>
+              <div class="pct" id="b2Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b2List"></div>
+          </div>
+        </div>
+
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 3 — Good (80–89%)</div>
+              <div class="m">ดี มีโอกาสพัฒนา</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับกลาง ยังมีโอกาสในการพัฒนาเพิ่มเติม อาจเป็นกลุ่มที่ยังไม่ถึงระดับที่พึงพอใจอย่างเต็มที่</div>
+            <div class="bucketMeta">
+              <div class="count" id="b3Count">— คน</div>
+              <div class="pct" id="b3Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b3List"></div>
+          </div>
+        </div>
+
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 4 — Fair (70–79%)</div>
+              <div class="m">ปานกลาง ควรฝึกเพิ่ม</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับปานกลาง ยังไม่สามารถเข้าถึงสมาธิได้อย่างที่คาดหวัง จะต้องฝึกฝนเพิ่มเติม</div>
+            <div class="bucketMeta">
+              <div class="count" id="b4Count">— คน</div>
+              <div class="pct" id="b4Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b4List"></div>
+          </div>
+        </div>
+
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 5 — Needs Support (&lt;69%)</div>
+              <div class="m">ค่อนข้างต่ำ ต้องการการสนับสนุน</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับต่ำ การฝึกสมาธิยังไม่ค่อยประสบความสำเร็จ อาจมีปัญหาในการตั้งมั่นหรือการเข้าถึงสมาธิ อาจต้องการการสนับสนุนเพิ่มเติม</div>
+            <div class="bucketMeta">
+              <div class="count" id="b5Count">— คน</div>
+              <div class="pct" id="b5Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b5List"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="note">*แต่ละกลุ่มแสดงรายชื่อสูงสุด 45 คน เพื่อคุมรายงานให้อยู่ใน 1 หน้า A4</div>
+
+    </div>
+  </div>
+
+<script>
+  let WEEK_OFFSET = 0; // 0=this week, -1=last week
+  const MAX_PER_BUCKET = 45;
+  const $ = (id)=> document.getElementById(id);
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (m)=>( {
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m] ));
+  }
+  function thaiDateFromISO(iso){
+    const [y,m,d] = String(iso||"").split("-").map(Number);
+    if(!y||!m||!d) return "-";
+    const dt = new Date(y,m-1,d);
+    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
+  }
+  function nowHHmmTH(){
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mm = String(d.getMinutes()).padStart(2,"0");
+    return `${hh}:${mm}`;
+  }
+  function pct(n, total){ return total ? (n/total*100) : 0; }
+  function localTodayISO(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${da}`;
+  }
+  function isPerfectWeek(perDay){
+    const arr = Array.isArray(perDay) ? perDay : [];
+    if (arr.length < 7) return false;
+    return arr.every(d => Number(d.count||0) === 3);
+  }
+  function getCSS(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#999"; }
+
+  function buildTrend(peopleRows, week){
+    const days = [];
+    const [sy,sm,sd] = week.startISO.split("-").map(Number);
+    const start = new Date(sy,sm-1,sd); start.setHours(0,0,0,0);
+    for(let i=0;i<7;i++){
+      const d = new Date(start); d.setDate(start.getDate()+i);
+      const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+      days.push(iso);
+    }
+    const total = peopleRows.length;
+    return days.map(iso=>{
+      let c=0;
+      for(const p of peopleRows){
+        const dd = (p.perDay||[]).find(x=>String(x.dateISO||"")===iso);
+        if (dd && Number(dd.count||0)===3) c++;
+      }
+      return { iso, complete:c, pct: pct(c,total) };
+    });
+  }
+  function renderTrend(tr){
+    const host = $("trendBars");
+    host.innerHTML = tr.map(x=>{
+      const dayShort = new Date(x.iso).toLocaleDateString("th-TH",{weekday:"short"});
+      const h = Math.max(0, Math.min(100, x.pct));
+      return `
+        <div class="barCol" title="${dayShort} ${thaiDateFromISO(x.iso)}: ${x.complete} คน (${x.pct.toFixed(0)}%)">
+          <div class="bar"><i style="height:${h}%"></i></div>
+          <div class="barLbl">${escapeHtml(dayShort)}</div>
+          <div class="barVal">${x.pct.toFixed(0)}%</div>
+        </div>
+      `;
+    }).join("");
+    const avg = tr.reduce((s,x)=>s+x.pct,0)/(tr.length||1);
+    $("trendAvg").textContent = `เฉลี่ย: ${avg.toFixed(0)}%`;
+  }
+
+  function renderDonut5(buckets, compliancePct, totalMembers){
+    const segHost = $("donutSegs");
+    segHost.innerHTML = "";
+    const r = 44;
+    const c = 2 * Math.PI * r;
+
+    const segs = [
+      { color:getCSS("--good"),   pct:pct(buckets.b1.length, totalMembers) },  // 100
+      { color:getCSS("--mid"),    pct:pct(buckets.b2.length, totalMembers) },  // 90-99
+      { color:getCSS("--orange"), pct:pct(buckets.b3.length, totalMembers) },  // 80-89
+      { color:"rgba(255,77,77,.28)", pct:pct(buckets.b4.length, totalMembers) }, // 70-79
+      { color:getCSS("--bad"),    pct:pct(buckets.b5.length, totalMembers) },  // <69
+    ];
+
+    let offset = 0;
+    segs.forEach(s=>{
+      const len = (Math.max(0, s.pct) / 100) * c;
+      const dash = `${len} ${c - len}`;
+      const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      circle.setAttribute("cx","60");
+      circle.setAttribute("cy","60");
+      circle.setAttribute("r", String(r));
+      circle.setAttribute("fill","none");
+      circle.setAttribute("stroke", s.color);
+      circle.setAttribute("stroke-width","14");
+      circle.setAttribute("stroke-linecap","round");
+      circle.setAttribute("stroke-dasharray", dash);
+      circle.setAttribute("stroke-dashoffset", String(-offset));
+      circle.setAttribute("transform","rotate(-90 60 60)");
+      segHost.appendChild(circle);
+      offset += len;
+    });
+
+    $("donutCenter").textContent = `${Number(compliancePct||0).toFixed(0)}%`;
+
+    const leg = $("legend");
+    const rows = [
+      { label:"100%",     dot:"good",   val:`${buckets.b1.length} คน (${pct(buckets.b1.length,totalMembers).toFixed(0)}%)` },
+      { label:"90–99%",   dot:"mid",    val:`${buckets.b2.length} คน (${pct(buckets.b2.length,totalMembers).toFixed(0)}%)` },
+      { label:"80–89%",   dot:"orange", val:`${buckets.b3.length} คน (${pct(buckets.b3.length,totalMembers).toFixed(0)}%)` },
+      { label:"70–79%",   dot:"bad",    val:`${buckets.b4.length} คน (${pct(buckets.b4.length,totalMembers).toFixed(0)}%)` },
+      { label:"<69%",     dot:"bad",    val:`${buckets.b5.length} คน (${pct(buckets.b5.length,totalMembers).toFixed(0)}%)` },
+    ];
+    leg.innerHTML = rows.map(r=>`
+      <div class="legRow">
+        <div class="legLeft">
+          <span class="dot ${r.dot}"></span>
+          <span class="legName">${r.label}</span>
+        </div>
+        <span class="legVal">${escapeHtml(r.val)}</span>
+      </div>
+    `).join("");
+  }
+
+  function renderBucket(idPrefix, names, totalMembers, pillClass){
+    const countEl = $(idPrefix + "Count");
+    const pctEl   = $(idPrefix + "Pct");
+    const listEl  = $(idPrefix + "List");
+
+    countEl.textContent = `${names.length} คน`;
+    pctEl.textContent = `${pct(names.length, totalMembers).toFixed(0)}%`;
+
+    if (!names.length){
+      listEl.innerHTML = `<span class="namePill gray">— ไม่มี —</span>`;
+      return;
+    }
+    const top = names.slice(0, MAX_PER_BUCKET);
+    const rest = Math.max(0, names.length - top.length);
+    listEl.innerHTML = top.map(n=>`<span class="namePill ${pillClass}">${escapeHtml(n)}</span>`).join("");
+    if (rest>0){
+      listEl.innerHTML += `<span class="namePill gray">+${rest} คน</span>`;
+    }
+  }
+
+  function compute(out){
+    const people = Array.isArray(out.people) ? out.people : [];
+    const totalMembers = people.length;
+    const week = out.week || { startISO:"-", endISO:"-" };
+    const sum = out.summary && out.summary.thisWeek ? out.summary.thisWeek : null;
+
+    let totalDoneAll = 0, totalSlots = totalMembers * 21;
+    if (sum && Number.isFinite(Number(sum.totalDoneAll))) totalDoneAll = Number(sum.totalDoneAll);
+    else totalDoneAll = people.reduce((s,p)=> s + Number(p.totalDone||0), 0);
+
+    if (sum && Number.isFinite(Number(sum.totalSlots))) totalSlots = Number(sum.totalSlots);
+    else totalSlots = people.reduce((s,p)=> s + Number(p.totalSlots||21), 0);
+
+    const compliance = totalSlots ? (totalDoneAll/totalSlots*100) : 0;
+
+    const buckets = { b1:[], b2:[], b3:[], b4:[], b5:[] };
+    let riskN = 0;
+    let perfectN = 0;
+
+    const todayISO = localTodayISO();
+    const dayISO = (todayISO >= week.startISO && todayISO <= week.endISO) ? todayISO : week.startISO;
+    let todayComplete = 0;
+
+    for (const p of people){
+      const wp = Number(p.percent||0);
+      if (wp >= 100) buckets.b1.push(p.name);
+      else if (wp >= 90) buckets.b2.push(p.name);
+      else if (wp >= 80) buckets.b3.push(p.name);
+      else if (wp >= 70) buckets.b4.push(p.name);
+      else buckets.b5.push(p.name);
+
+      if (wp < 80) riskN++;
+      if (isPerfectWeek(p.perDay)) perfectN++;
+
+      const dd = (p.perDay||[]).find(x=>String(x.dateISO||"")===dayISO);
+      if (dd && Number(dd.count||0)===3) todayComplete++;
+    }
+
+    const thSort = (a,b)=> String(a).localeCompare(String(b),"th");
+    buckets.b1.sort(thSort); buckets.b2.sort(thSort); buckets.b3.sort(thSort); buckets.b4.sort(thSort); buckets.b5.sort(thSort);
+
+    const trend = buildTrend(people, week);
+
+    return { week,totalMembers,compliance,buckets,riskN,todayComplete,dayISO,perfectN,trend };
+  }
+
+  function renderAll(out){
+    const c = compute(out);
+
+    $("weekPill").textContent = `สัปดาห์: จ. ${thaiDateFromISO(c.week.startISO)} – อา. ${thaiDateFromISO(c.week.endISO)}`;
+    $("memberPill").textContent = `สมาชิก: ${c.totalMembers} คน`;
+    $("updatedPill").textContent = `อัปเดตล่าสุด: ${nowHHmmTH()} น.`;
+    $("kTodayLabel").textContent = `อิง “วันนี้” (${thaiDateFromISO(c.dayISO)})`;
+
+    $("kPerfectN").textContent = c.perfectN;
+    $("kPerfectPct").textContent = `${pct(c.perfectN, c.totalMembers).toFixed(0)}%`;
+
+    $("kCompliance").textContent = c.compliance.toFixed(0);
+    const compTag = c.compliance >= 90 ? ["good","ดีมาก"] : c.compliance >= 80 ? ["mid","พอใช้"] : ["bad","เสี่ยง"];
+    $("kCompTag").className = `tag ${compTag[0]}`;
+    $("kCompTag").textContent = compTag[1];
+
+    $("kRiskN").textContent = c.riskN;
+    $("kRiskPct").textContent = `${pct(c.riskN, c.totalMembers).toFixed(0)}%`;
+
+    $("kTodayN").textContent = c.todayComplete;
+    $("kTodayPct").textContent = `${pct(c.todayComplete, c.totalMembers).toFixed(0)}%`;
+
+    renderTrend(c.trend);
+    renderDonut5(c.buckets, c.compliance, c.totalMembers);
+
+    renderBucket("b1", c.buckets.b1, c.totalMembers, "l1");
+    renderBucket("b2", c.buckets.b2, c.totalMembers, "l2");
+    renderBucket("b3", c.buckets.b3, c.totalMembers, "l3");
+    renderBucket("b4", c.buckets.b4, c.totalMembers, "l4");
+    renderBucket("b5", c.buckets.b5, c.totalMembers, "l5");
+  }
+
+  async function load(){
+    const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(WEEK_OFFSET))}`, { cache:"no-store" });
+    const out = await res.json().catch(()=>({}));
+    if (!res.ok || !out.ok){
+      ["b1List","b2List","b3List","b4List","b5List"].forEach(id=>{
+        $(id).innerHTML = `<span class="namePill gray">โหลดไม่สำเร็จ</span>`;
+      });
+      return;
+    }
+    renderAll(out);
+  }
+
+
+  const btnThis = $("btnThis");
+  const btnLast = $("btnLast");
+
+  function setWeek(offset){
+    WEEK_OFFSET = offset;
+    if (btnThis && btnLast){
+      btnThis.classList.toggle("active", WEEK_OFFSET === 0);
+      btnLast.classList.toggle("active", WEEK_OFFSET === -1);
+      btnThis.setAttribute("aria-selected", String(WEEK_OFFSET === 0));
+      btnLast.setAttribute("aria-selected", String(WEEK_OFFSET === -1));
+    }
+    load();
+  }
+
+  if (btnThis) btnThis.addEventListener("click", ()=> setWeek(0));
+  if (btnLast) btnLast.addEventListener("click", ()=> setWeek(-1));
+
+  $("btnPrint").addEventListener("click", ()=> window.print());
+  load();
+</script>
+</body>
+</html>
