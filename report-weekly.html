@@ -474,7 +474,24 @@
 <script>
   let WEEK_OFFSET = 0; // 0=this week, -1=last week
   const MAX_PER_BUCKET = 45;
-  const $ = (id)=> document.getElementById(id);
+  // DOM helper
+  // NOTE: This report can be customized by removing sections. To avoid the whole page breaking,
+  // we return a safe dummy object when an element is missing.
+  const $ = (id)=>{
+    const el = document.getElementById(id);
+    if (el) return el;
+    return {
+      textContent: "",
+      innerHTML: "",
+      className: "",
+      style: {},
+      classList: { add(){}, remove(){}, toggle(){} },
+      setAttribute(){},
+      removeAttribute(){},
+      querySelector(){ return null; },
+      querySelectorAll(){ return []; },
+    };
+  };
 
   function escapeHtml(s){
     return String(s).replace(/[&<>"']/g, (m)=>( {
