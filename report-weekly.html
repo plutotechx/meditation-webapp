@@ -188,9 +188,20 @@
 
     /* ===== 5 bucket cards ===== */
     /* Keep all 5 columns perfectly equal (prevent content-driven min-width growth) */
-    .bucketCard{ min-height:220px; display:flex; flex-direction:column; min-width:0; }
+    .bucketCard{ min-height:280px; display:flex; flex-direction:column; min-width:0; }
     .bucketCard .cardBd{ padding:10px 10px 10px; display:flex; flex-direction:column; gap:8px; flex:1 1 auto; }
-    .bucketDesc{ font-size:10.6px; line-height:1.28; color:rgba(234,240,255,.66); }
+    /* Keep the meta row ("X คน" + "%") aligned across all 5 buckets
+       by normalizing description height (short descriptions won't pull the meta upward). */
+    .bucketDesc{
+      font-size:10.6px;
+      line-height:1.28;
+      color:rgba(234,240,255,.66);
+      display:-webkit-box;
+      -webkit-box-orient:vertical;
+      -webkit-line-clamp:4;
+      overflow:hidden;
+      min-height:56px;
+    }
     .bucketMeta{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
     .bucketMeta .count{ font-weight:1000; font-size:11px; color:rgba(234,240,255,.86); }
     .bucketMeta .pct{ font-family:var(--mono); font-weight:1000; font-size:11px; color:rgba(234,240,255,.72); }
@@ -198,8 +209,14 @@
       display:flex; flex-wrap:wrap; gap:6px;
       align-content:flex-start;
       flex:1 1 auto;
-      overflow:hidden; /* keep 1-page */
-      max-height:120px;
+      overflow:auto;
+      max-height:190px;
+      padding-right:6px; /* room for scrollbar */
+    }
+
+    /* Print: avoid scrollbars; keep layout stable */
+    @media print{
+      .bucketList{ overflow:hidden !important; }
     }
     .namePill{
       font-size:10.5px;font-weight:950;
