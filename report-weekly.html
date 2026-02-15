@@ -333,7 +333,28 @@
       .page{transform: scale(.92) !important; transform-origin: top left !important; width: calc(100% / .92) !important;}
     }
 
-  </style>
+  
+    /* ===== Force 2-column name grids in every bucket (no scrollbar) ===== */
+    .bucketList{
+      display:grid !important;
+      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+      gap:8px !important;
+      align-content:start !important;
+      overflow:visible !important;
+      max-height:none !important;
+      padding-right:0 !important;
+      scrollbar-gutter:auto !important;
+    }
+    .namePill{ width:100% !important; }
+    .namePill.empty{
+      grid-column:1 / -1;
+      justify-self:center;
+      width:min(260px, 80%);
+      text-align:center;
+      opacity:.9;
+    }
+
+</style>
 </head>
 
 <body>
@@ -657,7 +678,7 @@
     pctEl.textContent = `${pct(names.length, totalMembers).toFixed(0)}%`;
 
     if (!names.length){
-      listEl.innerHTML = `<span class="namePill gray">— ไม่มี —</span>`;
+      listEl.innerHTML = `<span class="namePill gray empty">ไม่มีรายการ</span>`;
       return;
     }
     const top = names.slice(0, MAX_PER_BUCKET);
