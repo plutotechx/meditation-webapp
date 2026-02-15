@@ -185,7 +185,8 @@
     .legVal{font-family:var(--mono);color:rgba(234,240,255,.70);white-space:nowrap}
 
     /* ===== 5 bucket cards ===== */
-    .bucketCard{ min-height:220px; display:flex; flex-direction:column; }
+    /* Keep all 5 columns perfectly equal (prevent content-driven min-width growth) */
+    .bucketCard{ min-height:220px; display:flex; flex-direction:column; min-width:0; }
     .bucketCard .cardBd{ padding:10px 10px 10px; display:flex; flex-direction:column; gap:8px; flex:1 1 auto; }
     .bucketDesc{ font-size:10.6px; line-height:1.28; color:rgba(234,240,255,.66); }
     .bucketMeta{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
@@ -282,6 +283,8 @@
       max-height:150px;
       overflow:auto;
       padding-right:4px;
+      /* Reserve space for scrollbar so each column keeps identical width */
+      scrollbar-gutter: stable both-edges;
     }
     .bucketList::-webkit-scrollbar{height:8px;width:8px}
     .bucketList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px}
@@ -727,16 +730,28 @@
     renderBucket("b5", c.buckets.b5, c.totalMembers, "l5");
   }
 
+  // Prevent stale responses when toggling between weeks quickly.
+  let loadSeq = 0;
   async function load(){
-    const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(WEEK_OFFSET))}`, { cache:"no-store" });
-    const out = await res.json().catch(()=>({}));
-    if (!res.ok || !out.ok){
+    const seq = ++loadSeq;
+    try{
+      const offset = WEEK_OFFSET;
+      const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(offset))}`, { cache:"no-store" });
+      const out = await res.json().catch(()=>({}));
+      if (seq !== loadSeq) return; // stale
+      if (!res.ok || !out.ok){
+        ["b1List","b2List","b3List","b4List","b5List"].forEach(id=>{
+          $(id).innerHTML = `<span class="namePill gray">โหลดไม่สำเร็จ</span>`;
+        });
+        return;
+      }
+      renderAll(out);
+    }catch(e){
+      if (seq !== loadSeq) return;
       ["b1List","b2List","b3List","b4List","b5List"].forEach(id=>{
-        $(id).innerHTML = `<span class="namePill gray">โหลดไม่สำเร็จ</span>`;
+        $(id).innerHTML = `<span class="namePill gray">network_error</span>`;
       });
-      return;
     }
-    renderAll(out);
   }
 
 
