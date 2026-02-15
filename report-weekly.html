@@ -226,7 +226,7 @@
       .bucketList{max-height:unset; overflow:visible;}
     }
 
-    @page{ size: A4 portrait; margin: 8mm; }
+    @page{ size: A4 landscape; margin: 8mm; }
     @media print{
       body{padding:0 !important; background:#fff !important; color:#111 !important;}
       .btn,.actions{display:none !important;}
@@ -250,6 +250,53 @@
       .namePill.gray{background:#f3f3f3 !important; color:#333 !important;}
       .page{transform: scale(.93); transform-origin: top left; width: calc(100% / .93);}
     }
+  
+    .seg{
+      display:inline-flex;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      padding:6px;
+      gap:6px;
+      box-shadow:0 12px 34px rgba(0,0,0,.20);
+    }
+    .segBtn{
+      border:0;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:950;
+      color:rgba(234,240,255,.86);
+      background:transparent;
+      cursor:pointer;
+      white-space:nowrap;
+      font-size:12px;
+    }
+    .segBtn.active{
+      color:#071120;
+      background:rgba(106,169,255,.95);
+      box-shadow:0 10px 24px rgba(106,169,255,.18);
+    }
+
+    /* show more names (screen) */
+    .bucketList{
+      max-height:150px;
+      overflow:auto;
+      padding-right:4px;
+    }
+    .bucketList::-webkit-scrollbar{height:8px;width:8px}
+    .bucketList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px}
+
+    @media print{
+      /* keep landscape & fit more names */
+      .bucketDesc{font-size:10.2px !important;}
+      .bucketList{max-height:165px !important; overflow:hidden !important; padding-right:0 !important;}
+      .namePill{font-size:9.6px !important; padding:3px 6px !important;}
+      .rowBottom5{gap:6px !important;}
+      .cardHd .h{font-size:12px !important;}
+      .cardHd .m{font-size:10.5px !important;}
+      .page{transform: scale(.92) !important; transform-origin: top left !important; width: calc(100% / .92) !important;}
+    }
+
   </style>
 </head>
 
@@ -265,8 +312,14 @@
       </div>
 
       <div class="actions">
+
+        <div class="seg" role="tablist" aria-label="เลือกสัปดาห์">
+          <button class="segBtn active" id="btnThis" role="tab" aria-selected="true">สัปดาห์นี้</button>
+          <button class="segBtn" id="btnLast" role="tab" aria-selected="false">สัปดาห์ที่แล้ว</button>
+        </div>
+
         <a class="btn" href="/dashboard.html">กลับไป Dashboard</a>
-        <button class="btn primary" id="btnPrint">Export PDF (A4)</button>
+        <button class="btn primary" id="btnPrint">Export PDF (A4 แนวนอน)</button>
       </div>
     </div>
 
@@ -450,7 +503,7 @@
   </div>
 
 <script>
-  const WEEK_OFFSET = 0;
+  let WEEK_OFFSET = 0; // 0=this week, -1=last week
   const MAX_PER_BUCKET = 45;
   const $ = (id)=> document.getElementById(id);
 
@@ -685,6 +738,24 @@
     }
     renderAll(out);
   }
+
+
+  const btnThis = $("btnThis");
+  const btnLast = $("btnLast");
+
+  function setWeek(offset){
+    WEEK_OFFSET = offset;
+    if (btnThis && btnLast){
+      btnThis.classList.toggle("active", WEEK_OFFSET === 0);
+      btnLast.classList.toggle("active", WEEK_OFFSET === -1);
+      btnThis.setAttribute("aria-selected", String(WEEK_OFFSET === 0));
+      btnLast.setAttribute("aria-selected", String(WEEK_OFFSET === -1));
+    }
+    load();
+  }
+
+  if (btnThis) btnThis.addEventListener("click", ()=> setWeek(0));
+  if (btnLast) btnLast.addEventListener("click", ()=> setWeek(-1));
 
   $("btnPrint").addEventListener("click", ()=> window.print());
   load();
