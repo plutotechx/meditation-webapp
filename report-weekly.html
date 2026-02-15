@@ -214,23 +214,24 @@
       padding-right:6px; /* room for scrollbar */
     }
 
-    /* Bucket 1: make the name pills look orderly (2-column grid) */
+    /* Bucket 1: show names in 2 columns (no scrollbar) */
     #b1List{
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:6px;
-      align-content:start;
+      column-count:2;
+      column-gap:10px;
+      overflow:visible !important;
+      max-height:none !important;
+      padding-right:0;
     }
     #b1List .namePill{
-      display:block;
       width:100%;
+      display:inline-flex;
+      break-inside:avoid;
+      -webkit-column-break-inside:avoid;
+      margin:0 0 6px;
     }
 
-
-    /* Print: avoid scrollbars; keep layout stable */
-    @media print{
-      .bucketList{ overflow:hidden !important; }
-    }
+/* Print: avoid scrollbars; keep layout stable */
+    @media print{ .bucketList{ overflow:visible !important; max-height:none !important; } }
     .namePill{
       font-size:10.5px;font-weight:950;
       padding:5px 8px;border-radius:999px;
@@ -324,7 +325,7 @@
     @media print{
       /* keep landscape & fit more names */
       .bucketDesc{font-size:10.2px !important;}
-      .bucketList{max-height:165px !important; overflow:hidden !important; padding-right:0 !important;}
+      .bucketList{max-height:none !important; overflow:visible !important; padding-right:0 !important;}
       .namePill{font-size:9.6px !important; padding:3px 6px !important;}
       .rowBottom5{gap:6px !important;}
       .cardHd .h{font-size:12px !important;}
