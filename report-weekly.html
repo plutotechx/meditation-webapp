@@ -36,33 +36,18 @@
       min-height:100vh;
       padding:14px;
     }
-    .page{
-      width:min(1080px, 100%);
-      margin:0 auto;
-    }
+    .page{ width:min(1080px, 100%); margin:0 auto; }
 
     .hdr{
       display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px; flex-wrap:wrap;
-      margin-bottom:10px;
+      gap:12px; flex-wrap:wrap; margin-bottom:10px;
     }
     .title{display:flex; flex-direction:column; gap:4px;}
-    h1{
-      margin:0;
-      font-size:20px;
-      font-weight:950;
-      letter-spacing:.2px;
-      line-height:1.1;
-    }
-    .sub{
-      display:flex; gap:10px; flex-wrap:wrap;
-      font-size:12px; color:var(--muted);
-      align-items:center;
-    }
+    h1{ margin:0; font-size:20px; font-weight:950; letter-spacing:.2px; line-height:1.1; }
+    .sub{ display:flex; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--muted); align-items:center; }
     .pill{
       display:inline-flex; align-items:center; gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
+      padding:6px 10px; border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(0,0,0,.18);
       white-space:nowrap;
@@ -80,19 +65,13 @@
       100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
     }
 
-    .actions{
-      display:flex; gap:10px; align-items:center; justify-content:flex-end;
-      flex-wrap:wrap;
-    }
+    .actions{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
     .btn{
       border:1px solid rgba(255,255,255,.16);
       background:rgba(255,255,255,.08);
       color:var(--text);
-      padding:9px 12px;
-      border-radius:12px;
-      font-weight:900;
-      cursor:pointer;
-      text-decoration:none;
+      padding:9px 12px; border-radius:12px;
+      font-weight:900; cursor:pointer; text-decoration:none;
     }
     .btn:hover{background:rgba(255,255,255,.10)}
     .btn.primary{
@@ -104,7 +83,7 @@
 
     .grid{display:grid; grid-template-columns: 1fr; gap:10px;}
     .row2{display:grid; grid-template-columns: 1.1fr .9fr; gap:10px; align-items:stretch;}
-    .rowBottom{display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:stretch;}
+    .rowBottom5{display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:8px; align-items:stretch;}
 
     .card{
       background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
@@ -113,6 +92,7 @@
       box-shadow:var(--shadow);
       overflow:hidden;
       position:relative;
+      min-height:120px;
     }
     .card:before{
       content:"";
@@ -131,7 +111,7 @@
       z-index:1;
     }
     .cardHd .h{margin:0;font-size:13px;font-weight:950;color:rgba(234,240,255,.90);}
-    .cardHd .m{font-size:11px;color:rgba(234,240,255,.66);margin-top:2px;}
+    .cardHd .m{font-size:11px;color:rgba(234,240,255,.66);margin-top:2px;line-height:1.25}
     .cardBd{padding:10px 12px; position:relative; z-index:1;}
 
     .kpis{display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px;}
@@ -144,10 +124,7 @@
     }
     .kpi .l{font-size:11px; color:rgba(234,240,255,.70); font-weight:900}
     .kpi .v{
-      margin-top:6px;
-      font-size:18px;
-      font-weight:1000;
-      line-height:1.05;
+      margin-top:6px; font-size:18px; font-weight:1000; line-height:1.05;
       display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
     }
     .kpi .v .big{font-size:22px}
@@ -185,9 +162,7 @@
       align-items:flex-end;
     }
     .bar > i{
-      display:block;
-      width:100%;
-      height:0%;
+      display:block; width:100%; height:0%;
       background:linear-gradient(180deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
     }
     .barLbl{font-size:11px;font-weight:950;color:rgba(234,240,255,.85);line-height:1;white-space:nowrap;}
@@ -209,72 +184,46 @@
     .legName{font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .legVal{font-family:var(--mono);color:rgba(234,240,255,.70);white-space:nowrap}
 
-    .list{display:flex;flex-wrap:wrap;gap:6px;}
+    /* ===== 5 bucket cards ===== */
+    .bucketCard{ min-height:220px; display:flex; flex-direction:column; }
+    .bucketCard .cardBd{ padding:10px 10px 10px; display:flex; flex-direction:column; gap:8px; flex:1 1 auto; }
+    .bucketDesc{ font-size:10.6px; line-height:1.28; color:rgba(234,240,255,.66); }
+    .bucketMeta{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+    .bucketMeta .count{ font-weight:1000; font-size:11px; color:rgba(234,240,255,.86); }
+    .bucketMeta .pct{ font-family:var(--mono); font-weight:1000; font-size:11px; color:rgba(234,240,255,.72); }
+    .bucketList{
+      display:flex; flex-wrap:wrap; gap:6px;
+      align-content:flex-start;
+      flex:1 1 auto;
+      overflow:hidden; /* keep 1-page */
+      max-height:120px;
+    }
     .namePill{
-      font-size:11px;font-weight:950;
-      padding:6px 9px;border-radius:999px;
+      font-size:10.5px;font-weight:950;
+      padding:5px 8px;border-radius:999px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
       color:rgba(234,240,255,.92);
       max-width:100%;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-    .namePill.bad{border-color:rgba(255,77,77,.35); background:rgba(255,77,77,.10)}
-    .namePill.good{border-color:rgba(48,209,106,.35); background:rgba(48,209,106,.10)}
+    .namePill.l1{border-color:rgba(48,209,106,.36); background:rgba(48,209,106,.10)}
+    .namePill.l2{border-color:rgba(243,196,58,.38); background:rgba(243,196,58,.10)}
+    .namePill.l3{border-color:rgba(255,140,42,.40); background:rgba(255,140,42,.10)}
+    .namePill.l4{border-color:rgba(255,77,77,.30); background:rgba(255,77,77,.08)}
+    .namePill.l5{border-color:rgba(255,77,77,.44); background:rgba(255,77,77,.12)}
     .namePill.gray{border-color:rgba(255,255,255,.16); background:rgba(0,0,0,.16); color:rgba(234,240,255,.75)}
 
-    table{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      background:rgba(255,255,255,.03);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:14px;
-      overflow:hidden;
-    }
-    thead th{
-      text-align:left;
-      padding:8px 10px;
-      font-size:11px;
-      color:rgba(234,240,255,.78);
-      font-weight:1000;
-      background:rgba(0,0,0,.22);
-      border-bottom:1px solid rgba(255,255,255,.10);
-      white-space:nowrap;
-    }
-    tbody td{
-      padding:8px 10px;
-      font-size:11px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      vertical-align:middle;
-    }
-    tbody tr:last-child td{border-bottom:none}
-    .pctChip{
-      display:inline-flex;align-items:center;justify-content:center;
-      padding:4px 8px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.16);
-      font-weight:1000;
-      font-family:var(--mono);
-      min-width:78px;
-    }
-    .pctChip.good{border-color:rgba(48,209,106,.30); background:rgba(48,209,106,.10)}
-    .pctChip.mid{border-color:rgba(243,196,58,.30); background:rgba(243,196,58,.10)}
-    .pctChip.orange{border-color:rgba(255,140,42,.32); background:rgba(255,140,42,.10)}
-    .pctChip.bad{border-color:rgba(255,77,77,.32); background:rgba(255,77,77,.10)}
-    .miniBar{
-      height:8px;border-radius:999px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-    }
-    .miniBar>i{display:block;height:100%;width:0%;background:linear-gradient(90deg, rgba(255,77,77,.85), rgba(255,140,42,.65));}
+    .note{margin-top:8px;font-size:10.3px;color:rgba(234,240,255,.62);}
 
-    .note{margin-top:8px;font-size:10.5px;color:rgba(234,240,255,.62);}
-
-    @media (max-width: 900px){
+    @media (max-width: 980px){
       .row2{grid-template-columns:1fr}
-      .rowBottom{grid-template-columns:1fr}
       .kpis{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .rowBottom5{grid-template-columns:1fr; gap:10px;} /* mobile: stack */
+      .bucketCard{min-height:unset}
+      .bucketList{max-height:unset; overflow:visible;}
     }
 
     @page{ size: A4 portrait; margin: 8mm; }
@@ -283,17 +232,9 @@
       .btn,.actions{display:none !important;}
       .page{width:auto !important; margin:0 !important;}
       .dotLive{animation:none !important; box-shadow:none !important;}
-      .card, .kpi, table{box-shadow:none !important;}
+      .card, .kpi{box-shadow:none !important;}
       .card{border-color:#ddd !important;}
       .kpi{background:#f6f6f6 !important; border-color:#ddd !important;}
-      table{border-color:#ddd !important; background:#fff !important;}
-      thead th{background:#f3f3f3 !important; color:#333 !important; border-bottom-color:#e6e6e6 !important;}
-      tbody td{border-bottom-color:#eee !important;}
-      .pctChip{border-color:#ddd !important; background:#f7f7f7 !important; color:#111 !important;}
-      .namePill{border-color:#ddd !important; background:#f7f7f7 !important; color:#111 !important;}
-      .namePill.bad{border-color:#e3b3b3 !important; background:#fff1f1 !important;}
-      .namePill.good{border-color:#b9e7c9 !important; background:#effbf3 !important;}
-      .namePill.gray{background:#f3f3f3 !important; color:#333 !important;}
       h1{font-size:18px !important;}
       .sub{font-size:11px !important;}
       .cardHd{padding:8px 10px !important;}
@@ -301,8 +242,13 @@
       .kpi .v .big{font-size:20px !important;}
       .trend{height:100px !important;}
       .bar{height:84px !important;}
-      .note{font-size:10px !important;}
-      .page{transform: scale(.94); transform-origin: top left; width: calc(100% / .94);}
+      .bucketDesc{color:#444 !important;}
+      .bucketList{max-height:118px !important;} /* keep single page */
+      .namePill{border-color:#ddd !important; background:#f7f7f7 !important; color:#111 !important;}
+      .namePill.l1{border-color:#b9e7c9 !important; background:#effbf3 !important;}
+      .namePill.l5{border-color:#e3b3b3 !important; background:#fff1f1 !important;}
+      .namePill.gray{background:#f3f3f3 !important; color:#333 !important;}
+      .page{transform: scale(.93); transform-origin: top left; width: calc(100% / .93);}
     }
   </style>
 </head>
@@ -357,12 +303,11 @@
               <div class="s" id="kTodayLabel">อิง “วันนี้” ตามเครื่องผู้เปิดรายงาน</div>
             </div>
           </div>
-          <div class="note" id="kpiNote">*รายงานนี้ยึดข้อมูลสัปดาห์ปัจจุบันเท่านั้น (weekOffset=0)</div>
+          <div class="note">*รายงานนี้ยึดข้อมูลสัปดาห์ปัจจุบันเท่านั้น (weekOffset=0)</div>
         </div>
       </div>
 
       <div class="row2">
-
         <div class="card">
           <div class="cardHd">
             <div>
@@ -374,7 +319,7 @@
           <div class="cardBd">
             <div class="trendWrap">
               <div class="trend" id="trendBars"></div>
-              <div class="note">อ่านง่าย: แท่งสูง = คนครบ 3/3 เยอะในวันนั้น</div>
+              <div class="note">แท่งสูง = คนครบ 3/3 เยอะในวันนั้น</div>
             </div>
           </div>
         </div>
@@ -383,7 +328,7 @@
           <div class="cardHd">
             <div>
               <div class="h">Distribution (ระดับ % ต่อสัปดาห์)</div>
-              <div class="m">แบ่งกลุ่ม 4 ระดับ เพื่อเห็นภาพรวมเร็ว</div>
+              <div class="m">ภาพรวมเร็ว: 100 / 90–99 / 80–89 / 70–79 / &lt;69</div>
             </div>
           </div>
           <div class="cardBd">
@@ -406,62 +351,107 @@
 
               <div class="legend" id="legend"></div>
             </div>
-            <div class="note">ระดับ: 100% / 90–99% / 80–89% / &lt;80%</div>
+            <div class="note">*โดนัทเป็นภาพรวม “จำนวนคน” ต่อระดับ (% ต่อสัปดาห์)</div>
           </div>
         </div>
-
       </div>
 
-      <div class="rowBottom">
-
-        <div class="card">
+      <!-- ===== Bottom: 5 buckets ===== -->
+      <div class="rowBottom5">
+        <div class="card bucketCard">
           <div class="cardHd">
             <div>
-              <div class="h">Top Follow-up (ต่ำสุด) — สูงสุด 10 คน</div>
-              <div class="m">สำหรับติดตาม/สนับสนุนให้ทำต่อเนื่อง</div>
+              <div class="h">ระดับที่ 1 — Perfect Integrity (100%)</div>
+              <div class="m">ทำสมาธิได้สมบูรณ์แบบ</div>
             </div>
-            <div class="pill" id="non100Pill">ไม่ครบ 100%: — คน</div>
           </div>
           <div class="cardBd">
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:44%">ชื่อ</th>
-                  <th style="width:18%">% สัปดาห์</th>
-                  <th style="width:16%">ขาด</th>
-                  <th>แถบ</th>
-                </tr>
-              </thead>
-              <tbody id="tbFollow">
-                <tr><td colspan="4" style="color:rgba(234,240,255,.66)">กำลังโหลด…</td></tr>
-              </tbody>
-            </table>
-            <div class="note" id="followNote">*แสดงเฉพาะ 10 คน “ต่ำสุด” เพื่อคุมให้อยู่ใน 1 หน้า A4</div>
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ที่ยอดเยี่ยม แสดงถึงความสามารถในการนั่งสมาธิที่เข้าถึงอย่างสมบูรณ์ ทั้งในด้านความสงบ ความตั้งมั่น และการมีสติ</div>
+            <div class="bucketMeta">
+              <div class="count" id="b1Count">— คน</div>
+              <div class="pct" id="b1Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b1List"></div>
           </div>
         </div>
 
-        <div class="card">
+        <div class="card bucketCard">
           <div class="cardHd">
             <div>
-              <div class="h">Perfect Week (7/7 วันครบ 3/3) — สูงสุด 10 คน</div>
-              <div class="m">ถ้ามากกว่า 10 จะสรุปเป็น “+N คน”</div>
+              <div class="h">ระดับที่ 2 — Excellent (90–99%)</div>
+              <div class="m">ดีมาก ใกล้เคียง 100%</div>
             </div>
-            <div class="pill" id="perfectPill">Perfect: — คน</div>
           </div>
           <div class="cardBd">
-            <div class="list" id="listPerfect"><span style="color:rgba(234,240,255,.66)">กำลังโหลด…</span></div>
-            <div class="note" id="perfectNote">*รายชื่อเรียงตามตัวอักษร (ไทย)</div>
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในการทำสมาธิ ถึงจะไม่ได้ผลลัพธ์สูงสุด 100% แต่ก็ใกล้เคียงมาก แสดงถึงการมีสมาธิที่ดีและความตั้งมั่น จงตั้งใจพัฒนาตนเองต่อไปเพื่อให้ผลลัพธ์ดีขึ้น</div>
+            <div class="bucketMeta">
+              <div class="count" id="b2Count">— คน</div>
+              <div class="pct" id="b2Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b2List"></div>
           </div>
         </div>
 
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 3 — Good (80–89%)</div>
+              <div class="m">ดี มีโอกาสพัฒนา</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับกลาง ยังมีโอกาสในการพัฒนาเพิ่มเติม อาจเป็นกลุ่มที่ยังไม่ถึงระดับที่พึงพอใจอย่างเต็มที่</div>
+            <div class="bucketMeta">
+              <div class="count" id="b3Count">— คน</div>
+              <div class="pct" id="b3Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b3List"></div>
+          </div>
+        </div>
+
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 4 — Fair (70–79%)</div>
+              <div class="m">ปานกลาง ควรฝึกเพิ่ม</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับปานกลาง ยังไม่สามารถเข้าถึงสมาธิได้อย่างที่คาดหวัง จะต้องฝึกฝนเพิ่มเติม</div>
+            <div class="bucketMeta">
+              <div class="count" id="b4Count">— คน</div>
+              <div class="pct" id="b4Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b4List"></div>
+          </div>
+        </div>
+
+        <div class="card bucketCard">
+          <div class="cardHd">
+            <div>
+              <div class="h">ระดับที่ 5 — Needs Support (&lt;69%)</div>
+              <div class="m">ค่อนข้างต่ำ ต้องการการสนับสนุน</div>
+            </div>
+          </div>
+          <div class="cardBd">
+            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับต่ำ การฝึกสมาธิยังไม่ค่อยประสบความสำเร็จ อาจมีปัญหาในการตั้งมั่นหรือการเข้าถึงสมาธิ อาจต้องการการสนับสนุนเพิ่มเติม</div>
+            <div class="bucketMeta">
+              <div class="count" id="b5Count">— คน</div>
+              <div class="pct" id="b5Pct">—%</div>
+            </div>
+            <div class="bucketList" id="b5List"></div>
+          </div>
+        </div>
       </div>
+
+      <div class="note">*แต่ละกลุ่มแสดงรายชื่อสูงสุด 45 คน เพื่อคุมรายงานให้อยู่ใน 1 หน้า A4</div>
+
     </div>
   </div>
 
 <script>
   const WEEK_OFFSET = 0;
-  const MAX_LIST = 10;
-  const MAX_FOLLOW = 10;
+  const MAX_PER_BUCKET = 45;
   const $ = (id)=> document.getElementById(id);
 
   function escapeHtml(s){
@@ -482,17 +472,6 @@
     return `${hh}:${mm}`;
   }
   function pct(n, total){ return total ? (n/total*100) : 0; }
-  function gradeChip(p){
-    if (p >= 100) return ["good"];
-    if (p >= 90) return ["mid"];
-    if (p >= 80) return ["orange"];
-    return ["bad"];
-  }
-  function isPerfectWeek(perDay){
-    const arr = Array.isArray(perDay) ? perDay : [];
-    if (arr.length < 7) return false;
-    return arr.every(d => Number(d.count||0) === 3);
-  }
   function localTodayISO(){
     const d = new Date();
     const y = d.getFullYear();
@@ -500,6 +479,13 @@
     const da = String(d.getDate()).padStart(2,'0');
     return `${y}-${m}-${da}`;
   }
+  function isPerfectWeek(perDay){
+    const arr = Array.isArray(perDay) ? perDay : [];
+    if (arr.length < 7) return false;
+    return arr.every(d => Number(d.count||0) === 3);
+  }
+  function getCSS(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#999"; }
+
   function buildTrend(peopleRows, week){
     const days = [];
     const [sy,sm,sd] = week.startISO.split("-").map(Number);
@@ -535,20 +521,19 @@
     const avg = tr.reduce((s,x)=>s+x.pct,0)/(tr.length||1);
     $("trendAvg").textContent = `เฉลี่ย: ${avg.toFixed(0)}%`;
   }
-  function getCSS(name){
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#999";
-  }
-  function renderDonut(buckets, compliancePct){
+
+  function renderDonut5(buckets, compliancePct, totalMembers){
     const segHost = $("donutSegs");
     segHost.innerHTML = "";
     const r = 44;
     const c = 2 * Math.PI * r;
 
     const segs = [
-      { color:getCSS("--good"), pct:buckets.p100.pct },
-      { color:getCSS("--mid"), pct:buckets.p90.pct },
-      { color:getCSS("--orange"), pct:buckets.p80.pct },
-      { color:getCSS("--bad"), pct:buckets.pLow.pct },
+      { color:getCSS("--good"),   pct:pct(buckets.b1.length, totalMembers) },  // 100
+      { color:getCSS("--mid"),    pct:pct(buckets.b2.length, totalMembers) },  // 90-99
+      { color:getCSS("--orange"), pct:pct(buckets.b3.length, totalMembers) },  // 80-89
+      { color:"rgba(255,77,77,.28)", pct:pct(buckets.b4.length, totalMembers) }, // 70-79
+      { color:getCSS("--bad"),    pct:pct(buckets.b5.length, totalMembers) },  // <69
     ];
 
     let offset = 0;
@@ -574,10 +559,11 @@
 
     const leg = $("legend");
     const rows = [
-      { label:"100%", dot:"good", val:`${buckets.p100.count} คน (${buckets.p100.pct.toFixed(0)}%)` },
-      { label:"90–99%", dot:"mid", val:`${buckets.p90.count} คน (${buckets.p90.pct.toFixed(0)}%)` },
-      { label:"80–89%", dot:"orange", val:`${buckets.p80.count} คน (${buckets.p80.pct.toFixed(0)}%)` },
-      { label:"<80%", dot:"bad", val:`${buckets.pLow.count} คน (${buckets.pLow.pct.toFixed(0)}%)` },
+      { label:"100%",     dot:"good",   val:`${buckets.b1.length} คน (${pct(buckets.b1.length,totalMembers).toFixed(0)}%)` },
+      { label:"90–99%",   dot:"mid",    val:`${buckets.b2.length} คน (${pct(buckets.b2.length,totalMembers).toFixed(0)}%)` },
+      { label:"80–89%",   dot:"orange", val:`${buckets.b3.length} คน (${pct(buckets.b3.length,totalMembers).toFixed(0)}%)` },
+      { label:"70–79%",   dot:"bad",    val:`${buckets.b4.length} คน (${pct(buckets.b4.length,totalMembers).toFixed(0)}%)` },
+      { label:"<69%",     dot:"bad",    val:`${buckets.b5.length} คน (${pct(buckets.b5.length,totalMembers).toFixed(0)}%)` },
     ];
     leg.innerHTML = rows.map(r=>`
       <div class="legRow">
@@ -589,39 +575,24 @@
       </div>
     `).join("");
   }
-  function renderLists(perfectNames, followRows, totals){
-    $("perfectPill").textContent = `Perfect: ${totals.perfect} คน`;
-    const list = $("listPerfect");
-    if (!perfectNames.length){
-      list.innerHTML = `<span class="namePill gray">— ไม่มี —</span>`;
-    } else {
-      const top = perfectNames.slice(0, MAX_LIST);
-      const rest = Math.max(0, perfectNames.length - top.length);
-      list.innerHTML = top.map(n=>`<span class="namePill good">${escapeHtml(n)}</span>`).join("");
-      if (rest>0) list.innerHTML += `<span class="namePill gray">+${rest} คน</span>`;
-    }
 
-    $("non100Pill").textContent = `ไม่ครบ 100%: ${totals.non100} คน`;
-    const tb = $("tbFollow");
-    if (!followRows.length){
-      tb.innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.66)">— ไม่มี —</td></tr>`;
+  function renderBucket(idPrefix, names, totalMembers, pillClass){
+    const countEl = $(idPrefix + "Count");
+    const pctEl   = $(idPrefix + "Pct");
+    const listEl  = $(idPrefix + "List");
+
+    countEl.textContent = `${names.length} คน`;
+    pctEl.textContent = `${pct(names.length, totalMembers).toFixed(0)}%`;
+
+    if (!names.length){
+      listEl.innerHTML = `<span class="namePill gray">— ไม่มี —</span>`;
       return;
     }
-    tb.innerHTML = followRows.slice(0, MAX_FOLLOW).map(r=>{
-      const [cls] = gradeChip(r.pct);
-      const width = Math.max(0, Math.min(100, r.pct));
-      return `
-        <tr>
-          <td><b>${escapeHtml(r.name)}</b></td>
-          <td><span class="pctChip ${cls}">${r.pct.toFixed(0)}%</span></td>
-          <td>${r.missing} ครั้ง</td>
-          <td><div class="miniBar" title="${r.totalDone}/${r.totalSlots}"><i style="width:${width}%"></i></div></td>
-        </tr>
-      `;
-    }).join("");
-    const rest = Math.max(0, followRows.length - MAX_FOLLOW);
+    const top = names.slice(0, MAX_PER_BUCKET);
+    const rest = Math.max(0, names.length - top.length);
+    listEl.innerHTML = top.map(n=>`<span class="namePill ${pillClass}">${escapeHtml(n)}</span>`).join("");
     if (rest>0){
-      tb.innerHTML += `<tr><td colspan="4" style="color:rgba(234,240,255,.60)">… และอีก ${rest} รายชื่อ</td></tr>`;
+      listEl.innerHTML += `<span class="namePill gray">+${rest} คน</span>`;
     }
   }
 
@@ -640,10 +611,9 @@
 
     const compliance = totalSlots ? (totalDoneAll/totalSlots*100) : 0;
 
-    const buckets = { p100:{count:0,pct:0}, p90:{count:0,pct:0}, p80:{count:0,pct:0}, pLow:{count:0,pct:0} };
-    const risk = [];
-    const non100 = [];
-    const perfectNames = [];
+    const buckets = { b1:[], b2:[], b3:[], b4:[], b5:[] };
+    let riskN = 0;
+    let perfectN = 0;
 
     const todayISO = localTodayISO();
     const dayISO = (todayISO >= week.startISO && todayISO <= week.endISO) ? todayISO : week.startISO;
@@ -651,35 +621,25 @@
 
     for (const p of people){
       const wp = Number(p.percent||0);
-      if (wp >= 100) buckets.p100.count++;
-      else if (wp >= 90) buckets.p90.count++;
-      else if (wp >= 80) buckets.p80.count++;
-      else buckets.pLow.count++;
+      if (wp >= 100) buckets.b1.push(p.name);
+      else if (wp >= 90) buckets.b2.push(p.name);
+      else if (wp >= 80) buckets.b3.push(p.name);
+      else if (wp >= 70) buckets.b4.push(p.name);
+      else buckets.b5.push(p.name);
 
-      if (wp < 100) non100.push(p);
-      if (wp < 80) risk.push(p);
-
-      if (isPerfectWeek(p.perDay)) perfectNames.push(p.name);
+      if (wp < 80) riskN++;
+      if (isPerfectWeek(p.perDay)) perfectN++;
 
       const dd = (p.perDay||[]).find(x=>String(x.dateISO||"")===dayISO);
       if (dd && Number(dd.count||0)===3) todayComplete++;
     }
-    buckets.p100.pct = pct(buckets.p100.count, totalMembers);
-    buckets.p90.pct  = pct(buckets.p90.count, totalMembers);
-    buckets.p80.pct  = pct(buckets.p80.count, totalMembers);
-    buckets.pLow.pct = pct(buckets.pLow.count, totalMembers);
 
-    const follow = non100.map(p=>{
-      const totalDone = Number(p.totalDone||0);
-      const slots = Number(p.totalSlots||21);
-      const missing = Math.max(0, slots - totalDone);
-      return { name:p.name, pct:Number(p.percent||0), totalDone, totalSlots:slots, missing };
-    }).sort((a,b)=> (a.pct-b.pct) || String(a.name).localeCompare(String(b.name),"th"));
+    const thSort = (a,b)=> String(a).localeCompare(String(b),"th");
+    buckets.b1.sort(thSort); buckets.b2.sort(thSort); buckets.b3.sort(thSort); buckets.b4.sort(thSort); buckets.b5.sort(thSort);
 
-    perfectNames.sort((a,b)=> String(a).localeCompare(String(b),"th"));
     const trend = buildTrend(people, week);
 
-    return { week,totalMembers,compliance,buckets,perfectNames,follow,riskN:risk.length,todayComplete,dayISO,perfectN:perfectNames.length,non100N:non100.length,trend };
+    return { week,totalMembers,compliance,buckets,riskN,todayComplete,dayISO,perfectN,trend };
   }
 
   function renderAll(out){
@@ -705,16 +665,22 @@
     $("kTodayPct").textContent = `${pct(c.todayComplete, c.totalMembers).toFixed(0)}%`;
 
     renderTrend(c.trend);
-    renderDonut(c.buckets, c.compliance);
-    renderLists(c.perfectNames, c.follow, { perfect:c.perfectN, non100:c.non100N });
+    renderDonut5(c.buckets, c.compliance, c.totalMembers);
+
+    renderBucket("b1", c.buckets.b1, c.totalMembers, "l1");
+    renderBucket("b2", c.buckets.b2, c.totalMembers, "l2");
+    renderBucket("b3", c.buckets.b3, c.totalMembers, "l3");
+    renderBucket("b4", c.buckets.b4, c.totalMembers, "l4");
+    renderBucket("b5", c.buckets.b5, c.totalMembers, "l5");
   }
 
   async function load(){
     const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(WEEK_OFFSET))}`, { cache:"no-store" });
     const out = await res.json().catch(()=>({}));
     if (!res.ok || !out.ok){
-      $("tbFollow").innerHTML = `<tr><td colspan="4" style="color:rgba(234,240,255,.66)">โหลดไม่สำเร็จ: ${escapeHtml(out.error||"unknown_error")}</td></tr>`;
-      $("listPerfect").innerHTML = `<span class="namePill gray">โหลดไม่สำเร็จ</span>`;
+      ["b1List","b2List","b3List","b4List","b5List"].forEach(id=>{
+        $(id).innerHTML = `<span class="namePill gray">โหลดไม่สำเร็จ</span>`;
+      });
       return;
     }
     renderAll(out);
