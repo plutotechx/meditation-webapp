@@ -5,350 +5,379 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard - Daily Meditation</title>
   <style>
+    /* --- ORIGINAL DASHBOARD STYLE --- */
     :root{
-      /* --- Unified Theme Variables --- */
-      --bg:#081224;
-      --card-bg: #111826;
-      --border: rgba(255,255,255,.10);
+      --bg:#0a1322;
+      --card:rgba(255,255,255,.07);
+      --border:rgba(255,255,255,.10);
       --text:#eaf0ff;
-      --muted:rgba(234,240,255,.65);
+      --muted:rgba(234,240,255,.72);
 
       --good:#30d16a;
       --mid:#f3c43a;
       --orange:#ff8c2a;
       --bad:#ff4d4d;
+
       --none:rgba(255,255,255,.28);
 
-      --radius:16px;
-      --shadow:0 4px 20px rgba(0,0,0,.45);
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --radius:18px;
+      --shadow:0 18px 60px rgba(0,0,0,.35);
     }
 
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
-      background: var(--bg);
+      background:
+        radial-gradient(1200px 600px at 25% 0%, rgba(88,140,255,.16), transparent 60%),
+        radial-gradient(900px 500px at 80% 15%, rgba(0,240,255,.12), transparent 55%),
+        linear-gradient(180deg, #081224 0%, #070f1e 100%);
       color:var(--text);
       min-height:100vh;
-      padding:20px;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
     }
 
-    .wrap{width:min(1280px, 100%); margin:0 auto;}
+    .wrap{max-width:1180px;margin:0 auto;padding:18px 14px 26px}
 
-    /* --- Header --- */
     .topRow{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:16px; flex-wrap:wrap; margin-bottom:20px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
     }
-    .titleRow h1{ margin:0; font-size:24px; font-weight:900; letter-spacing:0.5px; }
-    
-    .pill-info{
-      background:rgba(255,255,255,0.1);
-      padding:4px 12px; border-radius:99px;
-      display:inline-flex; align-items:center; gap:8px;
-      font-size:13px; font-weight:700; color:var(--muted);
-      margin-top:6px;
+    h1{margin:0;font-size:24px;font-weight:900;letter-spacing:.2px}
+    .titleRow{display:flex;align-items:center;justify-content:flex-start;gap:12px;flex-wrap:wrap}
+    .lastUpd{
+      height:34px;
+      padding:6px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      font-weight:900;
+      color:rgba(234,240,255,.85);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      white-space:nowrap;
+      box-shadow:0 12px 34px rgba(0,0,0,.22);
     }
-    .dot-live{
-      width:8px; height:8px; background:var(--good);
-      border-radius:50%; box-shadow:0 0 8px var(--good);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse { 0%{opacity:1} 50%{opacity:.5} 100%{opacity:1} }
 
-    /* --- Controls --- */
-    .weekMenu{ display:flex; gap:10px; }
-    .seg{ 
-      display:flex; background:#000; border-radius:99px; padding:4px; 
-      border:1px solid rgba(255,255,255,0.15); 
+    .weekMenu{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
     }
-    .seg-btn{
-      background:transparent; border:none; color:#aaa; 
-      padding:8px 16px; border-radius:99px; cursor:pointer; 
-      font-weight:bold; font-size:13px; white-space:nowrap;
+    .seg{
+      display:inline-flex;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      padding:6px;
+      gap:6px;
+      box-shadow:0 12px 34px rgba(0,0,0,.26);
     }
-    .seg-btn.active{ background:#3b82f6; color:#fff; box-shadow:0 2px 10px rgba(59,130,246,0.4); }
-    
-    .btn{
-      background:rgba(255,255,255,0.1);
-      border:1px solid rgba(255,255,255,0.2);
-      color:#fff; padding:8px 16px; border-radius:99px;
-      cursor:pointer; text-decoration:none; font-weight:bold; font-size:13px;
-      display:inline-flex; align-items:center; height:42px;
+    .seg button{
+      border:0;
+      border-radius:999px;
+      padding:8px 12px;
+      font-weight:900;
+      color:rgba(234,240,255,.85);
+      background:transparent;
+      cursor:pointer;
+      white-space:nowrap;
     }
-    .btn:hover{ background:rgba(255,255,255,0.15); }
+    .seg button.active{
+      color:#071120;
+      background:rgba(106,169,255,.95);
+      box-shadow:0 10px 24px rgba(106,169,255,.22);
+    }
 
-    /* --- KPI Grid --- */
+    .dotLive{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--good);
+      box-shadow:0 0 0 0 rgba(48,209,106,.55);
+      animation:pulseG 1.2s infinite;
+      flex:0 0 auto;
+    }
+    @keyframes pulseG{
+      0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
+      70%{ box-shadow:0 0 0 10px rgba(48,209,106,0) }
+      100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
+    }
+
+    .weekTitle{font-size:18px;font-weight:900;margin:10px 0 12px;color:rgba(234,240,255,.92)}
+    .muted{color:var(--muted)}
+
     .kpis{
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:16px;
-      margin-bottom:24px;
-      align-items:start;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:12px;
+      margin:6px 0 14px;
+      align-items:start; /* Changed from stretch to start to allow natural height */
     }
+    @media (max-width:900px){ .kpis{grid-template-columns:1fr;} }
 
     .kpi{
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:16px 16px 14px;
+      box-shadow:0 18px 50px rgba(0,0,0,.35);
       position:relative;
       overflow:hidden;
-      display:flex; flex-direction:column;
+      min-height:160px;
+    }
+    .kpi:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:radial-gradient(closest-side at 65% 0%, rgba(120,200,255,.25), transparent 70%);
+      pointer-events:none;
+    }
+    .kpi .label{font-size:14px;color:var(--muted);font-weight:800}
+    .kpi .kpiHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .kpi .kpiHead .countBadge{
+      font-size:12px;font-weight:800;
+      padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
+      color:rgba(234,240,255,.9);
+      white-space:nowrap;
     }
 
-    .kpiHead{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
-    .label{ font-size:14px; color:var(--muted); font-weight:800; }
-    .countBadge{
-      font-size:12px; font-weight:800; padding:4px 10px;
-      border-radius:999px; background:rgba(255,255,255,.1);
-      color:#fff; border:1px solid rgba(255,255,255,.1);
+    /* Lists */
+    .wkList, .nameList {
+      /* Base: Scrollable (will be overridden for Desktop) */
+      overflow: auto;
+      padding-right: 6px;
+    }
+    
+    /* ===== FIX: Desktop No Scrollbars ===== */
+    @media (min-width: 901px) {
+      .wkList, .nameList {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+    }
+    /* ===== Mobile: Max Height with Scroll ===== */
+    @media (max-width: 900px) {
+      .wkList { max-height: 330px; }
+      .nameList { max-height: 160px; }
     }
 
-    /* --- Pie Chart --- */
-    .pieWrap{ display:flex; gap:20px; align-items:center; justify-content:center; flex-wrap:wrap; }
+    .wkBox{ margin-top:12px; }
+    .wkList{ display:grid; gap:10px; }
+    .wkRow{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      grid-template-areas: "day stat" "bar bar";
+      gap:10px 12px;
+      align-items:center;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.045);
+      box-shadow: 0 10px 28px rgba(0,0,0,.22);
+    }
+    .wkDay{ grid-area:day; font-weight:950; color:rgba(234,240,255,.92); white-space:nowrap; }
+    .wkBar{ grid-area:bar; height:12px; border-radius:999px; background:rgba(255,255,255,.12); overflow:hidden; }
+    .wkBar > i{ display:block; height:100%; width:0%; background:linear-gradient(90deg, rgba(48,209,106,.98), rgba(48,209,106,.55)); }
+    .wkStat{ grid-area:stat; font-weight:950; color:rgba(234,240,255,.82); }
+
+    .nameSection{margin-top:10px}
+    .nameSection .secTitle{font-size:12px;color:rgba(234,240,255,.72);font-weight:800;margin-bottom:8px}
+    .nameList{ display:flex; flex-wrap:wrap; gap:8px; }
+    .nameItem{
+      font-size:12px;font-weight:800;
+      padding:7px 10px;border-radius:999px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      color:rgba(234,240,255,.92);
+    }
+    .nameItem.bad{border-color:rgba(255,77,77,.35);background:rgba(255,77,77,.10)}
+    /* Added good style for Last Week KPI */
+    .nameItem.good{border-color:rgba(48,209,106,.35);background:rgba(48,209,106,.10)}
+
+    /* Pie & Compare */
+    .legend{display:grid;gap:6px}
+    .legendRow{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(234,240,255,.82)}
+    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .dot.good{background:var(--good)}
+    .dot.bad{background:var(--bad)}
+    .dot.none{background:rgba(255,255,255,.28)}
+
+    .pieWrap{display:flex;gap:14px;align-items:center;margin-top:10px;flex-wrap:wrap}
     .pie{
-      width:110px; height:110px; border-radius:50%;
+      width:116px;height:116px;border-radius:999px;
+      background:conic-gradient(var(--good) 0 0, rgba(255,255,255,.12) 0 100%);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 16px 45px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06);
       position:relative; flex:0 0 auto;
     }
-    .pieSvg{ width:100%; height:100%; transform:rotate(-90deg); }
-    .pieTrack{ fill:none; stroke:rgba(255,255,255,0.05); stroke-width:12; }
-    .pieSeg{
-      fill:none; stroke-width:12; stroke-linecap:round;
-      transition: stroke-dasharray .6s ease;
-    }
-    .pieSeg.good{ stroke:var(--good); }
-    .pieSeg.bad{ stroke:var(--bad); }
-    .pieSeg.none{ stroke:var(--none); }
-    
     .pieCenter{
-      position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+      position:absolute; inset:12px;
+      background:rgba(10,19,34,.88); border-radius:999px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
       text-align:center;
     }
-    .pieCenterBig{ font-size:22px; font-weight:900; color:#fff; line-height:1; }
-    .pieCenterSub{ font-size:10px; color:var(--muted); margin-top:2px; }
+    .pieSvg{ width:100%; height:100%; display:block; transform:rotate(-90deg); }
+    .pieTrack{ fill:none; stroke:rgba(255,255,255,.10); stroke-width:14; }
+    .pieSeg{ fill:none; stroke-width:14; stroke-linecap:butt; transition: stroke-dasharray .4s; }
+    .pieSeg.good{ stroke:var(--good); } .pieSeg.bad{ stroke:var(--bad); } .pieSeg.none{ stroke:var(--none); }
+    .pieCenterBig{ font-size:26px; font-weight:1000; color:rgba(234,240,255,.96); line-height:1; }
+    .pieCenterSub{ font-size:11px; font-weight:900; color:rgba(234,240,255,.78); }
+    .pieCenterTiny{ font-size:11px; font-weight:900; color:rgba(234,240,255,.62); }
 
-    .legend{ display:grid; gap:8px; }
-    .legendRow{ display:flex; align-items:center; gap:8px; font-size:12px; color:rgba(234,240,255,0.8); }
-    .dot{ width:8px; height:8px; border-radius:50%; }
-    .dot.good{ background:var(--good); }
-    .dot.bad{ background:var(--bad); }
-    .dot.none{ background:var(--none); }
+    .cmpWrap{ margin-top:12px; padding:12px; border-radius:16px; border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.14); }
+    .cmpTitle{font-size:12px;font-weight:900;color:rgba(234,240,255,.78);margin-bottom:10px}
+    .cmpGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .cmpLbl{font-size:12px;font-weight:950;color:rgba(234,240,255,.90);margin-bottom:6px}
+    .cmpBar{ height:10px;border-radius:999px; background:rgba(255,255,255,.10); overflow:hidden; }
+    .cmpBar > i{ display:block;height:100%;width:0%; background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.45)); }
+    .cmpVal{margin-top:6px;font-size:12px;font-weight:950;color:rgba(234,240,255,.84)}
+    .cmpDelta{margin-top:10px;font-size:12px;font-weight:950;color:rgba(234,240,255,.86)}
 
-    /* Compare Bar */
-    .cmpWrap{ margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
-    .cmpTitle{ font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:700; }
-    .cmpGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .cmpLbl{ font-size:11px; font-weight:700; color:#fff; margin-bottom:4px; }
-    .cmpBar{ height:6px; background:rgba(255,255,255,0.1); border-radius:99px; overflow:hidden; }
-    .cmpBar i{ display:block; height:100%; background:var(--good); width:0%; border-radius:99px; }
-    .cmpVal{ font-size:11px; margin-top:4px; color:rgba(255,255,255,0.6); font-family:var(--mono); }
-    .cmpDelta{ margin-top:10px; font-size:11px; font-weight:700; color:var(--muted); }
-    .cmpDelta .up{ color:var(--good); } .cmpDelta .down{ color:var(--bad); }
-
-    /* --- Lists (Weekly & Daily) --- */
-    /* ✅ FIXED: No Max-Height on Desktop to prevent scrollbars */
-    .wkList, .nameList { 
-      display:grid; 
-      gap:8px; 
-      max-height: none !important; 
-      overflow: visible !important; 
-    }
+    /* Table */
+    .table{ width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:18px; border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.04); box-shadow:var(--shadow); }
+    .table thead th{ text-align:left; font-size:14px; font-weight:900; color:rgba(234,240,255,.82); padding:14px 14px; background:rgba(0,0,0,.20); border-bottom:1px solid rgba(255,255,255,.10); white-space:nowrap; }
+    .table tbody td{ padding:14px 14px; border-bottom:1px solid rgba(255,255,255,.08); vertical-align:top; }
+    .table tbody tr:last-child td{border-bottom:none}
+    .name{font-size:16px;font-weight:900}
+    .pctRow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .chip{ display:inline-flex;align-items:center;gap:8px; padding:6px 10px;border-radius:12px; font-weight:900;border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.18); min-width:110px;justify-content:center; }
+    .dot{width:12px;height:12px;border-radius:999px;background:var(--mid)}
+    .chip.good{color:#dfffe9} .chip.good .dot{background:var(--good)}
+    .chip.mid{color:#fff5d0} .chip.mid .dot{background:var(--mid)}
+    .chip.bad{color:#ffd9d9} .chip.bad .dot{background:var(--bad)}
+    .progress{ width:min(280px, 100%); height:10px;border-radius:999px; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.10); overflow:hidden; }
+    .progress > i{ display:block;height:100%; width:0%; background:linear-gradient(90deg, rgba(48,209,106,.95), rgba(48,209,106,.55)); }
+    .progress.mid > i{ background:linear-gradient(90deg, rgba(243,196,58,.95), rgba(243,196,58,.55)); }
+    .progress.bad > i{ background:linear-gradient(90deg, rgba(255,77,77,.95), rgba(255,77,77,.55)); }
     
-    .wkRow{
-      display:grid; grid-template-columns: 1fr auto;
-      background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);
-      padding:10px 12px; border-radius:12px; align-items:center;
-    }
-    .wkDay{ font-size:13px; font-weight:700; color:#fff; }
-    .wkBarWrap{ margin-top:6px; height:6px; background:rgba(255,255,255,0.1); border-radius:99px; overflow:hidden; grid-column:1/-1; }
-    .wkBarWrap i{ display:block; height:100%; background:var(--good); width:0; }
-    .wkStat{ font-size:12px; font-weight:700; color:rgba(255,255,255,0.8); }
+    .days{ display:grid; grid-template-columns:repeat(7, minmax(0, 1fr)); gap:8px; min-width:560px; }
+    @media (max-width:1100px){ .days{min-width:460px} }
+    @media (max-width:900px){ .days{grid-template-columns:repeat(4, minmax(0, 1fr)); min-width:unset} }
+    .daybox{ border-radius:12px; padding:8px 8px 10px; text-align:center; font-weight:900; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.20); user-select:none; position:relative; cursor:default; }
+    .daybox.s3{ background:linear-gradient(180deg, rgba(48,209,106,.35), rgba(48,209,106,.18)); border-color:rgba(48,209,106,.35); }
+    .daybox.s2{ background:linear-gradient(180deg, rgba(255,140,42,.32), rgba(255,140,42,.16)); border-color:rgba(255,140,42,.38); }
+    .daybox.s1{ background:linear-gradient(180deg, rgba(243,196,58,.30), rgba(243,196,58,.16)); border-color:rgba(243,196,58,.35); }
+    .daybox.s0{ background:linear-gradient(180deg, rgba(255,77,77,.30), rgba(255,77,77,.15)); border-color:rgba(255,77,77,.35); }
+    .dayTop{ display:flex;align-items:center;justify-content:space-between; gap:6px;margin-bottom:8px; }
+    .dayPill{ font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.14); background:rgba(0,0,0,.18); line-height:1; white-space:nowrap; font-weight:950; }
+    .dayNum{ font-size:13px; opacity:.9; font-weight:950; }
+    .dayCount{ font-size:26px; letter-spacing:.2px; font-weight:1100; }
 
-    .nameSection{ margin-top:16px; }
-    .secTitle{ font-size:12px; font-weight:800; color:var(--muted); margin-bottom:8px; }
-    
-    .nameList{ display:flex; flex-wrap:wrap; gap:6px; }
-    .nameItem{
-      font-size:11px; font-weight:700; padding:6px 10px; border-radius:999px;
-      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-      color:rgba(234,240,255,0.9);
-    }
-    .nameItem.bad{ border-color:rgba(255,77,77,0.3); color:#ffcccc; background:rgba(255,77,77,0.1); }
-    .nameItem.good{ border-color:rgba(48,209,106,0.3); color:#d1fae5; background:rgba(48,209,106,0.1); } /* For consistency list */
+    .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+    .btn{ text-decoration:none;color:var(--text); background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); padding:10px 14px;border-radius:12px; font-weight:900; }
+    .btn:hover{background:rgba(255,255,255,.10)}
 
-    /* --- Main Table --- */
-    .weekTitle{ font-size:18px; font-weight:900; margin:20px 0 12px; color:#fff; }
-    
-    .tableWrap{
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow:hidden;
-      box-shadow: var(--shadow);
-    }
-    .table{ width:100%; border-collapse:collapse; }
-    .table th{
-      text-align:left; padding:16px; font-size:13px; font-weight:900;
-      color:rgba(255,255,255,0.7); background:rgba(0,0,0,0.2);
-      border-bottom:1px solid var(--border);
-    }
-    .table td{
-      padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.05);
-      vertical-align:middle;
-    }
-    .table tr:last-child td{ border-bottom:none; }
-    
-    .name{ font-size:14px; font-weight:900; color:#fff; }
-    
-    .pctRow{ display:flex; align-items:center; gap:12px; }
-    .chip{
-      font-size:11px; font-weight:800; padding:4px 8px; border-radius:6px;
-      background:rgba(255,255,255,0.1); color:#fff; min-width:60px; text-align:center;
-    }
-    .chip.good{ background:rgba(48,209,106,0.15); color:var(--good); }
-    .chip.mid{ background:rgba(243,196,58,0.15); color:var(--mid); }
-    .chip.bad{ background:rgba(255,77,77,0.15); color:var(--bad); }
-    
-    .progress{
-      flex:1; height:6px; background:rgba(255,255,255,0.1); border-radius:99px; overflow:hidden;
-      max-width:120px;
-    }
-    .progress i{ display:block; height:100%; background:var(--good); width:0; }
-    .progress.mid i{ background:var(--mid); }
-    .progress.bad i{ background:var(--bad); }
+    /* Tooltip */
+    .hoverTip{ position:fixed; z-index:99999; display:none; width:fit-content; max-width:calc(100vw - 24px); min-width:200px; background:rgba(10,16,26,.96); border:1px solid rgba(255,255,255,.14); border-radius:14px; box-shadow:0 18px 55px rgba(0,0,0,.55); padding:8px; backdrop-filter: blur(10px); color:var(--text); overflow:hidden; pointer-events:none; }
+    .hoverTip.show{display:block}
+    .hoverTip .hdr{ font-weight:950; font-size:15px; margin:2px 0 8px; color:rgba(234,240,255,.95); text-align:center; white-space:nowrap; }
+    .tipRow{ display:flex; align-items:center; justify-content:flex-start; gap:10px; padding:8px 12px 8px 10px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); margin-bottom:6px; }
+    .tipLeft{ display:flex; align-items:center; gap:8px; font-weight:950; min-width:0; flex:0 0 auto; }
+    .tipLabel{ font-size:13px; white-space:nowrap; }
+    .tipSep{ font-weight:950; font-size:14px; opacity:.85; line-height:1; flex:0 0 auto; margin:0 6px; }
+    .ico{ width:24px;height:24px; border-radius:999px; display:grid;place-items:center; border:1px solid rgba(255,255,255,.16); flex:0 0 auto; }
+    .ico.ok{background:rgba(48,209,106,.22); border-color:rgba(48,209,106,.40)} .ico.no{background:rgba(255,77,77,.20); border-color:rgba(255,77,77,.40)}
+    .tipTime{ font-weight:950; font-size:14px; opacity:.98; white-space:nowrap; flex:0 0 auto; text-align:left; }
+    .tipTime.dim{opacity:.55}
 
-    .days{ display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; }
-    .daybox{
-      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
-      border-radius:8px; text-align:center; padding:6px 2px;
-      font-size:12px; font-weight:900; color:rgba(255,255,255,0.5);
-      cursor:default;
-    }
-    .daybox.s3{ background:rgba(48,209,106,0.2); border-color:var(--good); color:#fff; }
-    .daybox.s2{ background:rgba(243,196,58,0.2); border-color:var(--mid); color:#fff; }
-    .daybox.s1{ background:rgba(255,140,42,0.2); border-color:var(--orange); color:#fff; }
-    .daybox.s0{ background:rgba(255,77,77,0.15); border-color:rgba(255,77,77,0.4); color:rgba(255,200,200,0.8); }
-
-    .btns{ display:flex; justify-content:flex-end; gap:12px; margin-top:24px; }
-
-    /* --- Tooltip --- */
-    .hoverTip{
-      position:fixed; z-index:9999; display:none; pointer-events:none;
-      background:rgba(15,23,42,0.95); border:1px solid rgba(255,255,255,0.2);
-      border-radius:12px; padding:12px; backdrop-filter:blur(8px);
-      box-shadow:0 10px 30px rgba(0,0,0,0.5);
-      min-width:180px; color:#fff;
-    }
-    .hoverTip.show{ display:block; }
-    .tipHeader{ font-size:13px; font-weight:900; color:var(--muted); margin-bottom:8px; text-align:center; }
-    .tipRow{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; }
-    .tipVal{ font-family:var(--mono); color:#fff; }
-
-    /* --- Mobile --- */
-    @media (max-width: 900px) {
-      .page{ padding:10px; }
-      .kpis{ grid-template-columns:1fr; }
-      .topRow{ flex-direction:column; align-items:stretch; }
-      .weekMenu{ justify-content:center; }
-      .table thead{ display:none; }
-      .table tr{ display:block; border-bottom:1px solid rgba(255,255,255,0.1); padding:16px; }
-      .table td{ display:block; padding:4px 0; border:none; }
-      .table td:first-child{ font-size:16px; margin-bottom:8px; }
-      .days{ gap:4px; }
+    @media (max-width: 720px){
+      .wrap{padding:14px 10px 22px}
+      .topRow{flex-direction:column; align-items:center; justify-content:flex-start; padding-top:0px;}
+      .topRow > div:first-child{width:100%; text-align:center;}
+      .weekMenu{width:100%; justify-content:center;}
+      .kpis{grid-template-columns:1fr}
+      .table thead{display:none}
+      .table, .table tbody, .table tr, .table td{display:block;width:100%}
+      .table{background:transparent;border:none;box-shadow:none}
+      .table tbody tr{ background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); border-radius:18px; padding:12px 12px 14px; margin-bottom:12px; box-shadow:0 14px 40px rgba(0,0,0,.35); }
+      .table tbody td{ border-bottom:none; padding:10px 6px; }
+      .table tbody td[data-label]::before{ content: attr(data-label); display:block; font-size:12px; font-weight:900; color:rgba(234,240,255,.70); margin-bottom:6px; }
+      .days{ min-width:0 !important; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:7px; }
     }
 
-    /* --- PRINT (A4 Landscape) --- */
-    @page { size: A4 landscape; margin: 6mm; }
     @media print {
-      body { background:#081224 !important; padding:0 !important; width:1100px; zoom:0.75; }
-      .wrap { max-width:none !important; width:100% !important; margin:0 !important; }
-      .topRow, .btns { display:none !important; }
-      .kpis { display:grid !important; grid-template-columns: repeat(3, 1fr) !important; gap:12px !important; }
-      .card, .tableWrap { background:#111826 !important; border:1px solid #333 !important; page-break-inside:avoid; }
-      .table th { color:#ccc !important; }
-      .table td { color:#fff !important; }
-      .nameList, .wkList { max-height:none !important; overflow:visible !important; }
+      body { background:#fff !important; color:#000 !important; }
+      .page, .wrap { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+      .topRow, .btns { display: none !important; }
+      .kpi, .table { box-shadow: none !important; border: 1px solid #ccc !important; }
+      .nameList, .wkList { max-height: none !important; overflow: visible !important; }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    
     <div class="topRow">
-      <div class="titleRow">
-        <h1>Dashboard Meditation</h1>
-        <div class="pill-info">
-          <span class="dot-live"></span>
-          <span>อัปเดต <span id="lastUpdated">--:--</span> น.</span>
+      <div>
+        <div class="titleRow">
+          <h1>Dashboard Meditation</h1>
+          <div class="lastUpd">
+            <span class="dotLive"></span>
+            <span>อัปเดตล่าสุด <span id="lastUpdated">--:--</span> น.</span>
+          </div>
         </div>
       </div>
 
       <div class="weekMenu">
         <div class="seg" role="tablist">
-          <button id="btnThis" class="seg-btn active">This Week</button>
-          <button id="btnLast" class="seg-btn">Last Week</button>
+          <button id="btnThis" class="active">สัปดาห์นี้</button>
+          <button id="btnLast">สัปดาห์ที่แล้ว</button>
         </div>
       </div>
     </div>
 
     <div class="kpis">
-      
       <div class="kpi">
-        <div class="kpiHead">
-          <div class="label" id="dailyPieLabel">สัดส่วนวันนี้</div>
-        </div>
+        <div class="label" id="dailyPieLabel">สัดส่วนวันนี้</div>
         <div class="pieWrap">
-          <div class="pie">
-            <svg class="pieSvg" viewBox="0 0 100 100">
-              <circle class="pieTrack" cx="50" cy="50" r="40"></circle>
-              <circle id="pieSegGood" class="pieSeg good" cx="50" cy="50" r="40" stroke-dasharray="0 251"></circle>
-              <circle id="pieSegBad" class="pieSeg bad" cx="50" cy="50" r="40" stroke-dasharray="0 251"></circle>
-              <circle id="pieSegNone" class="pieSeg none" cx="50" cy="50" r="40" stroke-dasharray="0 251"></circle>
-            </svg>
+          <div class="pie" id="pie">
+            <svg class="pieSvg" viewBox="0 0 120 120"><circle class="pieTrack" cx="60" cy="60" r="46"></circle><circle id="pieSegGood" class="pieSeg good" cx="60" cy="60" r="46"></circle><circle id="pieSegBad" class="pieSeg bad" cx="60" cy="60" r="46"></circle><circle id="pieSegNone" class="pieSeg none" cx="60" cy="60" r="46"></circle></svg>
             <div class="pieCenter">
               <div class="pieCenterBig" id="pieCenterBig">--%</div>
-              <div class="pieCenterSub">Complete</div>
+              <div class="pieCenterSub" id="pieCenterSub">ครบ 3 ครั้ง</div>
+              <div class="pieCenterTiny" id="pieCenterTiny">-/- คน</div>
             </div>
           </div>
           <div class="legend">
-            <div class="legendRow"><span class="dot good"></span><span id="lgGood">ครบ: -</span></div>
-            <div class="legendRow"><span class="dot bad"></span><span id="lgBad">ไม่ครบ: -</span></div>
-            <div class="legendRow"><span class="dot none"></span><span id="lgNone">0 ครั้ง: -</span></div>
+            <div class="legendRow"><span class="dot good"></span><span id="lgGood">ครบ 3 ครั้ง: -</span></div>
+            <div class="legendRow"><span class="dot bad"></span><span id="lgBad">ทำไม่ครบ: -</span></div>
+            <div class="legendRow"><span class="dot none"></span><span id="lgNone">ไม่ทำเลย: -</span></div>
           </div>
         </div>
-
+        <div class="muted" style="margin-top:10px" id="pieText">กำลังคำนวณ...</div>
+        
         <div class="cmpWrap">
-          <div class="cmpTitle">เทียบกับเมื่อวาน</div>
+          <div class="cmpTitle">เทียบ “ครบ 3 ครั้ง” วันนี้ vs เมื่อวาน</div>
           <div class="cmpGrid">
             <div>
               <div class="cmpLbl" id="cmpTodayLabel">วันนี้</div>
               <div class="cmpBar"><i id="cmpBarToday"></i></div>
-              <div class="cmpVal" id="cmpTodayPct">--%</div>
+              <div class="cmpVal"><span id="cmpTodayPct">-</span></div>
             </div>
             <div>
               <div class="cmpLbl" id="cmpPrevLabel">เมื่อวาน</div>
-              <div class="cmpBar"><i id="cmpBarPrev" style="background:rgba(255,255,255,0.3)"></i></div>
-              <div class="cmpVal" id="cmpPrevPct">--%</div>
+              <div class="cmpBar"><i id="cmpBarPrev"></i></div>
+              <div class="cmpVal"><span id="cmpPrevPct">-</span></div>
             </div>
           </div>
-          <div class="cmpDelta" id="cmpDelta">--</div>
+          <div class="cmpDelta" id="cmpDelta">—</div>
         </div>
       </div>
 
       <div class="kpi">
         <div class="kpiHead">
           <div class="label" id="weeklyCompleteLabel">สรุป “ครบ 3 ครั้ง” รายวัน</div>
-          <div class="countBadge" id="weeklyCompleteMeta">--%</div>
+          <div class="countBadge" id="weeklyCompleteMeta">-</div>
         </div>
         <div class="wkList" id="weeklyCompleteList">
-          <span style="font-size:12px;color:#666">Loading...</span>
+          <span class="muted">กำลังโหลด...</span>
         </div>
+        <div class="sub" id="weeklyCompleteSub" style="margin-top:10px">—</div>
       </div>
 
       <div class="kpi">
@@ -357,46 +386,38 @@
           <div class="countBadge" id="card3Count">-</div>
         </div>
 
-        <div class="nameSection">
-          <div class="secTitle" id="sec1Title">ทำไม่ครบ (1–2 ครั้ง)</div>
-          <div class="nameList" id="sec1List"></div>
-        </div>
-
-        <div class="nameSection" id="sec2Wrap">
-          <div class="secTitle" id="sec2Title">ไม่ทำเลย (0 ครั้ง)</div>
-          <div class="nameList" id="sec2List"></div>
+        <div id="card3Content">
+          <span class="muted">กำลังโหลด...</span>
         </div>
       </div>
-
     </div>
 
-    <div class="weekTitle" id="weekHeader">Week: --</div>
-    <div class="tableWrap">
-      <table class="table">
-        <thead>
-          <tr>
-            <th width="25%">ชื่อ</th>
-            <th width="35%">ความคืบหน้า (สัปดาห์)</th>
-            <th width="10%">วันครบ</th>
-            <th width="30%">รายวัน (จ. – อา.)</th>
-          </tr>
-        </thead>
-        <tbody id="tbody">
-          <tr><td colspan="4" style="text-align:center;padding:20px;color:#666">Loading...</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <div class="weekTitle" id="weekHeader">กำลังโหลดช่วงสัปดาห์...</div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th style="width:26%">ชื่อ</th>
+          <th style="width:30%">% สัปดาห์</th>
+          <th style="width:10%">ครบทั้งวัน</th>
+          <th>สรุป 7 วัน (นับครั้ง/วัน)</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="4" class="muted">กำลังโหลด...</td></tr>
+      </tbody>
+    </table>
 
     <div class="btns">
-      <a class="btn" href="/">กลับหน้าบันทึก</a>
-      <a class="btn" href="/status.html">ตรวจสอบสถานะ</a>
-      <button class="btn" style="background:#3b82f6" id="btnPrint">พิมพ์รายงาน (PDF)</button>
+      <a class="btn" href="/">กลับหน้าบันทึกข้อมูล</a>
+      <a class="btn" href="/status.html">ไปหน้าตรวจสอบสถานะ</a>
+      <button class="btn" id="btnPrint" style="background:#3b82f6;color:#fff">พิมพ์รายงาน</button>
     </div>
-
   </div>
 
   <div class="hoverTip" id="hoverTip">
-    <div class="tipHeader" id="tipHdr">-</div>
+    <div class="arrow"></div>
+    <div class="hdr" id="tipHdr">-</div>
     <div id="tipBody"></div>
   </div>
 
@@ -412,57 +433,23 @@
     const dt = new Date(y, m-1, d);
     return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
   }
+  function thaiDayShortFromISO(iso){
+    const dt = new Date(iso);
+    return ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."][dt.getDay()];
+  }
   function pct(n, total){ return total ? (n/total*100) : 0; }
 
-  // Pie Chart Logic
-  function updatePie(pGood, pBad, pNone){
-    const C = 2 * Math.PI * 40; 
-    const lGood = (pGood/100)*C;
-    const lBad  = (pBad/100)*C;
-    const lNone = (pNone/100)*C;
-
-    const sGood = $("pieSegGood");
-    const sBad  = $("pieSegBad");
-    const sNone = $("pieSegNone");
-
-    sGood.style.strokeDasharray = `${lGood} ${C}`;
-    sGood.style.strokeDashoffset = 0;
-
-    sBad.style.strokeDasharray = `${lBad} ${C}`;
-    sBad.style.strokeDashoffset = -lGood;
-
-    sNone.style.strokeDasharray = `${lNone} ${C}`;
-    sNone.style.strokeDashoffset = -(lGood + lBad);
-  }
-
-  // Tooltip Logic
-  const tip = $("hoverTip");
-  function showTip(evt, iso, sessions){
-    const h = $("tipHdr");
-    const b = $("tipBody");
-    const dayName = new Date(iso).toLocaleDateString("th-TH",{weekday:"long",day:"numeric",month:"short"});
-    h.textContent = dayName;
+  // Pie
+  function updatePieSVG(pGood, pBad, pNone){
+    const r = 46, C = 2 * Math.PI * r;
+    const lGood = (Math.max(0,Math.min(100,pGood))/100)*C;
+    const lBad  = (Math.max(0,Math.min(100,pBad))/100)*C;
+    const lNone = (Math.max(0,Math.min(100,pNone))/100)*C;
     
-    const s = sessions || {};
-    const row = (lbl, ok, time) => `
-      <div class="tipRow">
-        <span style="color:${ok?'#4ade80':'#f87171'}">${lbl}</span>
-        <span class="tipVal">${ok ? (time||'ok')+' น.' : '-'}</span>
-      </div>`;
-    
-    b.innerHTML = 
-      row("เช้า", s.s1?.done, s.s1?.time) +
-      row("บ่าย", s.s2?.done, s.s2?.time) +
-      row("ค่ำ", s.s3?.done, s.s3?.time);
-
-    tip.classList.add("show");
-    moveTip(evt);
+    $("pieSegGood").style.strokeDasharray = `${lGood} ${C}`; $("pieSegGood").style.strokeDashoffset = 0;
+    $("pieSegBad").style.strokeDasharray = `${lBad} ${C}`;   $("pieSegBad").style.strokeDashoffset = -lGood;
+    $("pieSegNone").style.strokeDasharray = `${lNone} ${C}`; $("pieSegNone").style.strokeDashoffset = -(lGood+lBad);
   }
-  function moveTip(evt){
-    tip.style.left = (evt.clientX + 10) + "px";
-    tip.style.top  = (evt.clientY + 10) + "px";
-  }
-  function hideTip(){ tip.classList.remove("show"); }
 
   async function load(){
     try{
@@ -475,12 +462,12 @@
       const people = out.people || [];
       const total = people.length;
 
-      // 1. Date Logic
-      const today = new Date();
-      const todayISO = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      // 1. Determine "Active Day" for daily stats
+      const todayISO = new Date().toISOString().split('T')[0];
+      // If today is in range, use today. Else use range end.
       const showISO = (todayISO >= w.startISO && todayISO <= w.endISO) ? todayISO : w.endISO;
 
-      // 2. Card 1: Pie Chart & Compare
+      // 2. Calc Daily Stats
       let completeN=0, partialN=0, noneN=0;
       people.forEach(p => {
         const d = (p.perDay||[]).find(x => x.dateISO === showISO);
@@ -490,76 +477,53 @@
         else noneN++;
       });
 
+      // Pie
       const pGood = pct(completeN, total);
-      const pBad = pct(partialN, total);
-      const pNone = pct(noneN, total);
-      
-      updatePie(pGood, pBad, pNone);
+      updatePieSVG(pGood, pct(partialN, total), pct(noneN, total));
       $("pieCenterBig").textContent = `${pGood.toFixed(0)}%`;
+      $("pieCenterTiny").textContent = `${completeN}/${total} คน`;
       $("lgGood").textContent = `ครบ: ${completeN}`;
       $("lgBad").textContent = `ไม่ครบ: ${partialN}`;
       $("lgNone").textContent = `0 ครั้ง: ${noneN}`;
       $("dailyPieLabel").textContent = `สัดส่วน (${thaiDateFromISO(showISO)})`;
+      $("pieText").textContent = `ทั้งหมด ${total} คน · ครบ ${completeN} · ไม่ครบ ${partialN} · ไม่ทำเลย ${noneN}`;
 
-      // Compare Stats
-      const prevDate = new Date(showISO); prevDate.setDate(prevDate.getDate()-1);
-      const prevISO = prevDate.toISOString().split('T')[0];
-      let prevCompleteN = 0;
-      people.forEach(p => {
-        const d = (p.perDay||[]).find(x => x.dateISO === prevISO);
-        if(d && d.count===3) prevCompleteN++;
-      });
-      const pPrev = pct(prevCompleteN, total);
-      
-      $("cmpTodayPct").textContent = `${completeN} (${pGood.toFixed(0)}%)`;
-      $("cmpBarToday").style.width = `${pGood}%`;
-      $("cmpPrevPct").textContent = `${prevCompleteN} (${pPrev.toFixed(0)}%)`;
-      $("cmpBarPrev").style.width = `${pPrev}%`;
-      
-      const diff = pGood - pPrev;
-      $("cmpDelta").innerHTML = diff >= 0 
-        ? `<span style="color:var(--good)">▲ ดีขึ้น ${diff.toFixed(0)}%</span>` 
-        : `<span style="color:var(--bad)">▼ ลดลง ${Math.abs(diff).toFixed(0)}%</span>`;
-
-      // 3. Card 2: Weekly Trend
+      // 3. Weekly Trend (Middle Box)
       const days = [];
       const start = new Date(w.startISO);
       for(let i=0; i<7; i++){
         const d = new Date(start); d.setDate(start.getDate()+i);
         days.push(d.toISOString().split('T')[0]);
       }
-      
-      $("weeklyCompleteList").innerHTML = days.map(iso => {
+      const dailyCounts = days.map(iso => {
         let c=0;
         people.forEach(p => {
            const d = (p.perDay||[]).find(x => x.dateISO===iso);
            if(d && d.count===3) c++;
         });
-        const pDay = pct(c, total);
-        return `
-          <div class="wkRow">
-            <div class="wkDay">${thaiDateFromISO(iso)}</div>
-            <div class="wkBarWrap"><i style="width:${pDay}%"></i></div>
-            <div class="wkStat">${c} คน (${pDay.toFixed(0)}%)</div>
-          </div>`;
-      }).join("");
+        return { iso, c, p: pct(c, total) };
+      });
+      
+      $("weeklyCompleteList").innerHTML = dailyCounts.map(x => `
+        <div class="wkRow">
+          <div class="wkDay">${thaiDayShortFromISO(x.iso)} ${thaiDateFromISO(x.iso)}</div>
+          <div class="wkBar"><i style="width:${x.p}%"></i></div>
+          <div class="wkStat">${x.c} คน</div>
+        </div>`).join("");
+      
+      const avg = dailyCounts.reduce((s,x)=>s+x.p,0)/7;
+      $("weeklyCompleteMeta").textContent = `เฉลี่ย ${avg.toFixed(0)}%/วัน`;
+      $("weeklyCompleteSub").textContent = `รวมตลอดสัปดาห์: ${dailyCounts.reduce((s,x)=>s+x.c,0)} ครั้ง`;
 
-      // ============================================================
-      // 4. Card 3: Logic Switch (Today vs Last Week)
-      // ============================================================
-      const renderList = (el, names, cls) => {
-        el.innerHTML = names.length 
-          ? names.sort().map(n => `<div class="nameItem ${cls}">${escapeHtml(n)}</div>`).join("") 
-          : `<span style="color:#666;font-size:12px">- ไม่มี -</span>`;
-      };
+      // 4. Card 3: Dynamic Logic (The Fix)
+      const c3Label = $("card3Label");
+      const c3Count = $("card3Count");
+      const c3Content = $("card3Content");
 
-      if(WEEK_OFFSET === 0) {
-        // --- THIS WEEK: Show Incomplete (Operational View) ---
-        $("card3Label").textContent = "ทำไม่ครบวันนี้";
-        $("sec1Title").textContent = "ทำไม่ครบ (1–2 ครั้ง)";
-        $("sec2Title").textContent = "ไม่ทำเลย (0 ครั้ง)";
-        $("sec2Wrap").style.display = "block";
-
+      if (WEEK_OFFSET === 0) {
+        // --- THIS WEEK: Operational View (Incomplete Today) ---
+        c3Label.textContent = "ทำไม่ครบวันนี้";
+        
         const partialNames = [], noneNames = [];
         people.forEach(p => {
           const d = (p.perDay||[]).find(x => x.dateISO === showISO);
@@ -567,41 +531,55 @@
           if(cnt>0 && cnt<3) partialNames.push(p.name);
           if(cnt===0) noneNames.push(p.name);
         });
-
-        renderList($("sec1List"), partialNames, "bad");
-        renderList($("sec2List"), noneNames, "");
-        $("card3Count").textContent = `${partialNames.length + noneNames.length}`;
-
+        
+        c3Count.textContent = `${partialNames.length + noneNames.length} คน`;
+        c3Content.innerHTML = `
+          <div class="nameSection">
+            <div class="secTitle">ทำไม่ครบ (1–2 ครั้ง)</div>
+            <div class="nameList">
+              ${partialNames.length ? partialNames.map(n=>`<span class="nameItem bad">${n}</span>`).join("") : '<span class="muted">- ไม่มี -</span>'}
+            </div>
+          </div>
+          <div class="nameSection">
+            <div class="secTitle">ไม่ทำเลย (0 ครั้ง)</div>
+            <div class="nameList">
+              ${noneNames.length ? noneNames.map(n=>`<span class="nameItem">${n}</span>`).join("") : '<span class="muted">- ไม่มี -</span>'}
+            </div>
+          </div>
+        `;
       } else {
-        // --- LAST WEEK: Show Consistent Users (KPI View) ---
-        $("card3Label").textContent = "ผู้ทำสม่ำเสมอ (สัปดาห์)";
-        $("sec1Title").textContent = "ทำครบ 100% (Perfect)";
-        $("sec2Wrap").style.display = "none"; // Hide second section
-
+        // --- LAST WEEK: KPI View (Consistent Users) ---
+        c3Label.textContent = "ผู้ทำสม่ำเสมอ (สัปดาห์)";
+        
         const consistentNames = [];
         people.forEach(p => {
           if((p.percent||0) >= 100) consistentNames.push(p.name);
         });
-
-        renderList($("sec1List"), consistentNames, "good");
-        $("card3Count").textContent = `${consistentNames.length}`;
+        
+        c3Count.textContent = `${consistentNames.length} คน`;
+        c3Content.innerHTML = `
+          <div class="nameSection">
+            <div class="secTitle">ทำครบ 100% (Perfect Integrity)</div>
+            <div class="nameList">
+              ${consistentNames.length ? consistentNames.sort().map(n=>`<span class="nameItem good">${n}</span>`).join("") : '<span class="muted">- ไม่มี -</span>'}
+            </div>
+          </div>
+        `;
       }
 
       // 5. Main Table
       $("weekHeader").textContent = `Week: ${thaiDateFromISO(w.startISO)} - ${thaiDateFromISO(w.endISO)}`;
       const tbody = $("tbody");
       tbody.innerHTML = "";
-      
       people.sort((a,b) => (b.percent||0) - (a.percent||0) || a.name.localeCompare(b.name, 'th'));
 
       people.forEach(p => {
         const pc = p.percent || 0;
         const grade = pc >= 90 ? 'good' : pc >= 70 ? 'mid' : 'bad';
-        
         const boxes = days.map(iso => {
           const d = (p.perDay||[]).find(x => x.dateISO === iso);
           const c = d ? d.count : 0;
-          return `<div class="daybox s${c}" onmouseenter='showTip(event,"${iso}",${JSON.stringify(d?.sessions)})' onmouseleave='hideTip()'>${c}</div>`;
+          return `<div class="daybox s${c}">${c}</div>`;
         }).join("");
 
         tbody.innerHTML += `
@@ -619,6 +597,7 @@
         `;
       });
 
+      // Time
       const now = new Date();
       $("lastUpdated").textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
@@ -630,8 +609,8 @@
   $("btnPrint").onclick = ()=>{ window.print(); };
 
   function updateBtns(){
-    $("btnThis").className = `seg-btn ${WEEK_OFFSET===0?"active":""}`;
-    $("btnLast").className = `seg-btn ${WEEK_OFFSET===-1?"active":""}`;
+    $("btnThis").className = WEEK_OFFSET===0?"active":"";
+    $("btnLast").className = WEEK_OFFSET===-1?"active":"";
   }
 
   load();
