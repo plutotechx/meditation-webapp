@@ -7,437 +7,333 @@
   <style>
     :root{
       --bg:#0a1322;
-      --card:rgba(255,255,255,.07);
-      --border:rgba(255,255,255,.12);
+      /* สีพื้นหลังการ์ดที่เข้มและมีมิติแบบในรูป */
+      --card-bg: #111826; 
       --text:#eaf0ff;
-      --muted:rgba(234,240,255,.72);
+      --muted:rgba(234,240,255,.65);
 
-      --good:#30d16a;
-      --mid:#f3c43a;
-      --orange:#ff8c2a;
-      --bad:#ff4d4d;
-      --none:rgba(255,255,255,.30);
+      /* สีตามระดับในรูปภาพ */
+      --l1-color: #30d16a; /* เขียว */
+      --l2-color: #f3c43a; /* ทอง */
+      --l3-color: #ff8c2a; /* ส้ม */
+      --l4-color: #ff4d4d; /* แดง */
+      --l5-color: #ff4d4d; /* แดงเข้ม */
 
       --radius:16px;
-      /* ปรับเงาให้ดูนุ่มลึกเหมือนในภาพ */
-      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --shadow:0 4px 20px rgba(0,0,0,.5);
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
+
     *{box-sizing:border-box}
     body{
       margin:0;
       font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
       color:var(--text);
-      background:
-        radial-gradient(1100px 560px at 18% 0%, rgba(88,140,255,.14), transparent 60%),
-        radial-gradient(900px 520px at 85% 12%, rgba(0,240,255,.10), transparent 55%),
-        linear-gradient(180deg, #081224 0%, #070f1e 100%);
+      background: #081224; /* พื้นหลังรวม */
       min-height:100vh;
       padding:20px;
+      /* บังคับพิมพ์สีพื้นหลัง */
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    .page{ width:min(1200px, 100%); margin:0 auto; }
-
-    /* Header & Action Bar */
-    .hdr{
-      display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px; flex-wrap:wrap; margin-bottom:16px;
-    }
-    .title{display:flex; flex-direction:column; gap:6px;}
-    h1{ margin:0; font-size:22px; font-weight:950; letter-spacing:.3px; line-height:1.2; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.5); }
-    .sub{ display:flex; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--muted); align-items:center; }
     
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:6px 12px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.25);
-      white-space:nowrap; font-weight:700;
+    .page{ width:min(1280px, 100%); margin:0 auto; }
+
+    /* --- Header Section --- */
+    .hdr{
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:20px;
     }
-    .dotLive{
-      width:8px;height:8px;border-radius:999px;
-      background:var(--good);
-      box-shadow:0 0 0 0 rgba(48,209,106,.55);
-      animation:pulseG 1.5s infinite;
-      flex:0 0 auto;
+    .title h1{ margin:0; font-size:24px; font-weight:900; letter-spacing:0.5px; }
+    .sub{ display:flex; gap:10px; font-size:12px; color:var(--muted); margin-top:6px; }
+    
+    .pill-info{
+      background:rgba(255,255,255,0.1);
+      padding:4px 10px; border-radius:99px;
+      display:inline-flex; align-items:center; gap:6px;
     }
-    @keyframes pulseG{
-      0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
-      70%{ box-shadow:0 0 0 8px rgba(48,209,106,0) }
-      100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
+    .dot-live{
+      width:8px; height:8px; background:var(--l1-color);
+      border-radius:50%; box-shadow:0 0 8px var(--l1-color);
     }
 
-    /* Buttons */
-    .actions{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
+    /* --- Action Buttons (Hidden on Print) --- */
+    .actions{ display:flex; gap:12px; }
     .btn{
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.08);
-      color:var(--text);
-      padding:10px 14px; border-radius:12px;
-      font-weight:800; cursor:pointer; text-decoration:none;
-      font-size:13px; transition: all .2s;
+      background:rgba(255,255,255,0.1);
+      border:1px solid rgba(255,255,255,0.2);
+      color:#fff; padding:8px 16px; border-radius:8px;
+      cursor:pointer; text-decoration:none; font-weight:bold; font-size:13px;
     }
-    .btn:hover{background:rgba(255,255,255,.15)}
-    .btn.primary{
-      background:rgba(106,169,255,.92);
-      color:#071120;
-      border-color:rgba(106,169,255,.35);
-      box-shadow:0 10px 24px rgba(106,169,255,.2);
+    .btn.primary{ background:#3b82f6; border-color:#2563eb; }
+    .seg{ display:flex; background:#000; border-radius:99px; padding:4px; border:1px solid rgba(255,255,255,0.15); }
+    .seg-btn{
+      background:transparent; border:none; color:#aaa; 
+      padding:6px 14px; border-radius:99px; cursor:pointer; font-weight:bold; font-size:12px;
     }
-    .seg{
-      display:inline-flex; background:rgba(0,0,0,.3);
-      border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:4px; gap:2px;
-    }
-    .segBtn{
-      border:0; border-radius:999px; padding:8px 14px;
-      font-weight:800; color:rgba(234,240,255,.75); background:transparent;
-      cursor:pointer; white-space:nowrap; font-size:12px; transition: all .2s;
-    }
-    .segBtn:hover{ color:#fff; }
-    .segBtn.active{
-      color:#071120; background:rgba(106,169,255,.95);
-      box-shadow:0 4px 12px rgba(0,0,0,.3);
-    }
+    .seg-btn.active{ background:#3b82f6; color:#fff; }
 
-    /* Grid Layouts */
-    .grid{display:grid; grid-template-columns: 1fr; gap:16px;}
-    .row2{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; align-items:stretch;}
-    .rowBottom5{
-      display:grid; 
-      grid-template-columns: repeat(5, minmax(0,1fr)); 
-      gap:12px; /* ช่องว่างระหว่างการ์ด */
-      align-items:stretch; /* ยืดให้สูงเท่ากัน */
+    /* --- Top Layout (Trend & Donut) --- */
+    .top-grid{
+      display:grid; grid-template-columns: 1.5fr 1fr; gap:16px; margin-bottom:16px;
     }
-
-    /* Universal Card Style */
+    
     .card{
-      background:linear-gradient(180deg, rgba(30,40,50,.7), rgba(20,25,35,.8));
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      position:relative;
-      /* Minimum height to match visual weight */
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
       display:flex; flex-direction:column;
     }
+
+    /* Trend Chart specific */
+    .chart-header{ display:flex; justify-content:space-between; margin-bottom:16px; }
+    .chart-title{ font-size:16px; font-weight:bold; }
+    .chart-sub{ font-size:11px; color:var(--muted); margin-top:2px; }
+    .trend-bars{
+      display:grid; grid-template-columns:repeat(7, 1fr); gap:12px;
+      height:100px; align-items:end;
+    }
+    .t-col{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+    .t-bar-bg{
+      width:100%; height:80px; background:rgba(255,255,255,0.05);
+      border-radius:6px; overflow:hidden; display:flex; align-items:flex-end;
+    }
+    .t-bar-fill{
+      width:100%; background:linear-gradient(180deg, #22c55e 0%, #15803d 100%);
+      border-top: 1px solid #4ade80;
+    }
+    .t-lbl{ font-size:11px; font-weight:bold; color:var(--muted); }
+    .t-val{ font-size:10px; color:var(--muted); }
+
+    /* Donut Chart specific */
+    .donut-layout{ display:flex; align-items:center; justify-content:center; gap:24px; }
+    .donut-chart{ width:100px; height:100px; position:relative; }
+    .legend-box{ display:grid; gap:6px; }
+    .l-row{ display:flex; justify-content:space-between; gap:12px; font-size:11px; color:var(--muted); }
+    .l-label{ display:flex; align-items:center; gap:6px; }
+    .dot{ width:8px; height:8px; border-radius:50%; }
+
+    /* --- Bottom Layout (5 Buckets) --- */
+    .buckets-grid{
+      display:grid; grid-template-columns: repeat(5, 1fr); gap:12px;
+    }
     
-    /* Top Charts Section */
-    .cardHd{
-      padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-      background:rgba(255,255,255,.02);
-    }
-    .cardHd .h{margin:0;font-size:14px;font-weight:950;color:#fff;letter-spacing:.2px;}
-    .cardHd .m{font-size:11px;color:rgba(234,240,255,.6);margin-top:4px;font-weight:500;}
-    .cardBd{padding:16px; position:relative; z-index:1; flex:1;}
-
-    /* Trend Bar */
-    .trendWrap{display:grid; gap:8px}
-    .trend{
-      display:grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap:6px;
-      align-items:end; height:100px; padding-top:6px;
-    }
-    .barCol{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
-    .bar{
-      width:100%; height:80px; border-radius:8px;
-      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08);
-      overflow:hidden; display:flex; align-items:flex-end;
-    }
-    .bar > i{
-      display:block; width:100%; height:0%;
-      background:linear-gradient(180deg, #30d16a 0%, rgba(48,209,106,.5) 100%);
-    }
-    .barLbl{font-size:11px;font-weight:800;color:rgba(234,240,255,.8);line-height:1;}
-    .barVal{font-size:10px;color:rgba(234,240,255,.5);font-family:var(--mono);}
-
-    /* Donut */
-    .dist{display:flex;gap:20px;align-items:center;justify-content:center;}
-    .donut{width:110px;height:110px;flex:0 0 auto;}
-    .centerText{font-size:15px;font-weight:1000;fill:#fff;}
-    .legend{display:grid;gap:6px;min-width:140px}
-    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:rgba(234,240,255,.8)}
-    .legLeft{display:flex;align-items:center;gap:8px;min-width:0}
-    .dot{width:8px;height:8px;border-radius:999px;}
-    .dot.good{background:var(--good)} .dot.mid{background:var(--mid)}
-    .dot.orange{background:var(--orange)} .dot.bad{background:var(--bad)}
-
-    /* =========================================
-       BUCKET CARDS (Matched to Image)
-       ========================================= */
-    .bucketCard{
-      /* Ensure they stretch nicely */
-      min-height: 420px; 
-      background: rgba(18,24,34, 0.6); /* Slightly darker bg like image */
-      border: 1px solid rgba(255,255,255,0.12);
-    }
-    .bucketCard .cardHd{
-      background:transparent;
-      border-bottom:none;
-      padding: 16px 16px 4px 16px;
-      flex-direction:column; gap:2px;
-    }
-    .bucketCard .cardHd .h{
-      font-size:13px; font-weight:950; color:rgba(255,255,255,0.95);
-    }
-    .bucketRange{ display:block; margin-top:3px; font-size:11px; color:rgba(255,255,255,0.6); font-weight:800; }
-    
-    /* Description Text */
-    .bucketDesc{
-      padding: 0 16px;
-      margin-top: 8px;
-      font-size: 10.5px;
-      line-height: 1.45;
-      color: rgba(234,240,255,0.6);
-      /* Fixed height block to align headers */
-      min-height: 64px; 
-    }
-
-    /* Stats Line (Count | Percent) */
-    .bucketMeta{
-      padding: 0 16px;
-      margin-top: 12px;
-      margin-bottom: 12px;
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    .bucketMeta .count{ font-size:12px; font-weight:950; color:#fff; }
-    .bucketMeta .pct{ font-family:var(--mono); font-size:12px; font-weight:800; color:rgba(255,255,255,0.8); }
-
-    /* Name List Container - The Core Fix */
-    .bucketList {
-      flex: 1; /* Fill remaining space */
-      background: rgba(0,0,0,0.2); /* Darker inner background */
-      margin: 0 8px 8px 8px; /* Gap from card edges */
+    .bucket-card{
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 12px;
-      padding: 10px;
-      border: 1px solid rgba(255,255,255,0.05);
-
-      /* ✅ GRID 2 COLUMNS: Force 2 columns for ALL buckets */
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px; 
-      align-content: start; /* Items start at top */
-
-      /* ✅ NO SCROLLBAR: Let it grow naturally */
-      overflow: visible;
-      height: auto;
-      min-height: 100px;
+      padding: 16px;
+      display:flex; flex-direction:column;
     }
 
-    /* Name Pills (Matched to Image) */
-    .namePill{
-      font-size: 10px;
-      font-weight: 800;
-      padding: 6px 10px;
+    /* Bucket Header */
+    .b-header{ margin-bottom:12px; }
+    .b-title{ font-size:13px; font-weight:900; color:#fff; margin-bottom:4px; }
+    .b-range{ font-size:11px; font-weight:bold; color:rgba(255,255,255,0.7); }
+    .b-desc{
+      font-size:10px; line-height:1.4; color:rgba(255,255,255,0.5);
+      margin-bottom:16px; min-height:56px; /* Align text blocks */
+    }
+
+    /* Stats Line: Count vs % */
+    .b-stats{
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:12px; font-size:12px; font-weight:bold;
+    }
+    .b-count{ color:#fff; font-size:13px; }
+    .b-pct{ color:rgba(255,255,255,0.6); font-family:var(--mono); }
+
+    /* Name List: 2 Columns Grid */
+    .b-list{
+      display:grid; 
+      grid-template-columns: 1fr 1fr; /* Force 2 columns */
+      gap: 8px;
+      align-content: start;
+    }
+    
+    /* Name Pill Style (Like image) */
+    .n-pill{
+      font-size: 10px; font-weight: 700;
+      padding: 6px 4px;
       border-radius: 99px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.05);
-      color: rgba(234,240,255,0.9);
-      
-      width: 100%;
-      text-align: center; /* Center text in pill */
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      
-      display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: rgba(255,255,255,0.9);
+      text-align: center;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    /* Specific Colors per Level (Matched to Image) */
-    .namePill.l1{ border-color:rgba(48,209,106,0.3); background:rgba(48,209,106,0.08); color:rgba(200,255,220,0.95); }
-    .namePill.l2{ border-color:rgba(243,196,58,0.3); background:rgba(243,196,58,0.08); color:rgba(255,240,200,0.95); }
-    .namePill.l3{ border-color:rgba(255,140,42,0.3); background:rgba(255,140,42,0.08); color:rgba(255,220,180,0.95); }
-    .namePill.l4{ border-color:rgba(255,77,77,0.3);  background:rgba(255,77,77,0.08);  color:rgba(255,200,200,0.95); }
-    .namePill.l5{ border-color:rgba(255,77,77,0.5);  background:rgba(255,77,77,0.15);  color:rgba(255,180,180,1.0); }
-    .namePill.gray{ opacity:0.5; border:1px dashed rgba(255,255,255,0.2); background:transparent; }
+
+    /* Specific Colors per Level */
+    .n-pill.l1{ border-color: var(--l1-color); color:var(--l1-color); box-shadow:inset 0 0 10px rgba(48,209,106,0.1); }
+    .n-pill.l2{ border-color: var(--l2-color); color:var(--l2-color); box-shadow:inset 0 0 10px rgba(243,196,58,0.1); }
+    .n-pill.l3{ border-color: var(--l3-color); color:var(--l3-color); box-shadow:inset 0 0 10px rgba(255,140,42,0.1); }
+    .n-pill.l4{ border-color: var(--l4-color); color:var(--l4-color); box-shadow:inset 0 0 10px rgba(255,77,77,0.1); }
+    .n-pill.l5{ border-color: var(--l5-color); color:var(--l5-color); background:rgba(255,77,77,0.1); }
 
     /* Mobile */
-    @media (max-width: 980px){
-      .row2{grid-template-columns:1fr}
-      .rowBottom5{grid-template-columns:1fr; gap:16px;}
+    @media (max-width: 980px) {
+      .top-grid, .buckets-grid { grid-template-columns: 1fr; }
     }
 
-    /* =========================================================================
-       PRINT SETTINGS (A4 Landscape)
-       ========================================================================= */
-    @page { size: A4 landscape; margin: 6mm; }
-
+    /* --- PRINT Settings (A4 Landscape) --- */
+    @page { size: A4 landscape; margin: 5mm; }
+    
     @media print {
-      body {
-        background: #081224 !important; /* Force dark bg */
-        color: #eaf0ff !important;
+      body { 
+        background-color: #081224 !important; /* Force Dark Background */
         padding: 0 !important;
-        -webkit-print-color-adjust: exact !important; 
-        print-color-adjust: exact !important;
       }
-      .page {
-        width: 100% !important; max-width: none !important; margin: 0 !important;
-        /* Scale to fit A4 width nicely */
-        transform: scale(0.94); transform-origin: top center;
+      .page { 
+        width: 100% !important; max-width: none !important; margin:0 !important;
+        transform: scale(0.93); transform-origin: top center; /* Fit perfectly */
       }
       .actions, .btn, .seg { display: none !important; }
       
-      .card, .bucketCard {
-        border: 1px solid rgba(255,255,255,0.2) !important;
-        background: rgba(30,40,50,1) !important; /* Solid dark for print */
-        box-shadow: none !important;
+      /* Make sure lists print fully */
+      .b-list { overflow: visible !important; display: grid !important; }
+      
+      /* Ensure specific colors print */
+      .card, .bucket-card {
+        background-color: #111826 !important;
+        border-color: #333 !important;
         page-break-inside: avoid;
       }
-      
-      /* Ensure lists expand fully on print */
-      .bucketList {
-        overflow: visible !important;
-        max-height: none !important;
-        border: none !important;
-        background: transparent !important;
-      }
-      
-      .rowBottom5 { align-items: flex-start !important; }
+      .t-bar-fill { -webkit-print-color-adjust: exact; }
     }
   </style>
 </head>
 
 <body>
   <div class="page">
+    
     <div class="hdr">
       <div class="title">
         <h1>Dashboard Meditation — Executive Weekly Report</h1>
         <div class="sub">
-          <span class="pill" id="weekPill">สัปดาห์: กำลังโหลด…</span>
-          <span class="pill"><span class="dotLive"></span><span id="updatedPill">อัปเดตล่าสุด: —</span></span>
-          <span class="pill" id="memberPill">สมาชิก: - คน</span>
+          <span class="pill-info" id="weekPill">Week: Loading...</span>
+          <span class="pill-info"><span class="dot-live"></span><span id="updatedPill">Updated: --:--</span></span>
         </div>
       </div>
-
       <div class="actions">
         <div class="seg" role="tablist">
-          <button class="segBtn active" id="btnThis">สัปดาห์นี้</button>
-          <button class="segBtn" id="btnLast">สัปดาห์ที่แล้ว</button>
+          <button class="seg-btn active" id="btnThis">This Week</button>
+          <button class="seg-btn" id="btnLast">Last Week</button>
         </div>
-        <a class="btn" href="/dashboard.html">กลับไป Dashboard</a>
-        <button class="btn primary" id="btnPrint">Export PDF (A4 แนวนอน)</button>
+        <a class="btn" href="/dashboard.html">Dashboard</a>
+        <button class="btn primary" id="btnPrint">Export PDF</button>
       </div>
     </div>
 
-    <div class="grid">
-      <div class="row2">
-        <div class="card">
-          <div class="cardHd">
-            <div>
-              <div class="h">Weekly Trend</div>
-              <div class="m">% คนที่ “ครบ 3/3” ต่อวัน (จ.-อา.)</div>
-            </div>
-            <div class="pill" style="font-size:11px" id="trendAvg">เฉลี่ย: —%</div>
+    <div class="top-grid">
+      <div class="card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Weekly Trend</div>
+            <div class="chart-sub">% คนที่ "ครบ 3/3" ต่อวัน (จ.-อา.)</div>
           </div>
-          <div class="cardBd">
-            <div class="trendWrap">
-              <div class="trend" id="trendBars"></div>
-            </div>
-          </div>
+          <div class="pill-info" style="font-size:11px" id="trendAvg">เฉลี่ย: --%</div>
         </div>
-
-        <div class="card">
-          <div class="cardHd">
-            <div>
-              <div class="h">Distribution (ระดับ % ต่อสัปดาห์)</div>
-              <div class="m">ภาพรวม Compliance</div>
-            </div>
-          </div>
-          <div class="cardBd">
-            <div class="dist">
-              <svg class="donut" viewBox="0 0 120 120">
-                <defs>
-                  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="1.6" result="blur"/>
-                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                  </filter>
-                </defs>
-                <circle cx="60" cy="60" r="44" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="14"/>
-                <g id="donutSegs" filter="url(#glow)"></g>
-                <text x="60" y="58" text-anchor="middle" class="centerText" id="donutCenter">—%</text>
-                <text x="60" y="74" text-anchor="middle" style="font-size:9px;fill:rgba(234,240,255,.7)">Compliance</text>
-              </svg>
-              <div class="legend" id="legend"></div>
-            </div>
-          </div>
-        </div>
+        <div class="trend-bars" id="trendBars"></div>
       </div>
 
-      <div class="rowBottom5">
-        
-        <div class="card bucketCard">
-          <div class="cardHd">
-            <div class="h">ระดับที่ 1 — Perfect Integrity</div>
-            <span class="bucketRange">(100%) ทำสมาธิได้สมบูรณ์แบบ</span>
+      <div class="card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Distribution (ระดับ % ต่อสัปดาห์)</div>
+            <div class="chart-sub">ภาพรวม Compliance</div>
           </div>
-          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ที่ยอดเยี่ยม แสดงถึงความสามารถในการนั่งสมาธิที่เข้าถึงอย่างสมบูรณ์ ทั้งในด้านความสงบ ความตั้งมั่น และการมีสติ</div>
-          <div class="bucketMeta">
-            <div class="count" id="b1Count">— คน</div>
-            <div class="pct" id="b1Pct">—%</div>
-          </div>
-          <div class="bucketList" id="b1List"></div>
         </div>
-
-        <div class="card bucketCard">
-          <div class="cardHd">
-            <div class="h">ระดับที่ 2 — Excellent</div>
-            <span class="bucketRange">(90–99%) ดีมาก ใกล้เคียง 100%</span>
+        <div class="donut-layout">
+          <div class="donut-chart">
+            <svg viewBox="0 0 36 36">
+              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="#333" stroke-width="3"/>
+              <g id="donutSegs"></g>
+            </svg>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;">
+              <div style="font-size:14px;font-weight:900;color:#fff" id="donutCenter">--%</div>
+              <div style="font-size:7px;color:#aaa">Compliance</div>
+            </div>
           </div>
-          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในการทำสมาธิ ถึงจะไม่ได้ผลลัพธ์สูงสุด 100% แต่ก็ใกล้เคียงมาก แสดงถึงความตั้งใจพัฒนาตนเองต่อไป</div>
-          <div class="bucketMeta">
-            <div class="count" id="b2Count">— คน</div>
-            <div class="pct" id="b2Pct">—%</div>
-          </div>
-          <div class="bucketList" id="b2List"></div>
+          <div class="legend-box" id="legend"></div>
         </div>
-
-        <div class="card bucketCard">
-          <div class="cardHd">
-            <div class="h">ระดับที่ 3 — Good</div>
-            <span class="bucketRange">(80–89%) ดี มีโอกาสพัฒนา</span>
-          </div>
-          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับกลาง ยังมีโอกาสในการพัฒนาเพิ่มเติม อาจเป็นกลุ่มที่ยังไม่ถึงระดับที่พึงพอใจอย่างเต็มที่</div>
-          <div class="bucketMeta">
-            <div class="count" id="b3Count">— คน</div>
-            <div class="pct" id="b3Pct">—%</div>
-          </div>
-          <div class="bucketList" id="b3List"></div>
-        </div>
-
-        <div class="card bucketCard">
-          <div class="cardHd">
-            <div class="h">ระดับที่ 4 — Fair</div>
-            <span class="bucketRange">(70–79%) ปานกลาง ควรฝึกเพิ่ม</span>
-          </div>
-          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับปานกลาง ยังไม่สามารถเข้าถึงสมาธิได้อย่างที่คาดหวัง จะต้องฝึกฝนเพิ่มเติม</div>
-          <div class="bucketMeta">
-            <div class="count" id="b4Count">— คน</div>
-            <div class="pct" id="b4Pct">—%</div>
-          </div>
-          <div class="bucketList" id="b4List"></div>
-        </div>
-
-        <div class="card bucketCard">
-          <div class="cardHd">
-            <div class="h">ระดับที่ 5 — Needs Support</div>
-            <span class="bucketRange">(&lt;69%) ค่อนข้างต่ำ ต้องการการสนับสนุน</span>
-          </div>
-          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับต่ำ การฝึกสมาธิยังไม่ค่อยประสบความสำเร็จ อาจต้องการการสนับสนุนเพิ่มเติม</div>
-          <div class="bucketMeta">
-            <div class="count" id="b5Count">— คน</div>
-            <div class="pct" id="b5Pct">—%</div>
-          </div>
-          <div class="bucketList" id="b5List"></div>
-        </div>
-
       </div>
+    </div>
+
+    <div class="buckets-grid">
       
-      <div class="note" style="margin-top:10px;text-align:right">*ข้อมูลอัปเดตแบบ Real-time</div>
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 1 — Perfect Integrity</div>
+          <div class="b-range">(100%) ทำสมาธิได้สมบูรณ์แบบ</div>
+        </div>
+        <div class="b-desc">สมาชิกในกลุ่มนี้มี Integrity ที่ยอดเยี่ยม แสดงถึงความสามารถในการนั่งสมาธิที่เข้าถึงอย่างสมบูรณ์ ทั้งในด้านความสงบ ความตั้งมั่น และการมีสติ</div>
+        <div class="b-stats">
+          <div class="b-count" id="b1Count">-- คน</div>
+          <div class="b-pct" id="b1Pct">--%</div>
+        </div>
+        <div class="b-list" id="b1List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 2 — Excellent</div>
+          <div class="b-range">(90–99%) ดีมาก ใกล้เคียง 100%</div>
+        </div>
+        <div class="b-desc">สมาชิกในกลุ่มนี้มี Integrity ในการทำสมาธิ ถึงจะไม่ได้ผลลัพธ์สูงสุด 100% แต่ก็ใกล้เคียงมาก แสดงถึงการมีสมาธิที่ดีและความตั้งมั่น</div>
+        <div class="b-stats">
+          <div class="b-count" id="b2Count">-- คน</div>
+          <div class="b-pct" id="b2Pct">--%</div>
+        </div>
+        <div class="b-list" id="b2List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 3 — Good</div>
+          <div class="b-range">(80–89%) ดี มีโอกาสพัฒนา</div>
+        </div>
+        <div class="b-desc">สมาชิกในกลุ่มนี้มี Integrity ในระดับกลาง ยังมีโอกาสในการพัฒนาเพิ่มเติม อาจเป็นกลุ่มที่ยังไม่ถึงระดับที่พึงพอใจอย่างเต็มที่</div>
+        <div class="b-stats">
+          <div class="b-count" id="b3Count">-- คน</div>
+          <div class="b-pct" id="b3Pct">--%</div>
+        </div>
+        <div class="b-list" id="b3List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 4 — Fair</div>
+          <div class="b-range">(70–79%) ปานกลาง ควรฝึกเพิ่ม</div>
+        </div>
+        <div class="b-desc">สมาชิกในกลุ่มนี้มี Integrity ในระดับปานกลาง ยังไม่สามารถเข้าถึงสมาธิได้อย่างที่คาดหวัง จะต้องฝึกฝนเพิ่มเติม</div>
+        <div class="b-stats">
+          <div class="b-count" id="b4Count">-- คน</div>
+          <div class="b-pct" id="b4Pct">--%</div>
+        </div>
+        <div class="b-list" id="b4List"></div>
+      </div>
+
+      <div class="bucket-card">
+        <div class="b-header">
+          <div class="b-title">ระดับที่ 5 — Needs Support</div>
+          <div class="b-range">(&lt;69%) ค่อนข้างต่ำ ต้องการการสนับสนุน</div>
+        </div>
+        <div class="b-desc">สมาชิกในกลุ่มนี้มี Integrity ในระดับต่ำ การฝึกสมาธิยังไม่ค่อยประสบความสำเร็จ อาจมีปัญหาในการตั้งมั่นหรือการเข้าถึงสมาธิ</div>
+        <div class="b-stats">
+          <div class="b-count" id="b5Count">-- คน</div>
+          <div class="b-pct" id="b5Pct">--%</div>
+        </div>
+        <div class="b-list" id="b5List"></div>
+      </div>
+
     </div>
+
   </div>
 
 <script>
   let WEEK_OFFSET = 0;
-  const MAX_PER_BUCKET = 999; // Show ALL
   
   const $ = (id)=> document.getElementById(id);
   const escapeHtml = (s)=> String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -446,28 +342,10 @@
     const [y,m,d] = String(iso||"").split("-").map(Number);
     if(!y||!m||!d) return "-";
     const dt = new Date(y,m-1,d);
-    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"2-digit"});
-  }
-  function nowHHmmTH(){
-    const d = new Date();
-    return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
+    return dt.toLocaleDateString("th-TH",{day:"numeric",month:"short"});
   }
   function pct(n, total){ return total ? (n/total*100) : 0; }
-  function localTodayISO(){
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const da = String(d.getDate()).padStart(2,'0');
-    return `${y}-${m}-${da}`;
-  }
-  function isPerfectWeek(perDay){
-    const arr = Array.isArray(perDay) ? perDay : [];
-    if (arr.length < 7) return false;
-    return arr.every(d => Number(d.count||0) === 3);
-  }
-  function getCSS(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#999"; }
-
-  // Build Charts
+  
   function buildTrend(peopleRows, week){
     const days = [];
     const [sy,sm,sd] = week.startISO.split("-").map(Number);
@@ -487,144 +365,109 @@
       return { iso, complete:c, pct: pct(c,total) };
     });
   }
+
   function renderTrend(tr){
     const host = $("trendBars");
     host.innerHTML = tr.map(x=>{
       const dayShort = new Date(x.iso).toLocaleDateString("th-TH",{weekday:"short"});
       const h = Math.max(0, Math.min(100, x.pct));
       return `
-        <div class="barCol">
-          <div class="bar"><i style="height:${h}%"></i></div>
-          <div class="barLbl">${dayShort}</div>
-          <div class="barVal">${x.pct.toFixed(0)}%</div>
+        <div class="t-col">
+          <div class="t-bar-bg"><div class="t-bar-fill" style="height:${h}%"></div></div>
+          <div class="t-lbl">${dayShort}.</div>
+          <div class="t-val">${x.pct.toFixed(0)}%</div>
         </div>
       `;
     }).join("");
     const avg = tr.reduce((s,x)=>s+x.pct,0)/(tr.length||1);
     $("trendAvg").textContent = `เฉลี่ย: ${avg.toFixed(0)}%`;
   }
-  function renderDonut5(buckets, compliancePct, totalMembers){
-    const segHost = $("donutSegs");
-    segHost.innerHTML = "";
-    const r = 44, c = 2 * Math.PI * r;
-    const segs = [
-      { color:getCSS("--good"),   pct:pct(buckets.b1.length, totalMembers) },
-      { color:getCSS("--mid"),    pct:pct(buckets.b2.length, totalMembers) },
-      { color:getCSS("--orange"), pct:pct(buckets.b3.length, totalMembers) },
-      { color:"rgba(255,77,77,.28)", pct:pct(buckets.b4.length, totalMembers) },
-      { color:getCSS("--bad"),    pct:pct(buckets.b5.length, totalMembers) },
-    ];
-    let offset = 0;
-    segs.forEach(s=>{
-      const len = (Math.max(0, s.pct) / 100) * c;
-      const dash = `${len} ${c - len}`;
-      const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      circle.setAttribute("cx","60"); circle.setAttribute("cy","60"); circle.setAttribute("r", String(r));
-      circle.setAttribute("fill","none"); circle.setAttribute("stroke", s.color);
-      circle.setAttribute("stroke-width","14"); circle.setAttribute("stroke-linecap","round");
-      circle.setAttribute("stroke-dasharray", dash);
-      circle.setAttribute("stroke-dashoffset", String(-offset));
-      circle.setAttribute("transform","rotate(-90 60 60)");
-      segHost.appendChild(circle);
-      offset += len;
-    });
-    $("donutCenter").textContent = `${Number(compliancePct||0).toFixed(0)}%`;
-    const leg = $("legend");
-    const rows = [
-      { label:"100%",     dot:"good",   val:`${buckets.b1.length} คน` },
-      { label:"90–99%",   dot:"mid",    val:`${buckets.b2.length} คน` },
-      { label:"80–89%",   dot:"orange", val:`${buckets.b3.length} คน` },
-      { label:"70–79%",   dot:"bad",    val:`${buckets.b4.length} คน` },
-      { label:"<69%",     dot:"bad",    val:`${buckets.b5.length} คน` },
-    ];
-    leg.innerHTML = rows.map(r=>`
-      <div class="legRow">
-        <div class="legLeft"><span class="dot ${r.dot}"></span><span>${r.label}</span></div>
-        <span>${escapeHtml(r.val)}</span>
+
+  function renderDonut(buckets, compliancePct, totalMembers){
+    // Colors mapped to Levels
+    const colors = ["#30d16a", "#f3c43a", "#ff8c2a", "#ff4d4d", "#b91c1c"];
+    const counts = [buckets.b1.length, buckets.b2.length, buckets.b3.length, buckets.b4.length, buckets.b5.length];
+    
+    // SVG segments
+    let accumulated = 0;
+    const segments = counts.map((cnt, i) => {
+       const p = pct(cnt, totalMembers);
+       const dash = `${p} ${100 - p}`;
+       const offset = 25 - accumulated; // start at top (25% offset)
+       accumulated += p;
+       return `<circle cx="18" cy="18" r="15.9155" fill="none" stroke="${colors[i]}" stroke-width="3" stroke-dasharray="${dash}" stroke-dashoffset="${offset}"></circle>`;
+    }).join("");
+    $("donutSegs").innerHTML = segments;
+    $("donutCenter").textContent = `${compliancePct.toFixed(0)}%`;
+
+    // Legend
+    const labels = ["100%", "90-99%", "80-89%", "70-79%", "<69%"];
+    $("legend").innerHTML = counts.map((c, i) => `
+      <div class="l-row">
+        <div class="l-label"><div class="dot" style="background:${colors[i]}"></div>${labels[i]}</div>
+        <div>${c} คน</div>
       </div>
     `).join("");
   }
-  
-  // Render Bucket Lists
-  function renderBucket(idPrefix, names, totalMembers, pillClass){
-    const countEl = $(idPrefix + "Count");
-    const pctEl   = $(idPrefix + "Pct");
-    const listEl  = $(idPrefix + "List");
-    countEl.textContent = `${names.length} คน`;
-    pctEl.textContent = `${pct(names.length, totalMembers).toFixed(0)}%`;
 
-    if (!names.length){
-      // Make placeholder span 2 columns
-      listEl.innerHTML = `<span class="namePill gray" style="grid-column:span 2">ไม่มีรายการ</span>`;
-      return;
-    }
-    listEl.innerHTML = names.map(n=>`<span class="namePill ${pillClass}">${escapeHtml(n)}</span>`).join("");
-  }
-  
-  function compute(out){
-    const people = Array.isArray(out.people) ? out.people : [];
-    const totalMembers = people.length;
-    const week = out.week || { startISO:"-", endISO:"-" };
-    const sum = out.summary && out.summary.thisWeek ? out.summary.thisWeek : null;
-    let totalDoneAll = 0, totalSlots = totalMembers * 21;
-    if (sum && Number.isFinite(Number(sum.totalDoneAll))) totalDoneAll = Number(sum.totalDoneAll);
-    else totalDoneAll = people.reduce((s,p)=> s + Number(p.totalDone||0), 0);
-    if (sum && Number.isFinite(Number(sum.totalSlots))) totalSlots = Number(sum.totalSlots);
-    else totalSlots = people.reduce((s,p)=> s + Number(p.totalSlots||21), 0);
-    const compliance = totalSlots ? (totalDoneAll/totalSlots*100) : 0;
-    const buckets = { b1:[], b2:[], b3:[], b4:[], b5:[] };
-    let riskN = 0, perfectN = 0;
-    const todayISO = localTodayISO();
-    const dayISO = (todayISO >= week.startISO && todayISO <= week.endISO) ? todayISO : week.startISO;
-    let todayComplete = 0;
-    for (const p of people){
-      const wp = Number(p.percent||0);
-      if (wp >= 100) buckets.b1.push(p.name);
-      else if (wp >= 90) buckets.b2.push(p.name);
-      else if (wp >= 80) buckets.b3.push(p.name);
-      else if (wp >= 70) buckets.b4.push(p.name);
-      else buckets.b5.push(p.name);
-      if (wp < 80) riskN++;
-      if (isPerfectWeek(p.perDay)) perfectN++;
-      const dd = (p.perDay||[]).find(x=>String(x.dateISO||"")===dayISO);
-      if (dd && Number(dd.count||0)===3) todayComplete++;
-    }
-    const thSort = (a,b)=> String(a).localeCompare(String(b),"th");
-    buckets.b1.sort(thSort); buckets.b2.sort(thSort); buckets.b3.sort(thSort); buckets.b4.sort(thSort); buckets.b5.sort(thSort);
-    const trend = buildTrend(people, week);
-    return { week,totalMembers,compliance,buckets,riskN,todayComplete,dayISO,perfectN,trend };
-  }
-  function renderAll(out){
-    const c = compute(out);
-    $("weekPill").textContent = `สัปดาห์: ${thaiDateFromISO(c.week.startISO)} – ${thaiDateFromISO(c.week.endISO)}`;
-    $("memberPill").textContent = `สมาชิก: ${c.totalMembers} คน`;
-    $("updatedPill").textContent = `อัปเดต: ${nowHHmmTH()} น.`;
-    renderTrend(c.trend);
-    renderDonut5(c.buckets, c.compliance, c.totalMembers);
-    renderBucket("b1", c.buckets.b1, c.totalMembers, "l1");
-    renderBucket("b2", c.buckets.b2, c.totalMembers, "l2");
-    renderBucket("b3", c.buckets.b3, c.totalMembers, "l3");
-    renderBucket("b4", c.buckets.b4, c.totalMembers, "l4");
-    renderBucket("b5", c.buckets.b5, c.totalMembers, "l5");
-  }
-
-  // Load Logic
-  let loadSeq = 0;
-  async function load(){
-    const seq = ++loadSeq;
-    try{
-      $("weekPill").textContent = "กำลังโหลด...";
-      const res = await fetch(`/api/dashboard?weekOffset=${WEEK_OFFSET}`, { cache:"no-store" });
-      const out = await res.json().catch(()=>({}));
-      if (seq !== loadSeq) return;
-      if (!out.ok){
-        ["b1List","b2List","b3List","b4List","b5List"].forEach(id=> $(id).innerHTML=`<span class="namePill gray" style="grid-column:span 2">โหลดไม่สำเร็จ</span>`);
+  function renderBucket(idPrefix, names, totalMembers, cls){
+    $(idPrefix + "Count").textContent = `${names.length} คน`;
+    $(idPrefix + "Pct").textContent = `${pct(names.length, totalMembers).toFixed(0)}%`;
+    if(!names.length){
+        $(idPrefix + "List").innerHTML = `<span style="grid-column:span 2;text-align:center;color:#555;font-size:10px">- ไม่มีรายการ -</span>`;
         return;
-      }
-      renderAll(out);
-    }catch(e){
-      if (seq !== loadSeq) return;
     }
+    // No limit -> show all for print
+    $(idPrefix + "List").innerHTML = names.map(n => `<div class="n-pill ${cls}">${escapeHtml(n)}</div>`).join("");
+  }
+
+  async function load(){
+    try{
+      $("weekPill").textContent = "Loading...";
+      const res = await fetch(`/api/dashboard?weekOffset=${WEEK_OFFSET}`);
+      const out = await res.json();
+      if(!out.ok) return;
+
+      const p = out.people || [];
+      const total = p.length;
+      
+      // Compute buckets
+      const buckets = { b1:[], b2:[], b3:[], b4:[], b5:[] };
+      let sumDone=0, sumSlots=0;
+      
+      p.forEach(x => {
+        const wp = Number(x.percent||0);
+        sumDone += Number(x.totalDone||0);
+        sumSlots += Number(x.totalSlots||21);
+        
+        if(wp >= 100) buckets.b1.push(x.name);
+        else if(wp >= 90) buckets.b2.push(x.name);
+        else if(wp >= 80) buckets.b3.push(x.name);
+        else if(wp >= 70) buckets.b4.push(x.name);
+        else buckets.b5.push(x.name);
+      });
+      
+      // Sort names
+      const sortFn = (a,b)=> a.localeCompare(b,'th');
+      Object.values(buckets).forEach(arr => arr.sort(sortFn));
+
+      // Header Info
+      const w = out.week;
+      $("weekPill").textContent = `Week: ${thaiDateFromISO(w.startISO)} - ${thaiDateFromISO(w.endISO)}`;
+      const d = new Date();
+      $("updatedPill").textContent = `Updated: ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+      // Render All
+      renderTrend(buildTrend(p, w));
+      renderDonut(buckets, (sumSlots ? sumDone/sumSlots*100 : 0), total);
+      
+      renderBucket("b1", buckets.b1, total, "l1");
+      renderBucket("b2", buckets.b2, total, "l2");
+      renderBucket("b3", buckets.b3, total, "l3");
+      renderBucket("b4", buckets.b4, total, "l4");
+      renderBucket("b5", buckets.b5, total, "l5");
+
+    } catch(e){ console.error(e); }
   }
 
   $("btnThis").onclick = ()=>{ WEEK_OFFSET=0; updateBtns(); load(); };
@@ -632,9 +475,10 @@
   $("btnPrint").onclick = ()=>{ window.print(); };
 
   function updateBtns(){
-    $("btnThis").className = `segBtn ${WEEK_OFFSET===0?"active":""}`;
-    $("btnLast").className = `segBtn ${WEEK_OFFSET===-1?"active":""}`;
+    $("btnThis").className = `seg-btn ${WEEK_OFFSET===0?"active":""}`;
+    $("btnLast").className = `seg-btn ${WEEK_OFFSET===-1?"active":""}`;
   }
+  
   load();
 </script>
 </body>
