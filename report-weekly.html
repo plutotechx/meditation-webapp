@@ -2,22 +2,19 @@
 <html lang="th">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Executive Weekly Report - Meditation</title>
+  <meta name="viewport" content="width=1200, initial-scale=1"/> <title>Executive Weekly Report - Meditation</title>
   <style>
     :root{
       --bg:#0a1322;
-      /* สีพื้นหลังการ์ดที่เข้มและมีมิติแบบในรูป */
       --card-bg: #111826; 
       --text:#eaf0ff;
       --muted:rgba(234,240,255,.65);
 
-      /* สีตามระดับในรูปภาพ */
-      --l1-color: #30d16a; /* เขียว */
-      --l2-color: #f3c43a; /* ทอง */
-      --l3-color: #ff8c2a; /* ส้ม */
-      --l4-color: #ff4d4d; /* แดง */
-      --l5-color: #ff4d4d; /* แดงเข้ม */
+      --l1-color: #30d16a;
+      --l2-color: #f3c43a;
+      --l3-color: #ff8c2a;
+      --l4-color: #ff4d4d;
+      --l5-color: #ff4d4d;
 
       --radius:16px;
       --shadow:0 4px 20px rgba(0,0,0,.5);
@@ -29,17 +26,16 @@
       margin:0;
       font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
       color:var(--text);
-      background: #081224; /* พื้นหลังรวม */
+      background: #081224;
       min-height:100vh;
       padding:20px;
-      /* บังคับพิมพ์สีพื้นหลัง */
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
     
-    .page{ width:min(1280px, 100%); margin:0 auto; }
+    .page{ width:1200px; margin:0 auto; } /* FIX: Fixed width to prevent mobile layout */
 
-    /* --- Header Section --- */
+    /* --- Header --- */
     .hdr{
       display:flex; align-items:center; justify-content:space-between;
       margin-bottom:20px;
@@ -57,7 +53,7 @@
       border-radius:50%; box-shadow:0 0 8px var(--l1-color);
     }
 
-    /* --- Action Buttons (Hidden on Print) --- */
+    /* --- Actions --- */
     .actions{ display:flex; gap:12px; }
     .btn{
       background:rgba(255,255,255,0.1);
@@ -73,7 +69,7 @@
     }
     .seg-btn.active{ background:#3b82f6; color:#fff; }
 
-    /* --- Top Layout (Trend & Donut) --- */
+    /* --- Top Layout --- */
     .top-grid{
       display:grid; grid-template-columns: 1.5fr 1fr; gap:16px; margin-bottom:16px;
     }
@@ -87,7 +83,7 @@
       display:flex; flex-direction:column;
     }
 
-    /* Trend Chart specific */
+    /* Trend Chart */
     .chart-header{ display:flex; justify-content:space-between; margin-bottom:16px; }
     .chart-title{ font-size:16px; font-weight:bold; }
     .chart-sub{ font-size:11px; color:var(--muted); margin-top:2px; }
@@ -107,7 +103,7 @@
     .t-lbl{ font-size:11px; font-weight:bold; color:var(--muted); }
     .t-val{ font-size:10px; color:var(--muted); }
 
-    /* Donut Chart specific */
+    /* Donut Chart */
     .donut-layout{ display:flex; align-items:center; justify-content:center; gap:24px; }
     .donut-chart{ width:100px; height:100px; position:relative; }
     .legend-box{ display:grid; gap:6px; }
@@ -117,7 +113,10 @@
 
     /* --- Bottom Layout (5 Buckets) --- */
     .buckets-grid{
-      display:grid; grid-template-columns: repeat(5, 1fr); gap:12px;
+      display:grid; 
+      grid-template-columns: repeat(5, 1fr); /* Force 5 columns */
+      gap:12px;
+      align-items: start;
     }
     
     .bucket-card{
@@ -128,16 +127,14 @@
       display:flex; flex-direction:column;
     }
 
-    /* Bucket Header */
     .b-header{ margin-bottom:12px; }
     .b-title{ font-size:13px; font-weight:900; color:#fff; margin-bottom:4px; }
     .b-range{ font-size:11px; font-weight:bold; color:rgba(255,255,255,0.7); }
     .b-desc{
       font-size:10px; line-height:1.4; color:rgba(255,255,255,0.5);
-      margin-bottom:16px; min-height:56px; /* Align text blocks */
+      margin-bottom:16px; min-height:56px;
     }
 
-    /* Stats Line: Count vs % */
     .b-stats{
       display:flex; justify-content:space-between; align-items:center;
       margin-bottom:12px; font-size:12px; font-weight:bold;
@@ -145,15 +142,13 @@
     .b-count{ color:#fff; font-size:13px; }
     .b-pct{ color:rgba(255,255,255,0.6); font-family:var(--mono); }
 
-    /* Name List: 2 Columns Grid */
     .b-list{
       display:grid; 
-      grid-template-columns: 1fr 1fr; /* Force 2 columns */
+      grid-template-columns: 1fr 1fr;
       gap: 8px;
       align-content: start;
     }
     
-    /* Name Pill Style (Like image) */
     .n-pill{
       font-size: 10px; font-weight: 700;
       padding: 6px 4px;
@@ -165,41 +160,59 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* Specific Colors per Level */
     .n-pill.l1{ border-color: var(--l1-color); color:var(--l1-color); box-shadow:inset 0 0 10px rgba(48,209,106,0.1); }
     .n-pill.l2{ border-color: var(--l2-color); color:var(--l2-color); box-shadow:inset 0 0 10px rgba(243,196,58,0.1); }
     .n-pill.l3{ border-color: var(--l3-color); color:var(--l3-color); box-shadow:inset 0 0 10px rgba(255,140,42,0.1); }
     .n-pill.l4{ border-color: var(--l4-color); color:var(--l4-color); box-shadow:inset 0 0 10px rgba(255,77,77,0.1); }
     .n-pill.l5{ border-color: var(--l5-color); color:var(--l5-color); background:rgba(255,77,77,0.1); }
 
-    /* Mobile */
-    @media (max-width: 980px) {
+    /* --- MOBILE (Screen Only) --- */
+    @media screen and (max-width: 980px) {
+      .page{ width:100%; padding:10px; }
       .top-grid, .buckets-grid { grid-template-columns: 1fr; }
+      .b-desc { min-height: auto; }
     }
 
-    /* --- PRINT Settings (A4 Landscape) --- */
-    @page { size: A4 landscape; margin: 5mm; }
+    /* --- PRINT Settings (A4 Landscape Fixed) --- */
+    @page { 
+      size: A4 landscape; 
+      margin: 4mm; /* Minimimal margin to fit content */
+    }
     
     @media print {
       body { 
-        background-color: #081224 !important; /* Force Dark Background */
-        padding: 0 !important;
+        background-color: #081224 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; /* Prevent spillover */
       }
-      .page { 
-        width: 100% !important; max-width: none !important; margin:0 !important;
-        transform: scale(0.93); transform-origin: top center; /* Fit perfectly */
+      
+      .page {
+        width: 1100px !important; /* Force width to fit landscape */
+        max-width: none !important;
+        margin: 0 auto !important;
+        /* ZOOM OUT to fit one page */
+        zoom: 0.65; 
       }
+
+      /* Force layouts to stay Grid (ignore mobile rules) */
+      .top-grid { grid-template-columns: 1.5fr 1fr !important; display:grid !important; gap:16px !important;}
+      .buckets-grid { grid-template-columns: repeat(5, 1fr) !important; display:grid !important; gap:12px !important;}
+      
       .actions, .btn, .seg { display: none !important; }
       
-      /* Make sure lists print fully */
-      .b-list { overflow: visible !important; display: grid !important; }
-      
-      /* Ensure specific colors print */
+      /* Avoid breaking inside cards */
       .card, .bucket-card {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
         background-color: #111826 !important;
         border-color: #333 !important;
-        page-break-inside: avoid;
       }
+
+      /* Allow lists to expand but stay in column */
+      .b-list { display: grid !important; overflow: visible !important; }
       .t-bar-fill { -webkit-print-color-adjust: exact; }
     }
   </style>
@@ -384,23 +397,20 @@
   }
 
   function renderDonut(buckets, compliancePct, totalMembers){
-    // Colors mapped to Levels
     const colors = ["#30d16a", "#f3c43a", "#ff8c2a", "#ff4d4d", "#b91c1c"];
     const counts = [buckets.b1.length, buckets.b2.length, buckets.b3.length, buckets.b4.length, buckets.b5.length];
     
-    // SVG segments
     let accumulated = 0;
     const segments = counts.map((cnt, i) => {
        const p = pct(cnt, totalMembers);
        const dash = `${p} ${100 - p}`;
-       const offset = 25 - accumulated; // start at top (25% offset)
+       const offset = 25 - accumulated;
        accumulated += p;
        return `<circle cx="18" cy="18" r="15.9155" fill="none" stroke="${colors[i]}" stroke-width="3" stroke-dasharray="${dash}" stroke-dashoffset="${offset}"></circle>`;
     }).join("");
     $("donutSegs").innerHTML = segments;
     $("donutCenter").textContent = `${compliancePct.toFixed(0)}%`;
 
-    // Legend
     const labels = ["100%", "90-99%", "80-89%", "70-79%", "<69%"];
     $("legend").innerHTML = counts.map((c, i) => `
       <div class="l-row">
@@ -431,7 +441,6 @@
       const p = out.people || [];
       const total = p.length;
       
-      // Compute buckets
       const buckets = { b1:[], b2:[], b3:[], b4:[], b5:[] };
       let sumDone=0, sumSlots=0;
       
@@ -447,17 +456,14 @@
         else buckets.b5.push(x.name);
       });
       
-      // Sort names
       const sortFn = (a,b)=> a.localeCompare(b,'th');
       Object.values(buckets).forEach(arr => arr.sort(sortFn));
 
-      // Header Info
       const w = out.week;
       $("weekPill").textContent = `Week: ${thaiDateFromISO(w.startISO)} - ${thaiDateFromISO(w.endISO)}`;
       const d = new Date();
       $("updatedPill").textContent = `Updated: ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 
-      // Render All
       renderTrend(buildTrend(p, w));
       renderDonut(buckets, (sumSlots ? sumDone/sumSlots*100 : 0), total);
       
