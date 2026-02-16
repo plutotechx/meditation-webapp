@@ -4,8 +4,6 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Executive Weekly Report - Meditation</title>
-  <!-- UpdatedAt: 2026-02-15 00:00 (+07:00) -->
-
   <style>
     :root{
       --bg:#0a1322;
@@ -35,6 +33,9 @@
         linear-gradient(180deg, #081224 0%, #070f1e 100%);
       min-height:100vh;
       padding:14px;
+      /* บังคับให้ Browser พิมพ์พื้นหลังสีเข้มออกมาด้วย */
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
     .page{ width:min(1080px, 100%); margin:0 auto; }
 
@@ -116,22 +117,7 @@
     .cardHd .m{font-size:11px;color:rgba(234,240,255,.66);margin-top:2px;line-height:1.25}
     .cardBd{padding:10px 12px; position:relative; z-index:1;}
 
-    .kpis{display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:8px;}
-    .kpi{
-      background:rgba(0,0,0,.20);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:14px;
-      padding:10px;
-      min-height:76px;
-    }
-    .kpi .l{font-size:11px; color:rgba(234,240,255,.70); font-weight:900}
-    .kpi .v{
-      margin-top:6px; font-size:18px; font-weight:1000; line-height:1.05;
-      display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;
-    }
-    .kpi .v .big{font-size:22px}
-    .kpi .s{margin-top:6px; font-size:11px; color:rgba(234,240,255,.62)}
-    .kpi .tag{
+    .tag{
       font-size:11px; font-weight:950;
       padding:4px 8px; border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
@@ -187,11 +173,9 @@
     .legVal{font-family:var(--mono);color:rgba(234,240,255,.70);white-space:nowrap}
 
     /* ===== 5 bucket cards ===== */
-    /* Keep all 5 columns perfectly equal (prevent content-driven min-width growth) */
     .bucketCard{ min-height:280px; display:flex; flex-direction:column; min-width:0; }
     .bucketCard .cardBd{ padding:10px 10px 10px; display:flex; flex-direction:column; gap:8px; flex:1 1 auto; }
-    /* Keep the meta row ("X คน" + "%") aligned across all 5 buckets
-       by normalizing description height (short descriptions won't pull the meta upward). */
+    
     .bucketDesc{
       font-size:10.6px;
       line-height:1.28;
@@ -205,33 +189,31 @@
     .bucketMeta{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
     .bucketMeta .count{ font-weight:1000; font-size:11px; color:rgba(234,240,255,.86); }
     .bucketMeta .pct{ font-family:var(--mono); font-weight:1000; font-size:11px; color:rgba(234,240,255,.72); }
+    
     .bucketList{
+      /* Default screen: scroll if too long */
       display:flex; flex-wrap:wrap; gap:6px;
       align-content:flex-start;
       flex:1 1 auto;
       overflow:auto;
       max-height:190px;
-      padding-right:6px; /* room for scrollbar */
+      padding-right:6px; 
+      scrollbar-gutter: stable both-edges;
     }
+    .bucketList::-webkit-scrollbar{height:8px;width:8px}
+    .bucketList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px}
 
-    /* Bucket 1: show names in 2 columns (no scrollbar) */
+    /* Bucket 1: show names in 2 columns (no scrollbar) on screen */
     #b1List{
-      column-count:2;
-      column-gap:10px;
-      overflow:visible !important;
-      max-height:none !important;
-      padding-right:0;
+      column-count:2; column-gap:10px;
+      overflow:visible !important; max-height:none !important; padding-right:0;
     }
     #b1List .namePill{
-      width:100%;
-      display:inline-flex;
-      break-inside:avoid;
-      -webkit-column-break-inside:avoid;
+      width:100%; display:inline-flex;
+      break-inside:avoid; -webkit-column-break-inside:avoid;
       margin:0 0 6px;
     }
 
-/* Print: avoid scrollbars; keep layout stable */
-    @media print{ .bucketList{ overflow:visible !important; max-height:none !important; } }
     .namePill{
       font-size:10.5px;font-weight:950;
       padding:5px 8px;border-radius:999px;
@@ -252,109 +234,113 @@
 
     .note{margin-top:8px;font-size:10.3px;color:rgba(234,240,255,.62);}
 
+    /* Mobile */
     @media (max-width: 980px){
       .row2{grid-template-columns:1fr}
       .kpis{grid-template-columns:repeat(2, minmax(0,1fr))}
-      .rowBottom5{grid-template-columns:1fr; gap:10px;} /* mobile: stack */
+      .rowBottom5{grid-template-columns:1fr; gap:10px;}
       .bucketCard{min-height:unset}
       .bucketList{max-height:unset; overflow:visible;}
     }
 
-    @page{ size: A4 landscape; margin: 8mm; }
-    @media print{
-      body{padding:0 !important; background:#fff !important; color:#111 !important;}
-      .btn,.actions{display:none !important;}
-      .page{width:auto !important; margin:0 !important;}
-      .dotLive{animation:none !important; box-shadow:none !important;}
-      .card, .kpi{box-shadow:none !important;}
-      .card{border-color:#ddd !important;}
-      .kpi{background:#f6f6f6 !important; border-color:#ddd !important;}
-      h1{font-size:18px !important;}
-      .sub{font-size:11px !important;}
-      .cardHd{padding:8px 10px !important;}
-      .cardBd{padding:8px 10px !important;}
-      .kpi .v .big{font-size:20px !important;}
-      .trend{height:100px !important;}
-      .bar{height:84px !important;}
-      .bucketDesc{color:#444 !important;}
-      .bucketList{max-height:118px !important;} /* keep single page */
-      .namePill{border-color:#ddd !important; background:#f7f7f7 !important; color:#111 !important;}
-      .namePill.l1{border-color:#b9e7c9 !important; background:#effbf3 !important;}
-      .namePill.l5{border-color:#e3b3b3 !important; background:#fff1f1 !important;}
-      .namePill.gray{background:#f3f3f3 !important; color:#333 !important;}
-      .page{transform: scale(.93); transform-origin: top left; width: calc(100% / .93);}
-    }
-  
     .seg{
-      display:inline-flex;
-      background:rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:999px;
-      padding:6px;
-      gap:6px;
+      display:inline-flex; background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:6px; gap:6px;
       box-shadow:0 12px 34px rgba(0,0,0,.20);
     }
     .segBtn{
-      border:0;
-      border-radius:999px;
-      padding:8px 12px;
-      font-weight:950;
-      color:rgba(234,240,255,.86);
-      background:transparent;
-      cursor:pointer;
-      white-space:nowrap;
-      font-size:12px;
+      border:0; border-radius:999px; padding:8px 12px;
+      font-weight:950; color:rgba(234,240,255,.86); background:transparent;
+      cursor:pointer; white-space:nowrap; font-size:12px;
     }
     .segBtn.active{
-      color:#071120;
-      background:rgba(106,169,255,.95);
-      box-shadow:0 10px 24px rgba(106,169,255,.18);
+      color:#071120; background:rgba(106,169,255,.95); box-shadow:0 10px 24px rgba(106,169,255,.18);
     }
 
-    /* show more names (screen) */
-    .bucketList{
-      max-height:150px;
-      overflow:auto;
-      padding-right:4px;
-      /* Reserve space for scrollbar so each column keeps identical width */
-      scrollbar-gutter: stable both-edges;
-    }
-    .bucketList::-webkit-scrollbar{height:8px;width:8px}
-    .bucketList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px}
 
-    @media print{
-      /* keep landscape & fit more names */
-      .bucketDesc{font-size:10.2px !important;}
-      .bucketList{max-height:none !important; overflow:visible !important; padding-right:0 !important;}
-      .namePill{font-size:9.6px !important; padding:3px 6px !important;}
-      .rowBottom5{gap:6px !important;}
-      .cardHd .h{font-size:12px !important;}
-      .cardHd .m{font-size:10.5px !important;}
-      .page{transform: scale(.92) !important; transform-origin: top left !important; width: calc(100% / .92) !important;}
-    }
+    /* ==========================================================================
+       PRINT OPTIMIZATION (Executive A4)
+       - คง Bucket Layout ไว้ตามเดิม
+       - ขยายรายชื่อให้เห็นครบ (ลบ Scrollbar)
+       - จัด Scale ให้พอดี A4 Landscape
+       ========================================================================== */
+    @page { size: A4 landscape; margin: 8mm; }
 
-  
-    /* ===== Force 2-column name grids in every bucket (no scrollbar) ===== */
-    .bucketList{
-      display:grid !important;
-      grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
-      gap:8px !important;
-      align-content:start !important;
-      overflow:visible !important;
-      max-height:none !important;
-      padding-right:0 !important;
-      scrollbar-gutter:auto !important;
-    }
-    .namePill{ width:100% !important; }
-    .namePill.empty{
-      grid-column:1 / -1;
-      justify-self:center;
-      width:min(260px, 80%);
-      text-align:center;
-      opacity:.9;
-    }
+    @media print {
+      body {
+        /* สำคัญ: ให้พิมพ์สีพื้นหลังออกมาด้วย */
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        background: #081224 !important;
+        color: #eaf0ff !important;
+        padding: 0 !important;
+      }
+      
+      /* ซ่อนปุ่มต่างๆ */
+      .actions, .btn, .seg { display: none !important; }
+      
+      /* ปรับขนาดหน้าให้พอดีกระดาษ A4 Landscape โดยไม่ล้น */
+      .page {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        /* ย่อลงเล็กน้อยเพื่อให้เหลือขอบกระดาษสวยงาม */
+        transform: scale(0.95);
+        transform-origin: top center; 
+      }
 
-</style>
+      /* กราฟด้านบน */
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #444 !important;
+        background: rgba(255,255,255,.05) !important;
+        page-break-inside: avoid; /* ห้ามตัดกลางหน้า */
+      }
+      
+      /* ส่วน Bucket: ขยายความสูงให้เท่าจำนวนรายชื่อ (ปิด Scrollbar) */
+      .bucketList, #b1List {
+        max-height: none !important;
+        overflow: visible !important;
+        display: block !important; /* เปลี่ยนเป็น Block เพื่อให้ชื่อเรียงลงมา */
+        column-count: 2; /* แบ่งชื่อเป็น 2 คอลัมน์เล็กๆ ในแต่ละกล่อง เพื่อประหยัดที่ */
+        column-gap: 8px;
+        padding-right: 0 !important;
+      }
+      
+      .namePill {
+        /* ปรับ style ป้ายชื่อตอนพิมพ์ให้ดูสะอาด */
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+        margin-bottom: 4px;
+        width: 100%;
+        display: inline-flex;
+        border-color: rgba(255,255,255,.2) !important;
+        font-size: 9px !important; /* ลดขนาดตัวอักษรชื่อลงนิดนึง */
+        padding: 4px 6px !important;
+      }
+      
+      /* ปรับความสูงการ์ดให้ยืดตามเนื้อหา */
+      .bucketCard {
+        min-height: auto !important;
+        height: auto !important;
+        border-color: #444 !important;
+      }
+      
+      /* คำอธิบายในกล่อง ลดขนาดลงเพื่อประหยัดที่ */
+      .bucketDesc {
+        font-size: 9px !important;
+        min-height: auto !important;
+        -webkit-line-clamp: none !important; /* แสดงข้อความครบ */
+        margin-bottom: 8px;
+      }
+      
+      /* ปรับ gap ของ layout หลัก */
+      .rowBottom5 {
+        gap: 8px !important;
+        align-items: flex-start !important; /* ให้กล่องยืดไม่เท่ากันได้ตามจำนวนคน */
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -365,6 +351,7 @@
         <div class="sub">
           <span class="pill" id="weekPill">สัปดาห์: กำลังโหลด…</span>
           <span class="pill"><span class="dotLive"></span><span id="updatedPill">อัปเดตล่าสุด: —</span></span>
+          <span class="pill" id="memberPill">สมาชิก: - คน</span>
         </div>
       </div>
 
@@ -381,7 +368,6 @@
     </div>
 
     <div class="grid">
-
 
       <div class="row2">
         <div class="card">
@@ -432,7 +418,6 @@
         </div>
       </div>
 
-      <!-- ===== Bottom: 5 buckets ===== -->
       <div class="rowBottom5">
         <div class="card bucketCard">
           <div class="cardHd">
@@ -520,30 +505,22 @@
         </div>
       </div>
 
-      <div class="note">*แต่ละกลุ่มแสดงรายชื่อสูงสุด 45 คน เพื่อคุมรายงานให้อยู่ใน 1 หน้า A4</div>
+      <div class="note">*แต่ละกลุ่มแสดงรายชื่อทั้งหมดเพื่อประกอบการพิจารณาของผู้บริหาร</div>
 
     </div>
   </div>
 
 <script>
   let WEEK_OFFSET = 0; // 0=this week, -1=last week
-  const MAX_PER_BUCKET = 45;
-  // DOM helper
-  // NOTE: This report can be customized by removing sections. To avoid the whole page breaking,
-  // we return a safe dummy object when an element is missing.
+  const MAX_PER_BUCKET = 999; // ✅ ปลดล็อกให้แสดงรายชื่อทั้งหมดสำหรับการพิมพ์
+  
   const $ = (id)=>{
     const el = document.getElementById(id);
     if (el) return el;
     return {
-      textContent: "",
-      innerHTML: "",
-      className: "",
-      style: {},
+      textContent: "", innerHTML: "", className: "", style: {},
       classList: { add(){}, remove(){}, toggle(){} },
-      setAttribute(){},
-      removeAttribute(){},
-      querySelector(){ return null; },
-      querySelectorAll(){ return []; },
+      setAttribute(){}, removeAttribute(){}, querySelector(){ return null; },
     };
   };
 
@@ -622,11 +599,11 @@
     const c = 2 * Math.PI * r;
 
     const segs = [
-      { color:getCSS("--good"),   pct:pct(buckets.b1.length, totalMembers) },  // 100
-      { color:getCSS("--mid"),    pct:pct(buckets.b2.length, totalMembers) },  // 90-99
-      { color:getCSS("--orange"), pct:pct(buckets.b3.length, totalMembers) },  // 80-89
-      { color:"rgba(255,77,77,.28)", pct:pct(buckets.b4.length, totalMembers) }, // 70-79
-      { color:getCSS("--bad"),    pct:pct(buckets.b5.length, totalMembers) },  // <69
+      { color:getCSS("--good"),   pct:pct(buckets.b1.length, totalMembers) },
+      { color:getCSS("--mid"),    pct:pct(buckets.b2.length, totalMembers) },
+      { color:getCSS("--orange"), pct:pct(buckets.b3.length, totalMembers) },
+      { color:"rgba(255,77,77,.28)", pct:pct(buckets.b4.length, totalMembers) },
+      { color:getCSS("--bad"),    pct:pct(buckets.b5.length, totalMembers) },
     ];
 
     let offset = 0;
@@ -634,13 +611,9 @@
       const len = (Math.max(0, s.pct) / 100) * c;
       const dash = `${len} ${c - len}`;
       const circle = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      circle.setAttribute("cx","60");
-      circle.setAttribute("cy","60");
-      circle.setAttribute("r", String(r));
-      circle.setAttribute("fill","none");
-      circle.setAttribute("stroke", s.color);
-      circle.setAttribute("stroke-width","14");
-      circle.setAttribute("stroke-linecap","round");
+      circle.setAttribute("cx","60"); circle.setAttribute("cy","60"); circle.setAttribute("r", String(r));
+      circle.setAttribute("fill","none"); circle.setAttribute("stroke", s.color);
+      circle.setAttribute("stroke-width","14"); circle.setAttribute("stroke-linecap","round");
       circle.setAttribute("stroke-dasharray", dash);
       circle.setAttribute("stroke-dashoffset", String(-offset));
       circle.setAttribute("transform","rotate(-90 60 60)");
@@ -681,12 +654,8 @@
       listEl.innerHTML = `<span class="namePill gray empty">ไม่มีรายการ</span>`;
       return;
     }
-    const top = names.slice(0, MAX_PER_BUCKET);
-    const rest = Math.max(0, names.length - top.length);
-    listEl.innerHTML = top.map(n=>`<span class="namePill ${pillClass}">${escapeHtml(n)}</span>`).join("");
-    if (rest>0){
-      listEl.innerHTML += `<span class="namePill gray">+${rest} คน</span>`;
-    }
+    // ✅ แสดงทั้งหมด ไม่มีปุ่ม Load More เพื่อรองรับการ Print
+    listEl.innerHTML = names.map(n=>`<span class="namePill ${pillClass}">${escapeHtml(n)}</span>`).join("");
   }
 
   function compute(out){
@@ -741,21 +710,6 @@
     $("weekPill").textContent = `สัปดาห์: จ. ${thaiDateFromISO(c.week.startISO)} – อา. ${thaiDateFromISO(c.week.endISO)}`;
     $("memberPill").textContent = `สมาชิก: ${c.totalMembers} คน`;
     $("updatedPill").textContent = `อัปเดตล่าสุด: ${nowHHmmTH()} น.`;
-    $("kTodayLabel").textContent = `อิง “วันนี้” (${thaiDateFromISO(c.dayISO)})`;
-
-    $("kPerfectN").textContent = c.perfectN;
-    $("kPerfectPct").textContent = `${pct(c.perfectN, c.totalMembers).toFixed(0)}%`;
-
-    $("kCompliance").textContent = c.compliance.toFixed(0);
-    const compTag = c.compliance >= 90 ? ["good","ดีมาก"] : c.compliance >= 80 ? ["mid","พอใช้"] : ["bad","เสี่ยง"];
-    $("kCompTag").className = `tag ${compTag[0]}`;
-    $("kCompTag").textContent = compTag[1];
-
-    $("kRiskN").textContent = c.riskN;
-    $("kRiskPct").textContent = `${pct(c.riskN, c.totalMembers).toFixed(0)}%`;
-
-    $("kTodayN").textContent = c.todayComplete;
-    $("kTodayPct").textContent = `${pct(c.todayComplete, c.totalMembers).toFixed(0)}%`;
 
     renderTrend(c.trend);
     renderDonut5(c.buckets, c.compliance, c.totalMembers);
@@ -767,7 +721,6 @@
     renderBucket("b5", c.buckets.b5, c.totalMembers, "l5");
   }
 
-  // Prevent stale responses when toggling between weeks quickly.
   let loadSeq = 0;
   async function load(){
     const seq = ++loadSeq;
@@ -775,7 +728,7 @@
       const offset = WEEK_OFFSET;
       const res = await fetch(`/api/dashboard?weekOffset=${encodeURIComponent(String(offset))}`, { cache:"no-store" });
       const out = await res.json().catch(()=>({}));
-      if (seq !== loadSeq) return; // stale
+      if (seq !== loadSeq) return;
       if (!res.ok || !out.ok){
         ["b1List","b2List","b3List","b4List","b5List"].forEach(id=>{
           $(id).innerHTML = `<span class="namePill gray">โหลดไม่สำเร็จ</span>`;
@@ -790,7 +743,6 @@
       });
     }
   }
-
 
   const btnThis = $("btnThis");
   const btnLast = $("btnLast");
