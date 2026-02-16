@@ -19,7 +19,8 @@
       --none:rgba(255,255,255,.30);
 
       --radius:16px;
-      --shadow:0 18px 60px rgba(0,0,0,.30);
+      /* ปรับเงาให้ดูนุ่มลึกเหมือนในภาพ */
+      --shadow:0 18px 60px rgba(0,0,0,.45);
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     }
     *{box-sizing:border-box}
@@ -32,222 +33,262 @@
         radial-gradient(900px 520px at 85% 12%, rgba(0,240,255,.10), transparent 55%),
         linear-gradient(180deg, #081224 0%, #070f1e 100%);
       min-height:100vh;
-      padding:14px;
+      padding:20px;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    .page{ width:min(1080px, 100%); margin:0 auto; }
+    .page{ width:min(1200px, 100%); margin:0 auto; }
 
-    /* Header */
+    /* Header & Action Bar */
     .hdr{
       display:flex; align-items:flex-start; justify-content:space-between;
-      gap:12px; flex-wrap:wrap; margin-bottom:10px;
+      gap:12px; flex-wrap:wrap; margin-bottom:16px;
     }
-    .title{display:flex; flex-direction:column; gap:4px;}
-    h1{ margin:0; font-size:20px; font-weight:950; letter-spacing:.2px; line-height:1.1; }
+    .title{display:flex; flex-direction:column; gap:6px;}
+    h1{ margin:0; font-size:22px; font-weight:950; letter-spacing:.3px; line-height:1.2; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,.5); }
     .sub{ display:flex; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--muted); align-items:center; }
+    
     .pill{
       display:inline-flex; align-items:center; gap:8px;
-      padding:6px 10px; border-radius:999px;
+      padding:6px 12px; border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.18);
-      white-space:nowrap;
+      background:rgba(0,0,0,.25);
+      white-space:nowrap; font-weight:700;
     }
     .dotLive{
-      width:10px;height:10px;border-radius:999px;
+      width:8px;height:8px;border-radius:999px;
       background:var(--good);
       box-shadow:0 0 0 0 rgba(48,209,106,.55);
-      animation:pulseG 1.2s infinite;
+      animation:pulseG 1.5s infinite;
       flex:0 0 auto;
     }
     @keyframes pulseG{
       0%{ box-shadow:0 0 0 0 rgba(48,209,106,.55) }
-      70%{ box-shadow:0 0 0 10px rgba(48,209,106,0) }
+      70%{ box-shadow:0 0 0 8px rgba(48,209,106,0) }
       100%{ box-shadow:0 0 0 0 rgba(48,209,106,0) }
     }
 
-    /* Actions */
+    /* Buttons */
     .actions{ display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap; }
     .btn{
       border:1px solid rgba(255,255,255,.16);
       background:rgba(255,255,255,.08);
       color:var(--text);
-      padding:9px 12px; border-radius:12px;
-      font-weight:900; cursor:pointer; text-decoration:none;
+      padding:10px 14px; border-radius:12px;
+      font-weight:800; cursor:pointer; text-decoration:none;
+      font-size:13px; transition: all .2s;
     }
-    .btn:hover{background:rgba(255,255,255,.10)}
+    .btn:hover{background:rgba(255,255,255,.15)}
     .btn.primary{
       background:rgba(106,169,255,.92);
       color:#071120;
       border-color:rgba(106,169,255,.35);
-      box-shadow:0 14px 28px rgba(106,169,255,.18);
+      box-shadow:0 10px 24px rgba(106,169,255,.2);
     }
     .seg{
-      display:inline-flex; background:rgba(0,0,0,.22);
-      border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:6px; gap:6px;
-      box-shadow:0 12px 34px rgba(0,0,0,.20);
+      display:inline-flex; background:rgba(0,0,0,.3);
+      border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:4px; gap:2px;
     }
     .segBtn{
-      border:0; border-radius:999px; padding:8px 12px;
-      font-weight:950; color:rgba(234,240,255,.86); background:transparent;
-      cursor:pointer; white-space:nowrap; font-size:12px;
+      border:0; border-radius:999px; padding:8px 14px;
+      font-weight:800; color:rgba(234,240,255,.75); background:transparent;
+      cursor:pointer; white-space:nowrap; font-size:12px; transition: all .2s;
     }
+    .segBtn:hover{ color:#fff; }
     .segBtn.active{
-      color:#071120; background:rgba(106,169,255,.95); box-shadow:0 10px 24px rgba(106,169,255,.18);
+      color:#071120; background:rgba(106,169,255,.95);
+      box-shadow:0 4px 12px rgba(0,0,0,.3);
     }
 
-    /* Grid Layout */
-    .grid{display:grid; grid-template-columns: 1fr; gap:10px;}
-    .row2{display:grid; grid-template-columns: 1.1fr .9fr; gap:10px; align-items:stretch;}
-    .rowBottom5{display:grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap:8px; align-items:stretch;}
+    /* Grid Layouts */
+    .grid{display:grid; grid-template-columns: 1fr; gap:16px;}
+    .row2{display:grid; grid-template-columns: 1.2fr .8fr; gap:16px; align-items:stretch;}
+    .rowBottom5{
+      display:grid; 
+      grid-template-columns: repeat(5, minmax(0,1fr)); 
+      gap:12px; /* ช่องว่างระหว่างการ์ด */
+      align-items:stretch; /* ยืดให้สูงเท่ากัน */
+    }
 
-    /* Cards */
+    /* Universal Card Style */
     .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      background:linear-gradient(180deg, rgba(30,40,50,.7), rgba(20,25,35,.8));
       border:1px solid rgba(255,255,255,.10);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       overflow:hidden;
       position:relative;
-      min-height:120px;
+      /* Minimum height to match visual weight */
+      display:flex; flex-direction:column;
     }
+    
+    /* Top Charts Section */
     .cardHd{
-      padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.08);
+      padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.08);
       display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      background:rgba(255,255,255,.02);
     }
-    .cardHd .h{margin:0;font-size:13px;font-weight:950;color:rgba(234,240,255,.90);}
-    .cardHd .m{font-size:11px;color:rgba(234,240,255,.66);margin-top:2px;line-height:1.25}
-    .cardBd{padding:10px 12px; position:relative; z-index:1;}
+    .cardHd .h{margin:0;font-size:14px;font-weight:950;color:#fff;letter-spacing:.2px;}
+    .cardHd .m{font-size:11px;color:rgba(234,240,255,.6);margin-top:4px;font-weight:500;}
+    .cardBd{padding:16px; position:relative; z-index:1; flex:1;}
 
-    /* Charts */
+    /* Trend Bar */
     .trendWrap{display:grid; gap:8px}
     .trend{
       display:grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap:6px;
-      align-items:end; height:110px; padding-top:6px;
+      align-items:end; height:100px; padding-top:6px;
     }
     .barCol{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;}
     .bar{
-      width:100%; height:90px; border-radius:12px;
-      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.10);
+      width:100%; height:80px; border-radius:8px;
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08);
       overflow:hidden; display:flex; align-items:flex-end;
     }
     .bar > i{
       display:block; width:100%; height:0%;
-      background:linear-gradient(180deg, rgba(48,209,106,.95), rgba(48,209,106,.45));
+      background:linear-gradient(180deg, #30d16a 0%, rgba(48,209,106,.5) 100%);
     }
-    .barLbl{font-size:11px;font-weight:950;color:rgba(234,240,255,.85);line-height:1;white-space:nowrap;}
-    .barVal{font-size:10px;color:rgba(234,240,255,.66);line-height:1;font-family:var(--mono);}
-    .dist{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
-    .donut{width:120px;height:120px;flex:0 0 auto;}
-    .centerText{font-size:14px;font-weight:1000;fill:#eaf0ff;}
-    .legend{display:grid;gap:6px;min-width:180px}
-    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:rgba(234,240,255,.84)}
+    .barLbl{font-size:11px;font-weight:800;color:rgba(234,240,255,.8);line-height:1;}
+    .barVal{font-size:10px;color:rgba(234,240,255,.5);font-family:var(--mono);}
+
+    /* Donut */
+    .dist{display:flex;gap:20px;align-items:center;justify-content:center;}
+    .donut{width:110px;height:110px;flex:0 0 auto;}
+    .centerText{font-size:15px;font-weight:1000;fill:#fff;}
+    .legend{display:grid;gap:6px;min-width:140px}
+    .legRow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:rgba(234,240,255,.8)}
     .legLeft{display:flex;align-items:center;gap:8px;min-width:0}
-    .dot{width:10px;height:10px;border-radius:999px;display:inline-block}
+    .dot{width:8px;height:8px;border-radius:999px;}
     .dot.good{background:var(--good)} .dot.mid{background:var(--mid)}
     .dot.orange{background:var(--orange)} .dot.bad{background:var(--bad)}
-    .note{margin-top:8px;font-size:10.3px;color:rgba(234,240,255,.62);}
 
-    /* ===== BUCKET CARDS ===== */
-    .bucketCard{ min-height:280px; display:flex; flex-direction:column; min-width:0; }
-    .bucketCard .cardBd{ padding:10px; display:flex; flex-direction:column; gap:8px; flex:1 1 auto; }
+    /* =========================================
+       BUCKET CARDS (Matched to Image)
+       ========================================= */
+    .bucketCard{
+      /* Ensure they stretch nicely */
+      min-height: 420px; 
+      background: rgba(18,24,34, 0.6); /* Slightly darker bg like image */
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .bucketCard .cardHd{
+      background:transparent;
+      border-bottom:none;
+      padding: 16px 16px 4px 16px;
+      flex-direction:column; gap:2px;
+    }
+    .bucketCard .cardHd .h{
+      font-size:13px; font-weight:950; color:rgba(255,255,255,0.95);
+    }
+    .bucketRange{ display:block; margin-top:3px; font-size:11px; color:rgba(255,255,255,0.6); font-weight:800; }
     
+    /* Description Text */
     .bucketDesc{
-      font-size:10.6px; line-height:1.3; color:rgba(234,240,255,.66);
-      display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:4; overflow:hidden;
-      min-height:56px;
+      padding: 0 16px;
+      margin-top: 8px;
+      font-size: 10.5px;
+      line-height: 1.45;
+      color: rgba(234,240,255,0.6);
+      /* Fixed height block to align headers */
+      min-height: 64px; 
     }
-    .bucketMeta{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; }
-    .bucketMeta .count{ font-weight:1000; font-size:11px; color:rgba(234,240,255,.9); }
-    .bucketMeta .pct{ font-family:var(--mono); font-weight:1000; font-size:11px; color:rgba(234,240,255,.75); }
-    
-    /* ✅ FORCE 2 COLUMNS FOR ALL BUCKETS (Screen & Print) */
-    .bucketList{
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 columns exactly */
-      gap: 8px; /* space between items */
-      align-content: start;
-      
-      overflow-y: auto; 
-      max-height: 190px;
-      padding-right: 4px;
-      scrollbar-gutter: stable both-edges;
-    }
-    .bucketList::-webkit-scrollbar{height:8px;width:8px}
-    .bucketList::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px}
 
-    /* Name Pill */
-    .namePill{
-      font-size:10.5px; font-weight:950;
-      padding:5px 8px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:rgba(234,240,255,.92);
-      width:100%; 
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      display:block;
+    /* Stats Line (Count | Percent) */
+    .bucketMeta{
+      padding: 0 16px;
+      margin-top: 12px;
+      margin-bottom: 12px;
+      display:flex; align-items:center; justify-content:space-between;
     }
-    .namePill.l1{border-color:rgba(48,209,106,.36); background:rgba(48,209,106,.10)}
-    .namePill.l2{border-color:rgba(243,196,58,.38); background:rgba(243,196,58,.10)}
-    .namePill.l3{border-color:rgba(255,140,42,.40); background:rgba(255,140,42,.10)}
-    .namePill.l4{border-color:rgba(255,77,77,.30); background:rgba(255,77,77,.08)}
-    .namePill.l5{border-color:rgba(255,77,77,.44); background:rgba(255,77,77,.12)}
-    .namePill.gray{border-color:rgba(255,255,255,.16); background:rgba(0,0,0,.16); color:rgba(234,240,255,.75)}
+    .bucketMeta .count{ font-size:12px; font-weight:950; color:#fff; }
+    .bucketMeta .pct{ font-family:var(--mono); font-size:12px; font-weight:800; color:rgba(255,255,255,0.8); }
+
+    /* Name List Container - The Core Fix */
+    .bucketList {
+      flex: 1; /* Fill remaining space */
+      background: rgba(0,0,0,0.2); /* Darker inner background */
+      margin: 0 8px 8px 8px; /* Gap from card edges */
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+
+      /* ✅ GRID 2 COLUMNS: Force 2 columns for ALL buckets */
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px; 
+      align-content: start; /* Items start at top */
+
+      /* ✅ NO SCROLLBAR: Let it grow naturally */
+      overflow: visible;
+      height: auto;
+      min-height: 100px;
+    }
+
+    /* Name Pills (Matched to Image) */
+    .namePill{
+      font-size: 10px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 99px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: rgba(234,240,255,0.9);
+      
+      width: 100%;
+      text-align: center; /* Center text in pill */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      
+      display: flex; align-items: center; justify-content: center;
+    }
+    /* Specific Colors per Level (Matched to Image) */
+    .namePill.l1{ border-color:rgba(48,209,106,0.3); background:rgba(48,209,106,0.08); color:rgba(200,255,220,0.95); }
+    .namePill.l2{ border-color:rgba(243,196,58,0.3); background:rgba(243,196,58,0.08); color:rgba(255,240,200,0.95); }
+    .namePill.l3{ border-color:rgba(255,140,42,0.3); background:rgba(255,140,42,0.08); color:rgba(255,220,180,0.95); }
+    .namePill.l4{ border-color:rgba(255,77,77,0.3);  background:rgba(255,77,77,0.08);  color:rgba(255,200,200,0.95); }
+    .namePill.l5{ border-color:rgba(255,77,77,0.5);  background:rgba(255,77,77,0.15);  color:rgba(255,180,180,1.0); }
+    .namePill.gray{ opacity:0.5; border:1px dashed rgba(255,255,255,0.2); background:transparent; }
 
     /* Mobile */
     @media (max-width: 980px){
       .row2{grid-template-columns:1fr}
-      .kpis{grid-template-columns:repeat(2, minmax(0,1fr))}
-      .rowBottom5{grid-template-columns:1fr; gap:10px;}
-      .bucketCard{min-height:unset}
-      .bucketList{max-height:unset; overflow:visible;}
+      .rowBottom5{grid-template-columns:1fr; gap:16px;}
     }
 
     /* =========================================================================
-       PRINT SETTINGS (A4 Landscape - Match Screen Layout)
+       PRINT SETTINGS (A4 Landscape)
        ========================================================================= */
-    @page { size: A4 landscape; margin: 8mm; }
+    @page { size: A4 landscape; margin: 6mm; }
 
     @media print {
       body {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        background: #081224 !important;
+        background: #081224 !important; /* Force dark bg */
         color: #eaf0ff !important;
         padding: 0 !important;
+        -webkit-print-color-adjust: exact !important; 
+        print-color-adjust: exact !important;
       }
       .page {
         width: 100% !important; max-width: none !important; margin: 0 !important;
-        /* Scale to fit A4 neatly */
-        transform: scale(0.92); transform-origin: top center;
+        /* Scale to fit A4 width nicely */
+        transform: scale(0.94); transform-origin: top center;
       }
       .actions, .btn, .seg { display: none !important; }
       
-      .card {
-        border: 1px solid rgba(255,255,255,.2) !important;
-        background: rgba(255,255,255,.05) !important;
-        page-break-inside: avoid;
+      .card, .bucketCard {
+        border: 1px solid rgba(255,255,255,0.2) !important;
+        background: rgba(30,40,50,1) !important; /* Solid dark for print */
         box-shadow: none !important;
-      }
-
-      /* PRINT: Show ALL names, keep 2 columns */
-      .bucketList {
-        max-height: none !important;
-        overflow: visible !important;
-        display: grid !important;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 6px !important;
-        padding-right: 0 !important;
-      }
-
-      .namePill {
-        border-width: 1px !important;
         page-break-inside: avoid;
       }
       
-      .bucketDesc {
-        min-height: auto !important;
-        -webkit-line-clamp: none !important;
+      /* Ensure lists expand fully on print */
+      .bucketList {
+        overflow: visible !important;
+        max-height: none !important;
+        border: none !important;
+        background: transparent !important;
       }
       
       .rowBottom5 { align-items: flex-start !important; }
@@ -285,12 +326,11 @@
               <div class="h">Weekly Trend</div>
               <div class="m">% คนที่ “ครบ 3/3” ต่อวัน (จ.-อา.)</div>
             </div>
-            <div class="pill" id="trendAvg">เฉลี่ย: —%</div>
+            <div class="pill" style="font-size:11px" id="trendAvg">เฉลี่ย: —%</div>
           </div>
           <div class="cardBd">
             <div class="trendWrap">
               <div class="trend" id="trendBars"></div>
-              <div class="note">แท่งสูง = คนครบ 3/3 เยอะในวันนั้น</div>
             </div>
           </div>
         </div>
@@ -323,99 +363,81 @@
       </div>
 
       <div class="rowBottom5">
+        
         <div class="card bucketCard">
           <div class="cardHd">
-            <div>
-              <div class="h">ระดับที่ 1 — Perfect Integrity <span style="font-size:11px;opacity:.8">(100%)</span></div>
-              <div class="m">ทำสมาธิได้สมบูรณ์แบบ</div>
-            </div>
+            <div class="h">ระดับที่ 1 — Perfect Integrity</div>
+            <span class="bucketRange">(100%) ทำสมาธิได้สมบูรณ์แบบ</span>
           </div>
-          <div class="cardBd">
-            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ที่ยอดเยี่ยม แสดงถึงความสามารถในการนั่งสมาธิที่เข้าถึงอย่างสมบูรณ์</div>
-            <div class="bucketMeta">
-              <div class="count" id="b1Count">— คน</div>
-              <div class="pct" id="b1Pct">—%</div>
-            </div>
-            <div class="bucketList" id="b1List"></div>
+          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ที่ยอดเยี่ยม แสดงถึงความสามารถในการนั่งสมาธิที่เข้าถึงอย่างสมบูรณ์ ทั้งในด้านความสงบ ความตั้งมั่น และการมีสติ</div>
+          <div class="bucketMeta">
+            <div class="count" id="b1Count">— คน</div>
+            <div class="pct" id="b1Pct">—%</div>
           </div>
+          <div class="bucketList" id="b1List"></div>
         </div>
 
         <div class="card bucketCard">
           <div class="cardHd">
-            <div>
-              <div class="h">ระดับที่ 2 — Excellent <span style="font-size:11px;opacity:.8">(90–99%)</span></div>
-              <div class="m">ดีมาก ใกล้เคียง 100%</div>
-            </div>
+            <div class="h">ระดับที่ 2 — Excellent</div>
+            <span class="bucketRange">(90–99%) ดีมาก ใกล้เคียง 100%</span>
           </div>
-          <div class="cardBd">
-            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในการทำสมาธิ ถึงจะไม่ได้ผลลัพธ์สูงสุด 100% แต่ก็ใกล้เคียงมาก แสดงถึงการมีสมาธิที่ดี</div>
-            <div class="bucketMeta">
-              <div class="count" id="b2Count">— คน</div>
-              <div class="pct" id="b2Pct">—%</div>
-            </div>
-            <div class="bucketList" id="b2List"></div>
+          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในการทำสมาธิ ถึงจะไม่ได้ผลลัพธ์สูงสุด 100% แต่ก็ใกล้เคียงมาก แสดงถึงความตั้งใจพัฒนาตนเองต่อไป</div>
+          <div class="bucketMeta">
+            <div class="count" id="b2Count">— คน</div>
+            <div class="pct" id="b2Pct">—%</div>
           </div>
+          <div class="bucketList" id="b2List"></div>
         </div>
 
         <div class="card bucketCard">
           <div class="cardHd">
-            <div>
-              <div class="h">ระดับที่ 3 — Good <span style="font-size:11px;opacity:.8">(80–89%)</span></div>
-              <div class="m">ดี มีโอกาสพัฒนา</div>
-            </div>
+            <div class="h">ระดับที่ 3 — Good</div>
+            <span class="bucketRange">(80–89%) ดี มีโอกาสพัฒนา</span>
           </div>
-          <div class="cardBd">
-            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับกลาง ยังมีโอกาสในการพัฒนาเพิ่มเติม อาจเป็นกลุ่มที่ยังไม่ถึงระดับที่พึงพอใจ</div>
-            <div class="bucketMeta">
-              <div class="count" id="b3Count">— คน</div>
-              <div class="pct" id="b3Pct">—%</div>
-            </div>
-            <div class="bucketList" id="b3List"></div>
+          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับกลาง ยังมีโอกาสในการพัฒนาเพิ่มเติม อาจเป็นกลุ่มที่ยังไม่ถึงระดับที่พึงพอใจอย่างเต็มที่</div>
+          <div class="bucketMeta">
+            <div class="count" id="b3Count">— คน</div>
+            <div class="pct" id="b3Pct">—%</div>
           </div>
+          <div class="bucketList" id="b3List"></div>
         </div>
 
         <div class="card bucketCard">
           <div class="cardHd">
-            <div>
-              <div class="h">ระดับที่ 4 — Fair <span style="font-size:11px;opacity:.8">(70–79%)</span></div>
-              <div class="m">ปานกลาง ควรฝึกเพิ่ม</div>
-            </div>
+            <div class="h">ระดับที่ 4 — Fair</div>
+            <span class="bucketRange">(70–79%) ปานกลาง ควรฝึกเพิ่ม</span>
           </div>
-          <div class="cardBd">
-            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับปานกลาง ยังไม่สามารถเข้าถึงสมาธิได้อย่างที่คาดหวัง จะต้องฝึกฝนเพิ่มเติม</div>
-            <div class="bucketMeta">
-              <div class="count" id="b4Count">— คน</div>
-              <div class="pct" id="b4Pct">—%</div>
-            </div>
-            <div class="bucketList" id="b4List"></div>
+          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับปานกลาง ยังไม่สามารถเข้าถึงสมาธิได้อย่างที่คาดหวัง จะต้องฝึกฝนเพิ่มเติม</div>
+          <div class="bucketMeta">
+            <div class="count" id="b4Count">— คน</div>
+            <div class="pct" id="b4Pct">—%</div>
           </div>
+          <div class="bucketList" id="b4List"></div>
         </div>
 
         <div class="card bucketCard">
           <div class="cardHd">
-            <div>
-              <div class="h">ระดับที่ 5 — Needs Support <span style="font-size:11px;opacity:.8">(&lt;69%)</span></div>
-              <div class="m">ต้องการการสนับสนุน</div>
-            </div>
+            <div class="h">ระดับที่ 5 — Needs Support</div>
+            <span class="bucketRange">(&lt;69%) ค่อนข้างต่ำ ต้องการการสนับสนุน</span>
           </div>
-          <div class="cardBd">
-            <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับต่ำ การฝึกสมาธิยังไม่ค่อยประสบความสำเร็จ อาจต้องการการสนับสนุนเพิ่มเติม</div>
-            <div class="bucketMeta">
-              <div class="count" id="b5Count">— คน</div>
-              <div class="pct" id="b5Pct">—%</div>
-            </div>
-            <div class="bucketList" id="b5List"></div>
+          <div class="bucketDesc">สมาชิกในกลุ่มนี้มี Integrity ในระดับต่ำ การฝึกสมาธิยังไม่ค่อยประสบความสำเร็จ อาจต้องการการสนับสนุนเพิ่มเติม</div>
+          <div class="bucketMeta">
+            <div class="count" id="b5Count">— คน</div>
+            <div class="pct" id="b5Pct">—%</div>
           </div>
+          <div class="bucketList" id="b5List"></div>
         </div>
+
       </div>
       
-      <div class="note">*แต่ละกลุ่มแสดงรายชื่อทั้งหมด (Auto-expand on print)</div>
+      <div class="note" style="margin-top:10px;text-align:right">*ข้อมูลอัปเดตแบบ Real-time</div>
     </div>
   </div>
 
 <script>
   let WEEK_OFFSET = 0;
-  const MAX_PER_BUCKET = 999; 
+  const MAX_PER_BUCKET = 999; // Show ALL
   
   const $ = (id)=> document.getElementById(id);
   const escapeHtml = (s)=> String(s).replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
@@ -445,7 +467,7 @@
   }
   function getCSS(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#999"; }
 
-  // Logic to build charts & buckets
+  // Build Charts
   function buildTrend(peopleRows, week){
     const days = [];
     const [sy,sm,sd] = week.startISO.split("-").map(Number);
@@ -522,6 +544,8 @@
       </div>
     `).join("");
   }
+  
+  // Render Bucket Lists
   function renderBucket(idPrefix, names, totalMembers, pillClass){
     const countEl = $(idPrefix + "Count");
     const pctEl   = $(idPrefix + "Pct");
@@ -530,12 +554,13 @@
     pctEl.textContent = `${pct(names.length, totalMembers).toFixed(0)}%`;
 
     if (!names.length){
-      listEl.innerHTML = `<span class="namePill gray" style="grid-column:1/-1;text-align:center">ไม่มีรายการ</span>`;
+      // Make placeholder span 2 columns
+      listEl.innerHTML = `<span class="namePill gray" style="grid-column:span 2">ไม่มีรายการ</span>`;
       return;
     }
-    // Use grid columns
     listEl.innerHTML = names.map(n=>`<span class="namePill ${pillClass}">${escapeHtml(n)}</span>`).join("");
   }
+  
   function compute(out){
     const people = Array.isArray(out.people) ? out.people : [];
     const totalMembers = people.length;
@@ -593,7 +618,7 @@
       const out = await res.json().catch(()=>({}));
       if (seq !== loadSeq) return;
       if (!out.ok){
-        ["b1List","b2List","b3List","b4List","b5List"].forEach(id=> $(id).innerHTML=`<span class="namePill gray">โหลดไม่สำเร็จ</span>`);
+        ["b1List","b2List","b3List","b4List","b5List"].forEach(id=> $(id).innerHTML=`<span class="namePill gray" style="grid-column:span 2">โหลดไม่สำเร็จ</span>`);
         return;
       }
       renderAll(out);
