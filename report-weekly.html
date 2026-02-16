@@ -116,12 +116,11 @@
     .dot{ width:8px; height:8px; border-radius:50%; }
 
     /* --- Bottom Layout (5 Buckets) --- */
-    /* Default Desktop: 5 Columns */
     .buckets-grid{
       display:grid; 
       grid-template-columns: repeat(5, 1fr); 
       gap:12px;
-      align-items: start;
+      align-items: start; /* Important: Allow items to have different heights */
     }
     
     .bucket-card{
@@ -130,6 +129,7 @@
       border-radius: 12px;
       padding: 16px;
       display:flex; flex-direction:column;
+      min-height: 0; /* Allow flex child to shrink if needed, but grow with content */
     }
 
     .b-header{ margin-bottom:12px; }
@@ -147,15 +147,15 @@
     .b-count{ color:#fff; font-size:13px; }
     .b-pct{ color:rgba(255,255,255,0.6); font-family:var(--mono); }
 
-    /* Name List: 2 Columns inside the bucket */
+    /* Name List: 2 Columns - FIXED for Desktop (No Scrollbar) */
     .b-list{
       display:grid; 
       grid-template-columns: 1fr 1fr;
       gap: 8px;
       align-content: start;
-      max-height: 400px; /* Scroll on screen if too long */
-      overflow-y: auto;
-      padding-right: 4px;
+      /* Remove max-height to show all items on desktop */
+      max-height: none; 
+      overflow: visible; 
     }
     
     .n-pill{
@@ -177,7 +177,7 @@
 
     /* --- MOBILE RESPONSIVE (Screen Only) --- */
     @media screen and (max-width: 980px) {
-      .page{ width:100%; padding:0; }
+      .page{ width:100%; padding:10px; }
       .hdr{ flex-direction:column; align-items:flex-start; }
       .actions{ width:100%; justify-content:space-between; }
       
@@ -186,10 +186,9 @@
       /* Stack buckets on mobile */
       .buckets-grid { grid-template-columns: 1fr; }
       .b-desc { min-height: auto; }
-      .b-list { max-height: none; overflow: visible; }
     }
 
-    /* --- PRINT Settings (Magical Transformation) --- */
+    /* --- PRINT Settings (Force A4 Landscape Layout) --- */
     @page { 
       size: A4 landscape; 
       margin: 5mm; 
@@ -209,11 +208,11 @@
         max-width: none !important;
         margin: 0 !important;
         padding: 0 !important;
-        /* Zoom out to fit 5 columns on A4 paper */
+        /* Zoom out slightly to fit 5 columns neatly on A4 */
         zoom: 0.65; 
       }
 
-      /* Force 5-column layout regardless of screen size */
+      /* Force 5-column layout regardless of screen size/device */
       .top-grid { display: grid !important; grid-template-columns: 1.5fr 1fr !important; gap:16px !important;}
       .buckets-grid { display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap:12px !important;}
       
@@ -229,9 +228,10 @@
         box-shadow: none !important;
       }
 
-      /* Show full lists */
+      /* Ensure lists are fully visible */
       .b-list { display: grid !important; overflow: visible !important; max-height: none !important; }
       .b-desc { min-height: 40px !important; } /* Align headers */
+      .t-bar-fill { -webkit-print-color-adjust: exact; }
     }
   </style>
 </head>
