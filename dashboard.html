@@ -698,7 +698,7 @@
           </div>
         </div>
         <div class="muted" style="margin-top:10px" id="pieText">กำลังคำนวณ...</div>
-        <div class="cmpWrap" id="cmpWrap" aria-label="compare">
+        <div class="cmpWrap" aria-label="compare">
           <div class="cmpTitle">เทียบ “ครบ 3 ครั้ง” วันนี้ vs เมื่อวาน</div>
           <div class="cmpGrid">
             <div class="cmpCol">
@@ -814,10 +814,6 @@
   const cmpBarToday   = document.getElementById("cmpBarToday");
   const cmpBarPrev    = document.getElementById("cmpBarPrev");
   const cmpDelta      = document.getElementById("cmpDelta");
-  const cmpWrap       = document.getElementById("cmpWrap");
-
-  const partialTitleEl = document.getElementById("partialTitle");
-  const noneTitleEl    = document.getElementById("noneTitle");
 
   const dailyNotCompleteLabel = document.getElementById("dailyNotCompleteLabel");
   const dailyNotCompleteCount = document.getElementById("dailyNotCompleteCount");
@@ -825,6 +821,8 @@
   const dailyNoneList    = document.getElementById("dailyNoneList");
 
 
+  const partialTitle = document.getElementById("partialTitle");
+  const noneTitle = document.getElementById("noneTitle");
   function setLastUpdated(){
     const d = new Date();
     const hh = String(d.getHours()).padStart(2,'0');
@@ -1045,11 +1043,11 @@ function render(out){
     const w = out.week;
     elWeek.textContent = `จันทร์ ${thaiDateFromISO(w.startISO)} – อาทิตย์ ${thaiDateFromISO(w.endISO)}`;
 
-    // ===== Daily (this week) or Weekly (last week) summary =====
+    // ===== Daily summary (client local day) =====
     const rowsAll = out.people || [];
     const peopleTotal = rowsAll.length;
 
-    const todayISO = (()=> {
+    const todayISO = (()=>{
       const d = new Date();
       const y = d.getFullYear();
       const m = String(d.getMonth()+1).padStart(2,'0');
@@ -1057,59 +1055,25 @@ function render(out){
       return `${y}-${m}-${da}`;
     })();
 
-    // helper: within selected week range
+    // if today not in selected week, fallback to week.startISO (makes UI still meaningful when browsing other week)
     const inRange = (iso)=> (iso >= w.startISO && iso <= w.endISO);
-
-    // dayISO is used only for "this week" daily view (if out-of-range, fall back to Monday)
     const dayISO = inRange(todayISO) ? todayISO : w.startISO;
-    const dayLabelTH = thaiDateFromISO(dayISO);
 
-    const weekMode = (weekOffset === -1);
+    const dayLabelTH = thaiDateFromISO(dayISO);
+    dailyPieLabel.textContent = `สัดส่วนวันนี้ (${dayLabelTH})`;
 
     const completeNames = [];
     const partialNames  = [];
     const noneNames     = [];
 
-    if (weekMode){
-      // ✅ Last week: "ไม่ทำเลย" ต้องหมายถึง 0 ครั้งทั้งสัปดาห์ (7 วัน)
-      for (const p of rowsAll){
-        const perDay = Array.isArray(p.perDay) ? p.perDay : [];
-        const weekSum = perDay.reduce((acc, x)=> acc + Number(x && x.count || 0), 0);
-
-        if (weekSum >= 21) completeNames.push(p.name);         // 21/21
-        else if (weekSum > 0) partialNames.push(p.name);       // 1..20/21
-        else noneNames.push(p.name);                           // 0/21
-      }
-
-      const startTH = thaiDateFromISO(w.startISO);
-      const endTH   = thaiDateFromISO(w.endISO);
-
-      dailyPieLabel.textContent = `สัดส่วนสัปดาห์ที่แล้ว (${startTH} – ${endTH})`;
-      if (dailyNotCompleteLabel) dailyNotCompleteLabel.textContent = `ทำไม่ครบทั้งสัปดาห์ · ${startTH} – ${endTH}`;
-      if (partialTitleEl) partialTitleEl.textContent = `ทำไม่ครบ (1–20 ครั้ง/สัปดาห์)`;
-      if (noneTitleEl) noneTitleEl.textContent = `ไม่ทำเลย (0 ครั้งทั้งสัปดาห์)`;
-
-      // Compare today vs yesterday is not meaningful for "last week" weekly mode
-      if (cmpWrap) cmpWrap.style.display = "none";
-    } else {
-      // This week: daily view (today)
-      for (const p of rowsAll){
-        const perDay = Array.isArray(p.perDay) ? p.perDay : [];
-        const d = perDay.find(x => String(x.dateISO||'') === dayISO);
-        const cnt = d ? Number(d.count||0) : 0;
-        if (cnt >= 3) completeNames.push(p.name);
-        else if (cnt > 0) partialNames.push(p.name);
-        else noneNames.push(p.name);
-      }
-
-      dailyPieLabel.textContent = `สัดส่วนวันนี้ (${dayLabelTH})`;
-      if (dailyNotCompleteLabel) dailyNotCompleteLabel.textContent = `ทำไม่ครบวันนี้ · ${dayLabelTH}`;
-      if (partialTitleEl) partialTitleEl.textContent = `ทำไม่ครบ (1–2 ครั้ง)`;
-      if (noneTitleEl) noneTitleEl.textContent = `ไม่ทำเลย (0 ครั้ง)`;
-
-      if (cmpWrap) cmpWrap.style.display = "";
+    for (const p of rowsAll){
+      const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+      const d = perDay.find(x => String(x.dateISO||'') === dayISO);
+      const cnt = d ? Number(d.count||0) : 0;
+      if (cnt >= 3) completeNames.push(p.name);
+      else if (cnt > 0) partialNames.push(p.name);
+      else noneNames.push(p.name);
     }
-
 
     // Sort names (Thai)
     const thSort = (a,b)=> String(a).localeCompare(String(b),'th');
@@ -1130,20 +1094,14 @@ function render(out){
 
     // ✅ Center label (premium)
     pieCenterBig.textContent = `${pGood.toFixed(0)}%`;
-    pieCenterSub.textContent = weekMode ? `ครบ 21 ครั้ง` : `ครบ 3 ครั้ง`;
+    pieCenterSub.textContent = `ครบ 3 ครั้ง`;
     pieCenterTiny.textContent = `${completeN}/${peopleTotal} คน`;
 
     lgGood.textContent = `ครบ 3 ครั้ง: ${completeN} คน (${pGood.toFixed(0)}%)`;
     lgBad.textContent  = `ทำไม่ครบ: ${partialN} คน (${pBad.toFixed(0)}%)`;
     lgNone.textContent = `ไม่ทำเลย: ${noneN} คน (${pNone.toFixed(0)}%)`;
 
-        pieText.textContent = weekMode
-          ? `ทั้งหมด ${peopleTotal} คน · ครบ 21 ครั้ง ${completeN} · ทำบ้าง ${partialN} · ไม่ทำเลย ${noneN}`
-          : `ทั้งหมด ${peopleTotal} คน · ครบ ${completeN} · ไม่ครบ ${partialN} · ไม่ทำเลย ${noneN}`;
-
-    // Right box (incomplete)
-    dailyNotCompleteCount.textContent = `${partialN + noneN} คน`;
-
+        pieText.textContent = `ทั้งหมด ${peopleTotal} คน · ครบ ${completeN} · ไม่ครบ ${partialN} · ไม่ทำเลย ${noneN}`;
     const renderNameChips = (el, names, cls)=> {
       if (!el) return;
       if (!names.length){
@@ -1201,59 +1159,101 @@ function render(out){
     if (weeklyCompleteSub){
       weeklyCompleteSub.textContent = `รวมครบทั้งสัปดาห์: ${dailyCompleteCounts.reduce((a,b)=>a+b,0)} ครั้ง (นับคน·วัน)`;
     }
+    // Right lists (this week = per-day; last week = whole-week)
+    const isLastWeek = (weekOffset === -1);
 
-    // Right lists
-    renderNameChips(dailyPartialList, partialNames, 'bad');
-    renderNameChips(dailyNoneList, noneNames, '');
+    if (isLastWeek){
+      const noneWeek = [];
+      const partialWeek = [];
 
-    // Compare today vs previous day (within selected week) — only for "this week" daily view
-    if (!weekMode){
-      const prevISO = (()=> {
-        const [yy,mm,dd] = dayISO.split("-").map(Number);
-        const d = new Date(yy, mm-1, dd);
-        d.setDate(d.getDate()-1);
-        const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2,'0');
-        const da = String(d.getDate()).padStart(2,'0');
-        const iso = `${y}-${m}-${da}`;
-        return inRange(iso) ? iso : dayISO;
-      })();
-
-      const prevCompleteN = (()=> {
-        let c=0;
-        for (const p of rowsAll){
-          const perDay = Array.isArray(p.perDay) ? p.perDay : [];
-          const dd = perDay.find(x => String(x.dateISO||'') === prevISO);
-          const cnt = dd ? Number(dd.count||0) : 0;
-          if (cnt >= 3) c++;
+      const getTotalDone = (person)=>{
+        const v = Number(person && person.totalDone);
+        if (Number.isFinite(v)) return v;
+        const perDay = Array.isArray(person && person.perDay) ? person.perDay : [];
+        let sum = 0;
+        for (const d of perDay){
+          const c = Number(d && d.count);
+          if (Number.isFinite(c)) sum += c;
         }
-        return c;
-      })();
+        return sum;
+      };
 
-      const pToday = peopleTotal ? (completeN/peopleTotal*100) : 0;
-      const pPrev  = peopleTotal ? (prevCompleteN/peopleTotal*100) : 0;
+      const getTotalSlots = (person)=>{
+        const v = Number(person && person.totalSlots);
+        if (Number.isFinite(v) && v > 0) return v;
+        return 21; // 7 days * 3 sessions
+      };
 
-      if (cmpTodayLabel) cmpTodayLabel.textContent = `วันนี้ (${thaiDateFromISO(dayISO)})`;
-      if (cmpPrevLabel)  cmpPrevLabel.textContent  = (prevISO===dayISO) ? `เมื่อวาน (—)` : `เมื่อวาน (${thaiDateFromISO(prevISO)})`;
-      if (cmpTodayPct)   cmpTodayPct.textContent   = `${completeN} คน (${pToday.toFixed(0)}%)`;
-      if (cmpPrevPct)    cmpPrevPct.textContent    = `${prevCompleteN} คน (${pPrev.toFixed(0)}%)`;
-      if (cmpBarToday)   cmpBarToday.style.width   = `${Math.max(0, Math.min(100, pToday)).toFixed(2)}%`;
-      if (cmpBarPrev)    cmpBarPrev.style.width    = `${Math.max(0, Math.min(100, pPrev)).toFixed(2)}%`;
-
-      const delta = pToday - pPrev;
-      if (cmpDelta){
-        if (prevISO===dayISO){
-          cmpDelta.textContent = `เทียบวันก่อนหน้า: — (อยู่นอกช่วงวันที่เลือก)`;
-        } else if (Math.abs(delta) < 0.5){
-          cmpDelta.textContent = `เทียบเมื่อวาน: แทบไม่เปลี่ยน (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
-        } else if (delta > 0){
-          cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="up">ดีขึ้น</span> (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
-        } else {
-          cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="down">ลดลง</span> (${delta.toFixed(0)}%)`;
-        }
+      for (const p of rowsAll){
+        const totalDoneW = getTotalDone(p);
+        const totalSlotsW = getTotalSlots(p);
+        if (totalDoneW <= 0) noneWeek.push(p.name);
+        else if (totalDoneW < totalSlotsW) partialWeek.push(p.name);
       }
-    }
 
+      noneWeek.sort(thSort);
+      partialWeek.sort(thSort);
+
+      if (dailyNotCompleteLabel) dailyNotCompleteLabel.textContent = `สรุปทั้งสัปดาห์ที่แล้ว (จันทร์–อาทิตย์)`;
+      if (partialTitle) partialTitle.textContent = `ทำไม่ครบทั้งสัปดาห์ (มีทำบ้าง แต่ไม่ครบ 21/21)`;
+      if (noneTitle) noneTitle.textContent = `ไม่ทำเลยทั้งสัปดาห์ (0/21)`;
+
+      if (dailyNotCompleteCount) dailyNotCompleteCount.textContent = `${partialWeek.length + noneWeek.length} คน`;
+      renderNameChips(dailyPartialList, partialWeek, 'bad');
+      renderNameChips(dailyNoneList, noneWeek, '');
+    } else {
+      if (dailyNotCompleteLabel) dailyNotCompleteLabel.textContent = `ทำไม่ครบวันนี้ · ${dayLabelTH}`;
+      if (partialTitle) partialTitle.textContent = `ทำไม่ครบ (1–2 ครั้ง)`;
+      if (noneTitle) noneTitle.textContent = `ไม่ทำเลย (0 ครั้ง)`;
+
+      if (dailyNotCompleteCount) dailyNotCompleteCount.textContent = `${partialN + noneN} คน`;
+      renderNameChips(dailyPartialList, partialNames, 'bad');
+      renderNameChips(dailyNoneList, noneNames, '');
+    }
+    // Compare today vs previous day (within selected week)
+    const prevISO = (()=> {
+      const [yy,mm,dd] = dayISO.split("-").map(Number);
+      const d = new Date(yy, mm-1, dd);
+      d.setDate(d.getDate()-1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,'0');
+      const da = String(d.getDate()).padStart(2,'0');
+      const iso = `${y}-${m}-${da}`;
+      return inRange(iso) ? iso : dayISO;
+    })();
+
+    const prevCompleteN = (()=> {
+      let c=0;
+      for (const p of rowsAll){
+        const perDay = Array.isArray(p.perDay) ? p.perDay : [];
+        const dd = perDay.find(x => String(x.dateISO||'') === prevISO);
+        const cnt = dd ? Number(dd.count||0) : 0;
+        if (cnt >= 3) c++;
+      }
+      return c;
+    })();
+
+    const pToday = peopleTotal ? (completeN/peopleTotal*100) : 0;
+    const pPrev  = peopleTotal ? (prevCompleteN/peopleTotal*100) : 0;
+
+    if (cmpTodayLabel) cmpTodayLabel.textContent = `วันนี้ (${thaiDateFromISO(dayISO)})`;
+    if (cmpPrevLabel)  cmpPrevLabel.textContent  = (prevISO===dayISO) ? `เมื่อวาน (—)` : `เมื่อวาน (${thaiDateFromISO(prevISO)})`;
+    if (cmpTodayPct)   cmpTodayPct.textContent   = `${completeN} คน (${pToday.toFixed(0)}%)`;
+    if (cmpPrevPct)    cmpPrevPct.textContent    = `${prevCompleteN} คน (${pPrev.toFixed(0)}%)`;
+    if (cmpBarToday)   cmpBarToday.style.width   = `${Math.max(0, Math.min(100, pToday)).toFixed(2)}%`;
+    if (cmpBarPrev)    cmpBarPrev.style.width    = `${Math.max(0, Math.min(100, pPrev)).toFixed(2)}%`;
+
+    const delta = pToday - pPrev;
+    if (cmpDelta){
+      if (prevISO===dayISO){
+        cmpDelta.textContent = `เทียบวันก่อนหน้า: — (อยู่นอกช่วงวันที่เลือก)`;
+      } else if (Math.abs(delta) < 0.5){
+        cmpDelta.textContent = `เทียบเมื่อวาน: แทบไม่เปลี่ยน (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
+      } else if (delta > 0){
+        cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="up">ดีขึ้น</span> (${delta>=0?"+":""}${delta.toFixed(0)}%)`;
+      } else {
+        cmpDelta.innerHTML = `เทียบเมื่อวาน: <span class="down">ลดลง</span> (${delta.toFixed(0)}%)`;
+      }
     }
 
     const rows = out.people || [];
