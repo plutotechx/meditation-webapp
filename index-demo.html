@@ -538,7 +538,22 @@
     </span>`;
   }
 
-  function renderAfterSaveBoxes({ s1, s2, s3, doneCount }){
+  
+  function normalizeCheckStatus(st){
+    // GAS checkStatus shape: { ok:true, doneCount, sessions:{s1:'✅'|'—',...}, times:{s1:'HH:mm',...} }
+    const done = (v)=> String(v||'') === '✅';
+    const times = (st && st.times) ? st.times : {};
+    return {
+      doneCount: Number(st && st.doneCount || 0),
+      sessions:{
+        s1:{ done: done(st && st.sessions && st.sessions.s1), time: times.s1 || "" },
+        s2:{ done: done(st && st.sessions && st.sessions.s2), time: times.s2 || "" },
+        s3:{ done: done(st && st.sessions && st.sessions.s3), time: times.s3 || "" },
+      }
+    };
+  }
+
+function renderAfterSaveBoxes({ s1, s2, s3, doneCount }){
     showAfterSaveGrid();
 
     const setBox = (key, done) => {
@@ -614,13 +629,20 @@
 
         window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย");
 
-        // show marks based on sheet status
-        try{
-          const st = await fetchCheckStatus(payload.name, payload.logDate);
-          renderAfterSaveBoxes(st);
-        } catch(err){
-          console.warn("checkStatus error:", err);
-          hideAfterSaveGrid();
+        // show marks instantly (prefer submit response), fallback to checkStatus if needed
+        const fastStatus = (out && out.status) ? out.status : null;
+        if (fastStatus && fastStatus.sessions){
+          renderAfterSaveBoxes(fastStatus);
+        } else {
+          try{
+            const st = await fetchCheckStatus(payload.name, payload.logDate);
+            // accept both shapes: {sessions:{s1:'✅',...}, times:{...}} OR {status:{...}}
+            if (st && st.status) renderAfterSaveBoxes(st.status);
+            else renderAfterSaveBoxes(normalizeCheckStatus(st));
+          } catch(err){
+            console.warn("checkStatus error:", err);
+            hideAfterSaveGrid();
+          }
         }
 
         form.reset();
