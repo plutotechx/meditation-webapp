@@ -11,33 +11,19 @@
       --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
 
       --overlay: rgba(0,0,0,.55);
-      --card-bg: rgba(40,52,62,.35);
       --card-border: rgba(255,255,255,.28);
       --green: #21b14b;
     }
 
     *{box-sizing:border-box}
-    body{
-      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-      margin:0;background:var(--bg);color:var(--text)
-    }
+    body{ font-family:system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; background:var(--bg); color:var(--text) }
     .wrap{max-width:820px;margin:0 auto;padding:24px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
 
-    /* ===== Header Center ===== */
-    .headerCenter{
-      text-align:center;
-      display:grid;
-      gap:6px;
-      margin-bottom:16px;
-    }
+    .headerCenter{ text-align:center; display:grid; gap:6px; margin-bottom:16px; }
     h1{margin:0;font-size:22px}
     .muted{color:var(--muted);margin:0;line-height:1.55}
-    #weekHeader{
-      margin:0;
-      color:rgba(234,240,255,.78);
-      font-weight:800;
-    }
+    #weekHeader{ margin:0; color:rgba(234,240,255,.78); font-weight:800; }
 
     label{display:block;margin:12px 0 6px}
     select,input{
@@ -64,13 +50,7 @@
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
 
-    /* หมายเหตุให้อยู่กลาง */
-    .small{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:10px;
-      text-align:center;
-    }
+    .small{ font-size:12px; color:var(--muted); margin-top:10px; text-align:center; }
 
     a.linkbtn{display:block;text-decoration:none}
     a.linkbtn button{
@@ -89,83 +69,35 @@
       background: var(--overlay);
       z-index: 9999;
     }
-    .success-overlay.is-open{
-      display: grid;
-      animation: overlayIn .18s ease-out forwards;
-    }
-    @keyframes overlayIn{
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
+    .success-overlay.is-open{ display: grid; animation: overlayIn .18s ease-out forwards; }
+    @keyframes overlayIn{ from { opacity: 0; } to { opacity: 1; } }
 
     .success-card{
-      width: min(520px, 86vw);
-      height: min(280px, 46vh);
+      width: min(560px, 90vw);
+      height: auto;
       border-radius: 10px;
-      background: linear-gradient(180deg,
-        rgba(54, 74, 86, .35),
-        rgba(25, 33, 41, .40)
-      );
+      background: linear-gradient(180deg, rgba(54, 74, 86, .35), rgba(25, 33, 41, .40));
       border: 1px solid var(--card-border);
-      box-shadow:
-        0 18px 55px rgba(0,0,0,.55),
-        inset 0 0 0 1px rgba(255,255,255,.05);
+      box-shadow: 0 18px 55px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       position: relative;
       overflow: hidden;
-
       display: grid;
       place-items: center;
-      padding: 24px;
+      padding: 22px 18px 18px;
       transform: translateY(6px) scale(.985);
       opacity: 0;
       animation: cardIn .22s ease-out forwards;
     }
-    @keyframes cardIn{
-      to { transform: translateY(0) scale(1); opacity: 1; }
-    }
-
-    .success-card::before{
-      content:"";
-      position:absolute;
-      top:-10px;
-      right: 80px;
-      width: 170px;
-      height: 18px;
-      background: radial-gradient(closest-side,
-        rgba(135, 200, 255, .95),
-        rgba(135, 200, 255, .25) 55%,
-        rgba(135, 200, 255, 0) 75%
-      );
-      filter: blur(1.2px);
-      opacity: .9;
-      pointer-events:none;
-    }
-    .success-card::after{
-      content:"";
-      position:absolute;
-      bottom:-10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 210px;
-      height: 20px;
-      background: radial-gradient(closest-side,
-        rgba(135, 200, 255, .85),
-        rgba(135, 200, 255, .25) 55%,
-        rgba(135, 200, 255, 0) 78%
-      );
-      filter: blur(1.4px);
-      opacity: .85;
-      pointer-events:none;
-    }
+    @keyframes cardIn{ to { transform: translateY(0) scale(1); opacity: 1; } }
 
     .success-content{
       text-align: center;
       display: grid;
-      gap: 18px;
+      gap: 14px;
       justify-items: center;
-      transform: translateY(-4px);
+      width: 100%;
     }
 
     .success-icon{
@@ -187,14 +119,78 @@
       text-shadow: 0 2px 18px rgba(0,0,0,.45);
       margin: 0;
     }
+
+    /* ===== After-save status popup (boxes) ===== */
+    .afterSaveGrid{
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 6px;
+    }
+    @media (max-width: 520px){ .afterSaveGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+
+    .sbox{
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.22);
+      padding: 12px 12px 10px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+    }
+    .sboxTop{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; font-weight: 800; color: rgba(234,240,255,.92);
+    }
+    .sicon{
+      width: 30px; height: 30px;
+      border-radius: 999px;
+      display:grid; place-items:center;
+      font-weight: 900;
+      border: 1px solid rgba(255,255,255,.18);
+      color: rgba(255,255,255,.92);
+    }
+    .sboxTime{
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,.10);
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      color: rgba(234,240,255,.95);
+      text-align: center;
+    }
+    .sbox.ok{
+      background: linear-gradient(180deg, rgba(33,177,75,.22), rgba(0,0,0,.20));
+      border-color: rgba(33,177,75,.35);
+    }
+    .sbox.ok .sicon{
+      background: rgba(33,177,75,.18);
+      border-color: rgba(33,177,75,.45);
+      color: #aaffc8;
+    }
+    .sbox.no{
+      background: linear-gradient(180deg, rgba(255,106,106,.14), rgba(0,0,0,.20));
+      border-color: rgba(255,106,106,.28);
+    }
+    .sbox.no .sicon{
+      background: rgba(255,106,106,.12);
+      border-color: rgba(255,106,106,.35);
+      color: #ffd3d3;
+    }
+    .sbox.summary{ background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.18)); }
+    .sboxSum{
+      margin-top: 14px;
+      font-size: 42px;
+      font-weight: 950;
+      text-align: center;
+      color: rgba(234,240,255,.96);
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="card">
-
-      <!-- ===== Center Header (FIX) ===== -->
       <div class="headerCenter">
         <h1>Update Daily Meditation</h1>
         <p class="muted">บันทึกข้อมูลการทำสมาธิ</p>
@@ -285,7 +281,6 @@
     </div>
   </div>
 
-  <!-- ===== Success Popup ===== -->
   <div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="success-card">
       <div class="success-content">
@@ -294,35 +289,49 @@
             <path d="M20 7L10.5 16.5L4 10" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
+
         <p id="successText" class="success-text">บันทึกข้อมูลเรียบร้อย</p>
+
+        <div id="afterSaveGrid" class="afterSaveGrid" hidden>
+          <div class="sbox" id="boxS1">
+            <div class="sboxTop"><span>ครั้งที่ 1</span><span class="sicon" id="iconS1">✕</span></div>
+            <div class="sboxTime" id="timeS1">—</div>
+          </div>
+
+          <div class="sbox" id="boxS2">
+            <div class="sboxTop"><span>ครั้งที่ 2</span><span class="sicon" id="iconS2">✕</span></div>
+            <div class="sboxTime" id="timeS2">—</div>
+          </div>
+
+          <div class="sbox" id="boxS3">
+            <div class="sboxTop"><span>ครั้งที่ 3</span><span class="sicon" id="iconS3">✕</span></div>
+            <div class="sboxTime" id="timeS3">—</div>
+          </div>
+
+          <div class="sbox summary" id="boxSum">
+            <div class="sboxTop"><span>สรุป</span></div>
+            <div class="sboxSum" id="sumText">0/3</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
 
 <script>
-  // =========================
-  // CONFIG (Option A)
-  //  - ใช้ timezone ของ "เครื่องผู้ใช้" เป็นหลัก
-  // =========================
   const weekHeaderEl = document.getElementById("weekHeader");
-
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-  function thaiDateLabelLocal(d){
-    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
-  }
+  function thaiDateLabelLocal(d){ return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" }); }
 
-  // Monday of week (local)
   function mondayOfWeekLocal(d){
     const x = new Date(d);
     x.setHours(0,0,0,0);
-    const day = x.getDay(); // Sun=0
+    const day = x.getDay();
     const diff = (day === 0) ? -6 : (1 - day);
     x.setDate(x.getDate() + diff);
     return x;
   }
-
-  // Sunday of week (local) from monday
   function sundayOfWeekFromMonday(mon){
     const sun = new Date(mon);
     sun.setDate(mon.getDate() + 6);
@@ -330,7 +339,6 @@
     return sun;
   }
 
-  // ===== Week header (จันทร์-อาทิตย์ของสัปดาห์ปัจจุบัน) =====
   (function showWeekHeader(){
     const now = new Date();
     const mon = mondayOfWeekLocal(now);
@@ -338,11 +346,6 @@
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
   })();
 
-  // =========================
-  // LogDate dropdown: 7 วัน (จันทร์-อาทิตย์ของสัปดาห์นี้)
-  //  - ตัดอาทิตย์สัปดาห์ก่อนออก
-  //  - ไม่ให้เลือกวันย้อนหลังและวันอนาคต (ยังโชว์ในรายการแต่ disabled)
-  // =========================
   const logDateEl = document.getElementById("logDate");
   const weekdayHiddenEl = document.getElementById("weekdayHidden");
   const TH_DOW = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"];
@@ -350,8 +353,6 @@
   function buildLogDateOptions7DaysNoPast(){
     const now = new Date();
     const todayISO = toISODateLocal(now);
-
-    // this week (Mon..Sun) — no previous Sunday
     const monThis = mondayOfWeekLocal(now);
 
     const days = [];
@@ -375,7 +376,6 @@
       opt.textContent = label;
       opt.dataset.dow = dow;
 
-      // ✅ ไม่ให้เลือกวันย้อนหลัง (ก่อนวันปัจจุบัน) และไม่ให้เลือกวันอนาคต
       if (iso < todayISO){
         opt.disabled = true;
         opt.textContent = `${label} (ผ่านมาแล้ว)`;
@@ -387,11 +387,9 @@
       logDateEl.appendChild(opt);
     }
 
-    // ค่าเริ่มต้น = วันนี้ (ถ้าอยู่ในช่วง จันทร์-อาทิตย์ของสัปดาห์นี้)
     if ([...logDateEl.options].some(o => o.value === todayISO)){
       logDateEl.value = todayISO;
     } else {
-      // fallback: เลือกตัวแรกที่ไม่ disabled (กรณีเข้าเว็บข้ามเขตเวลาแปลก ๆ)
       for (let i=0; i<logDateEl.options.length; i++){
         if (!logDateEl.options[i].disabled){
           logDateEl.selectedIndex = i;
@@ -410,23 +408,17 @@
 
   buildLogDateOptions7DaysNoPast();
 
-  // =========================
-  // Success Popup (auto close + refresh)
-  // =========================
   (function(){
     const overlay = document.getElementById('successOverlay');
     const textEl  = document.getElementById('successText');
     let autoTimer = null;
-
-    const POPUP_MS = 2500;      // ตามล่าสุดที่ตั้มใช้
+    const POPUP_MS = 2500;
     const REFRESH_AFTER_MS = POPUP_MS + 2000;
 
     window.showSuccessPopup = function(message = 'บันทึกข้อมูลเรียบร้อย', autoCloseMs = POPUP_MS){
       textEl.textContent = message;
-
       overlay.classList.add('is-open');
       overlay.setAttribute('aria-hidden', 'false');
-
       clearTimeout(autoTimer);
       autoTimer = setTimeout(window.hideSuccessPopup, autoCloseMs);
     };
@@ -436,18 +428,89 @@
       overlay.setAttribute('aria-hidden', 'true');
     };
 
-    // ไม่ให้คลิกพื้นหลังปิดเอง (ตัด event click overlay ออกตามที่ต้องการ)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') window.hideSuccessPopup();
     });
 
-    window.__POPUP_MS__ = POPUP_MS;
     window.__REFRESH_AFTER_MS__ = REFRESH_AFTER_MS;
   })();
 
-  // =========================
-  // SUBMIT
-  // =========================
+  function hhmmNow(){
+    const d = new Date();
+    return d.toLocaleTimeString("th-TH", { hour:"2-digit", minute:"2-digit", hour12:false });
+  }
+
+  function normalizeSessionKey(sessionText){
+    const s = String(sessionText || "");
+    if (s.includes("ครั้งที่ 1")) return "s1";
+    if (s.includes("ครั้งที่ 2")) return "s2";
+    if (s.includes("ครั้งที่ 3")) return "s3";
+    return "";
+  }
+
+  function renderAfterSaveBoxes({ s1, s2, s3, doneCount, justSavedKey, justSavedTime }){
+    const grid = document.getElementById("afterSaveGrid");
+    if (!grid) return;
+    grid.hidden = False;
+  }
+
+  // fix: JS boolean must be lowercase true/false
+  function showAfterSaveGrid(){
+    const grid = document.getElementById("afterSaveGrid");
+    if (grid) grid.hidden = false;
+  }
+  function hideAfterSaveGrid(){
+    const grid = document.getElementById("afterSaveGrid");
+    if (grid) grid.hidden = true;
+  }
+
+  function renderAfterSaveBoxesSafe({ s1, s2, s3, doneCount, justSavedKey, justSavedTime }){
+    showAfterSaveGrid();
+
+    const setBox = (key, done, timeText) => {
+      const box = document.getElementById("box" + key.toUpperCase());
+      const icon = document.getElementById("icon" + key.toUpperCase());
+      const time = document.getElementById("time" + key.toUpperCase());
+
+      const clsOk = done ? "ok" : "no";
+      box.classList.remove("ok","no");
+      box.classList.add(clsOk);
+
+      icon.textContent = done ? "✓" : "✕";
+      time.textContent = done ? (timeText || "—") : "—";
+    };
+
+    const t1 = s1.time || (justSavedKey==="s1" ? justSavedTime : "");
+    const t2 = s2.time || (justSavedKey==="s2" ? justSavedTime : "");
+    const t3 = s3.time || (justSavedKey==="s3" ? justSavedTime : "");
+
+    setBox("s1", !!s1.done, t1 ? `${t1} น.` : "");
+    setBox("s2", !!s2.done, t2 ? `${t2} น.` : "");
+    setBox("s3", !!s3.done, t3 ? `${t3} น.` : "");
+
+    const sumEl = document.getElementById("sumText");
+    if (sumEl) sumEl.textContent = `${doneCount}/3`;
+  }
+
+  async function fetchCheckStatus(name, logDate){
+    const url = `/api/checkStatus?name=${encodeURIComponent(name)}&logDate=${encodeURIComponent(logDate)}`;
+    const res = await fetch(url, { cache:"no-store" });
+    const out = await res.json().catch(()=>({}));
+    if (!res.ok || !out.ok) throw new Error(out.error || "checkStatus_failed");
+
+    const raw = out.sessions || {};
+    const toObj = (v)=> {
+      if (v && typeof v === "object") return { done: !!v.done, time: v.time || "" };
+      return { done: String(v||"") === "✅", time:"" };
+    };
+
+    const s1 = toObj(raw.s1);
+    const s2 = toObj(raw.s2);
+    const s3 = toObj(raw.s3);
+    const doneCount = out.doneCount ?? ([s1.done,s2.done,s3.done].filter(Boolean).length);
+    return { s1, s2, s3, doneCount };
+  }
+
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
@@ -460,8 +523,6 @@
 
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
-
-    // audit
     payload.clientNow = new Date().toISOString();
     payload.tzOffsetMin = new Date().getTimezoneOffset();
 
@@ -480,15 +541,21 @@
         // popup
         window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย");
 
-        // reset form
-        form.reset();
+        // show boxes inside popup (best effort)
+        try{
+          const justSavedKey = normalizeSessionKey(payload.session);
+          const justSavedTime = hhmmNow();
+          const st = await fetchCheckStatus(payload.name, payload.logDate);
+          renderAfterSaveBoxesSafe({ ...st, justSavedKey, justSavedTime });
+        } catch(err){
+          console.warn("checkStatus error:", err);
+          hideAfterSaveGrid();
+        }
 
-        // rebuild date options (8 วัน)
+        form.reset();
         buildLogDateOptions7DaysNoPast();
 
-        // refresh หน้า หลัง popup หาย + 2 วิ
         setTimeout(() => location.reload(), window.__REFRESH_AFTER_MS__ || 4500);
-
       } else {
         msg.className = "msg bad";
         msg.textContent = "บันทึกไม่สำเร็จ ❌ " + (out.error || "unknown_error");
