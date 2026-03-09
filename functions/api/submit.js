@@ -10,33 +10,25 @@ export async function onRequestPost({ request, env }) {
 
     // ============================================================
     // Validation: "กันย้อนหลัง" + กันคนปรับเวลาเครื่องแบบทั่วไป
-    // - ใช้เวลา server (Cloudflare) เป็นหลัก
-    // - ยอมให้เวลาเครื่องผู้ใช้คลาดเคลื่อนจาก server ได้ไม่เกิน 10 นาที
-    // - logDate ต้องเท่ากับ "วันท้องถิ่น" ของผู้ใช้ ณ ตอนกดจริง (คำนวณจาก serverNow + tzOffsetMin)
-    //   เพื่อกันคนเลื่อนวันเวลาเครื่องไปวันเก่าแล้วกดบันทึก
     // ============================================================
     const DRIFT_MINUTES = 10;
     const MS_PER_MIN = 60 * 1000;
 
-    // 1) Validate tzOffsetMin
     const off = Number(tzOffsetMin);
     if (!Number.isFinite(off) || Math.abs(off) > 14 * 60) {
       return json({ ok:false, error:"bad_tzOffsetMin" }, 400);
     }
 
-    // 2) Validate logDate format (YYYY-MM-DD)
     const m = String(logDate).match(/^(\d{4})-(\d{2})-(\d{2})$/);
     if (!m) {
       return json({ ok:false, error:"bad_logDate_format" }, 400);
     }
 
-    // 3) Validate clientNow
     const clientMs = Date.parse(String(clientNow || ""));
     if (!Number.isFinite(clientMs)) {
       return json({ ok:false, error:"bad_clientNow" }, 400);
     }
 
-    // 4) Drift check: clientNow vs serverNow (Cloudflare)
     const serverMs = Date.now();
     const driftMs = Math.abs(serverMs - clientMs);
     if (driftMs > DRIFT_MINUTES * MS_PER_MIN) {
@@ -47,9 +39,8 @@ export async function onRequestPost({ request, env }) {
       }, 400);
     }
 
-    // Helper: convert UTC ms -> local date ISO by tz offset (same sign as JS getTimezoneOffset)
     const toLocalISODate = (utcMs, tzOffsetMin) => {
-      const localMs = utcMs - (tzOffsetMin * MS_PER_MIN); // UTC - offset => local
+      const localMs = utcMs - (tzOffsetMin * MS_PER_MIN);
       const d = new Date(localMs);
       const y = d.getUTCFullYear();
       const mo = String(d.getUTCMonth() + 1).padStart(2, "0");
@@ -57,7 +48,6 @@ export async function onRequestPost({ request, env }) {
       return `${y}-${mo}-${da}`;
     };
 
-    // 5) Must match "server local day" (prevents backdating by changing device clock)
     const serverLocalDay = toLocalISODate(serverMs, off);
     if (String(logDate) !== serverLocalDay) {
       return json({
@@ -67,7 +57,6 @@ export async function onRequestPost({ request, env }) {
       }, 400);
     }
 
-    // 6) Optional: also ensure clientNow implies same local day (extra sanity)
     const clientLocalDay = toLocalISODate(clientMs, off);
     if (String(logDate) !== clientLocalDay) {
       return json({
@@ -81,7 +70,7 @@ export async function onRequestPost({ request, env }) {
     const payload = {
       secret: env.SECRET,
       name,
-      logDate,         // YYYY-MM-DD (วันท้องถิ่นที่เลือก)
+      logDate,
       weekday: weekday || "",
       session,
       duration,
@@ -93,10 +82,29 @@ export async function onRequestPost({ request, env }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
+      redirect: "follow",
     });
 
+    // ✅ IMPORTANT: even if res.ok is false, try to return the JSON for debugging
     const out = await res.json().catch(() => ({}));
-    return json(out, res.ok ? 200 : 500);
+
+    // If GAS says ok:true -> treat as success (200) regardless of HTTP code
+    const success = !!(out && out.ok === true);
+
+    if (!success) {
+      return json(
+        {
+          ok: false,
+          error: out.error || "gas_failed",
+          gasHttpStatus: res.status,
+          gasResponse: out
+        },
+        500
+      );
+    }
+
+    return json(out, 200);
+
   } catch (e) {
     return json({ ok:false, error:String(e) }, 500);
   }
