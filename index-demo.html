@@ -538,22 +538,7 @@
     </span>`;
   }
 
-  
-  function normalizeCheckStatus(st){
-    // GAS checkStatus shape: { ok:true, doneCount, sessions:{s1:'✅'|'—',...}, times:{s1:'HH:mm',...} }
-    const done = (v)=> String(v||'') === '✅';
-    const times = (st && st.times) ? st.times : {};
-    return {
-      doneCount: Number(st && st.doneCount || 0),
-      sessions:{
-        s1:{ done: done(st && st.sessions && st.sessions.s1), time: times.s1 || "" },
-        s2:{ done: done(st && st.sessions && st.sessions.s2), time: times.s2 || "" },
-        s3:{ done: done(st && st.sessions && st.sessions.s3), time: times.s3 || "" },
-      }
-    };
-  }
-
-function renderAfterSaveBoxes({ s1, s2, s3, doneCount }){
+  function renderAfterSaveBoxes({ s1, s2, s3, doneCount }){
     showAfterSaveGrid();
 
     const setBox = (key, done) => {
@@ -577,17 +562,49 @@ function renderAfterSaveBoxes({ s1, s2, s3, doneCount }){
     if (sumEl) sumEl.textContent = `${doneCount}/3`;
   }
 
-  async function fetchCheckStatus(name, logDate){
+  
+  // Normalize status from either:
+  // - GAS submit returns: {status:{doneCount, sessions:{s1:{done,time},...}}}
+  // - GAS checkStatus returns: sessions:{s1:{mark:"✅",time:""},...}
+  // - legacy: sessions:{s1:"✅",...}
+  function normalizeStatusPayload(raw){
+    const empty = { doneCount:0, sessions:{ s1:{done:false}, s2:{done:false}, s3:{done:false} } };
+    if (!raw) return empty;
+
+    // If already in {doneCount, sessions:{s1:{done}}} form
+    if (raw.sessions && raw.sessions.s1 && typeof raw.sessions.s1 === "object" && ("done" in raw.sessions.s1)){
+      const s = raw.sessions;
+      const dc = (raw.doneCount != null) ? raw.doneCount : [s.s1.done,s.s2.done,s.s3.done].filter(Boolean).length;
+      return { doneCount: dc, sessions:{ s1:{done:!!s.s1.done}, s2:{done:!!s.s2.done}, s3:{done:!!s.s3.done} } };
+    }
+
+    // If GAS checkStatus returns sessions:{s1:{mark:"✅"}}
+    if (raw.sessions && raw.sessions.s1 && typeof raw.sessions.s1 === "object" && ("mark" in raw.sessions.s1)){
+      const s = raw.sessions;
+      const toDone = (x)=> String((x && x.mark) || "") === "✅";
+      const ss = { s1:{done:toDone(s.s1)}, s2:{done:toDone(s.s2)}, s3:{done:toDone(s.s3)} };
+      const dc = (raw.doneCount != null) ? raw.doneCount : [ss.s1.done,ss.s2.done,ss.s3.done].filter(Boolean).length;
+      return { doneCount: dc, sessions: ss };
+    }
+
+    // If legacy strings sessions:{s1:"✅"}
+    if (raw.sessions && typeof raw.sessions.s1 === "string"){
+      const toDone = (v)=> String(v||"") === "✅";
+      const ss = { s1:{done:toDone(raw.sessions.s1)}, s2:{done:toDone(raw.sessions.s2)}, s3:{done:toDone(raw.sessions.s3)} };
+      const dc = (raw.doneCount != null) ? raw.doneCount : [ss.s1.done,ss.s2.done,ss.s3.done].filter(Boolean).length;
+      return { doneCount: dc, sessions: ss };
+    }
+
+    return empty;
+  }
+
+async function fetchCheckStatus(name, logDate){
     const url = `/api/checkStatus?name=${encodeURIComponent(name)}&logDate=${encodeURIComponent(logDate)}`;
     const res = await fetch(url, { cache:"no-store" });
     const out = await res.json().catch(()=>({}));
     if (!res.ok || !out.ok) throw new Error(out.error || "checkStatus_failed");
-
-    const raw = out.sessions || {};
-    const toObj = (v)=> {
-      if (v && typeof v === "object") return { done: !!v.done };
-      return { done: String(v||"") === "✅" };
-    };
+    return normalizeStatusPayload(out);
+  };
 
     const s1 = toObj(raw.s1);
     const s2 = toObj(raw.s2);
@@ -623,26 +640,26 @@ function renderAfterSaveBoxes({ s1, s2, s3, doneCount }){
       });
       const out = await res.json().catch(() => ({}));
 
+      // Prefer status returned from submit (fast + cross-device)
+
       if (res.ok && out.ok) {
         msg.className = "msg ok";
         msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
 
         window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย");
 
-        // show marks instantly (prefer submit response), fallback to checkStatus if needed
-        const fastStatus = (out && out.status) ? out.status : null;
-        if (fastStatus && fastStatus.sessions){
-          renderAfterSaveBoxes(fastStatus);
-        } else {
-          try{
-            const st = await fetchCheckStatus(payload.name, payload.logDate);
-            // accept both shapes: {sessions:{s1:'✅',...}, times:{...}} OR {status:{...}}
-            if (st && st.status) renderAfterSaveBoxes(st.status);
-            else renderAfterSaveBoxes(normalizeCheckStatus(st));
-          } catch(err){
-            console.warn("checkStatus error:", err);
-            hideAfterSaveGrid();
-          }
+        // show marks: prefer submit response.status (fastest); fallback to checkStatus
+        try{
+          const st = out && out.status ? normalizeStatusPayload(out.status) : await fetchCheckStatus(payload.name, payload.logDate);
+          renderAfterSaveBoxes({ 
+            s1: st.sessions.s1, 
+            s2: st.sessions.s2, 
+            s3: st.sessions.s3, 
+            doneCount: st.doneCount 
+          });
+        } catch(err){
+          console.warn("status error:", err);
+          hideAfterSaveGrid();
         }
 
         form.reset();
