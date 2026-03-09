@@ -11,19 +11,33 @@
       --btn:#6aa9ff; --btnText:#081122; --danger:#ff6a6a; --ok:#65ffb3; --radius:18px;
 
       --overlay: rgba(0,0,0,.55);
+      --card-bg: rgba(40,52,62,.35);
       --card-border: rgba(255,255,255,.28);
       --green: #21b14b;
     }
 
     *{box-sizing:border-box}
-    body{ font-family:system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; background:var(--bg); color:var(--text) }
+    body{
+      font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+      margin:0;background:var(--bg);color:var(--text)
+    }
     .wrap{max-width:820px;margin:0 auto;padding:24px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
 
-    .headerCenter{ text-align:center; display:grid; gap:6px; margin-bottom:16px; }
+    /* ===== Header Center ===== */
+    .headerCenter{
+      text-align:center;
+      display:grid;
+      gap:6px;
+      margin-bottom:16px;
+    }
     h1{margin:0;font-size:22px}
     .muted{color:var(--muted);margin:0;line-height:1.55}
-    #weekHeader{ margin:0; color:rgba(234,240,255,.78); font-weight:800; }
+    #weekHeader{
+      margin:0;
+      color:rgba(234,240,255,.78);
+      font-weight:800;
+    }
 
     label{display:block;margin:12px 0 6px}
     select,input{
@@ -50,7 +64,13 @@
     .msg.ok{color:var(--ok)}
     .msg.bad{color:var(--danger)}
 
-    .small{ font-size:12px; color:var(--muted); margin-top:10px; text-align:center; }
+    /* หมายเหตุให้อยู่กลาง */
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:10px;
+      text-align:center;
+    }
 
     a.linkbtn{display:block;text-decoration:none}
     a.linkbtn button{
@@ -69,20 +89,32 @@
       background: var(--overlay);
       z-index: 9999;
     }
-    .success-overlay.is-open{ display: grid; animation: overlayIn .18s ease-out forwards; }
-    @keyframes overlayIn{ from { opacity: 0; } to { opacity: 1; } }
+    .success-overlay.is-open{
+      display: grid;
+      animation: overlayIn .18s ease-out forwards;
+    }
+    @keyframes overlayIn{
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
 
     .success-card{
-      width: min(560px, 90vw);
+      width: min(600px, 92vw);
       height: auto;
       border-radius: 10px;
-      background: linear-gradient(180deg, rgba(54, 74, 86, .35), rgba(25, 33, 41, .40));
+      background: linear-gradient(180deg,
+        rgba(54, 74, 86, .35),
+        rgba(25, 33, 41, .40)
+      );
       border: 1px solid var(--card-border);
-      box-shadow: 0 18px 55px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
+      box-shadow:
+        0 18px 55px rgba(0,0,0,.55),
+        inset 0 0 0 1px rgba(255,255,255,.05);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       position: relative;
       overflow: hidden;
+
       display: grid;
       place-items: center;
       padding: 22px 18px 18px;
@@ -90,7 +122,60 @@
       opacity: 0;
       animation: cardIn .22s ease-out forwards;
     }
-    @keyframes cardIn{ to { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes cardIn{
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .success-card::before{
+      content:"";
+      position:absolute;
+      top:-10px;
+      right: 80px;
+      width: 170px;
+      height: 18px;
+      background: radial-gradient(closest-side,
+        rgba(135, 200, 255, .95),
+        rgba(135, 200, 255, .25) 55%,
+        rgba(135, 200, 255, 0) 75%
+      );
+      filter: blur(1.2px);
+      opacity: .9;
+      pointer-events:none;
+    }
+    .success-card::after{
+      content:"";
+      position:absolute;
+      bottom:-10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 210px;
+      height: 20px;
+      background: radial-gradient(closest-side,
+        rgba(135, 200, 255, .85),
+        rgba(135, 200, 255, .25) 55%,
+        rgba(135, 200, 255, 0) 78%
+      );
+      filter: blur(1.4px);
+      opacity: .85;
+      pointer-events:none;
+    }
+
+    /* Close button (X) */
+    .success-close{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:36px;height:36px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(0,0,0,.18);
+      color:rgba(234,240,255,.9);
+      display:grid;place-items:center;
+      cursor:pointer;
+      box-shadow:0 10px 22px rgba(0,0,0,.25);
+    }
+    .success-close:hover{ background:rgba(255,255,255,.10); }
+    .success-close:active{ transform:scale(.98); }
 
     .success-content{
       text-align: center;
@@ -281,17 +366,20 @@
     </div>
   </div>
 
+  <!-- ===== Success Popup ===== -->
   <div id="successOverlay" class="success-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="success-card">
+      <button type="button" class="success-close" id="successClose" aria-label="ปิดหน้าต่าง">✕</button>
+
       <div class="success-content">
         <div class="success-icon" aria-hidden="true">
           <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
             <path d="M20 7L10.5 16.5L4 10" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
-
         <p id="successText" class="success-text">บันทึกข้อมูลเรียบร้อย</p>
 
+        <!-- After-save 3 boxes + summary -->
         <div id="afterSaveGrid" class="afterSaveGrid" hidden>
           <div class="sbox" id="boxS1">
             <div class="sboxTop"><span>ครั้งที่ 1</span><span class="sicon" id="iconS1">✕</span></div>
@@ -319,15 +407,21 @@
   </div>
 
 <script>
+  // =========================
+  // CONFIG (Option A)
+  // =========================
   const weekHeaderEl = document.getElementById("weekHeader");
+
   function pad2(n){ return String(n).padStart(2,"0"); }
   function toISODateLocal(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-  function thaiDateLabelLocal(d){ return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" }); }
+  function thaiDateLabelLocal(d){
+    return d.toLocaleDateString("th-TH", { day:"numeric", month:"short", year:"2-digit" });
+  }
 
   function mondayOfWeekLocal(d){
     const x = new Date(d);
     x.setHours(0,0,0,0);
-    const day = x.getDay();
+    const day = x.getDay(); // Sun=0
     const diff = (day === 0) ? -6 : (1 - day);
     x.setDate(x.getDate() + diff);
     return x;
@@ -346,6 +440,9 @@
     weekHeaderEl.textContent = `จันทร์ ${thaiDateLabelLocal(mon)} – อาทิตย์ ${thaiDateLabelLocal(sun)}`;
   })();
 
+  // =========================
+  // LogDate dropdown: 7 วัน (จันทร์-อาทิตย์ของสัปดาห์นี้)
+  // =========================
   const logDateEl = document.getElementById("logDate");
   const weekdayHiddenEl = document.getElementById("weekdayHidden");
   const TH_DOW = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัส","ศุกร์","เสาร์"];
@@ -376,6 +473,7 @@
       opt.textContent = label;
       opt.dataset.dow = dow;
 
+      // ไม่ให้เลือกวันย้อนหลัง/วันอนาคต
       if (iso < todayISO){
         opt.disabled = true;
         opt.textContent = `${label} (ผ่านมาแล้ว)`;
@@ -408,17 +506,25 @@
 
   buildLogDateOptions7DaysNoPast();
 
+  // =========================
+  // Success Popup (auto close + close button)
+  // =========================
   (function(){
     const overlay = document.getElementById('successOverlay');
     const textEl  = document.getElementById('successText');
     let autoTimer = null;
-    const POPUP_MS = 2500;
+
+    const POPUP_MS = 12000; // show longer (10–15s)
     const REFRESH_AFTER_MS = POPUP_MS + 2000;
 
     window.showSuccessPopup = function(message = 'บันทึกข้อมูลเรียบร้อย', autoCloseMs = POPUP_MS){
       textEl.textContent = message;
       overlay.classList.add('is-open');
       overlay.setAttribute('aria-hidden', 'false');
+
+      // reset status boxes until we load fresh status
+      try{ hideAfterSaveGrid(); }catch(e){}
+
       clearTimeout(autoTimer);
       autoTimer = setTimeout(window.hideSuccessPopup, autoCloseMs);
     };
@@ -428,6 +534,16 @@
       overlay.setAttribute('aria-hidden', 'true');
     };
 
+    // Close button
+    const closeBtn = document.getElementById('successClose');
+    if (closeBtn){
+      closeBtn.addEventListener('click', () => {
+        clearTimeout(autoTimer);
+        window.hideSuccessPopup();
+      });
+    }
+
+    // ESC closes
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') window.hideSuccessPopup();
     });
@@ -435,6 +551,9 @@
     window.__REFRESH_AFTER_MS__ = REFRESH_AFTER_MS;
   })();
 
+  // =========================
+  // After-save boxes helpers
+  // =========================
   function hhmmNow(){
     const d = new Date();
     return d.toLocaleTimeString("th-TH", { hour:"2-digit", minute:"2-digit", hour12:false });
@@ -448,13 +567,6 @@
     return "";
   }
 
-  function renderAfterSaveBoxes({ s1, s2, s3, doneCount, justSavedKey, justSavedTime }){
-    const grid = document.getElementById("afterSaveGrid");
-    if (!grid) return;
-    grid.hidden = False;
-  }
-
-  // fix: JS boolean must be lowercase true/false
   function showAfterSaveGrid(){
     const grid = document.getElementById("afterSaveGrid");
     if (grid) grid.hidden = false;
@@ -464,7 +576,7 @@
     if (grid) grid.hidden = true;
   }
 
-  function renderAfterSaveBoxesSafe({ s1, s2, s3, doneCount, justSavedKey, justSavedTime }){
+  function renderAfterSaveBoxes({ s1, s2, s3, doneCount, justSavedKey, justSavedTime }){
     showAfterSaveGrid();
 
     const setBox = (key, done, timeText) => {
@@ -480,6 +592,7 @@
       time.textContent = done ? (timeText || "—") : "—";
     };
 
+    // fallback: ถ้า API ไม่ส่งเวลา (ปัจจุบัน GAS มักส่งแค่ ✅/—) เราจะโชว์เวลาให้ “ครั้งที่เพิ่งบันทึก” แน่นอน
     const t1 = s1.time || (justSavedKey==="s1" ? justSavedTime : "");
     const t2 = s2.time || (justSavedKey==="s2" ? justSavedTime : "");
     const t3 = s3.time || (justSavedKey==="s3" ? justSavedTime : "");
@@ -499,6 +612,10 @@
     if (!res.ok || !out.ok) throw new Error(out.error || "checkStatus_failed");
 
     const raw = out.sessions || {};
+
+    // รองรับ 2 แบบ:
+    // A) เดิม: s1:"✅" / "—"
+    // B) แบบใหม่: s1:{done:true,time:"HH:mm"}
     const toObj = (v)=> {
       if (v && typeof v === "object") return { done: !!v.done, time: v.time || "" };
       return { done: String(v||"") === "✅", time:"" };
@@ -507,10 +624,13 @@
     const s1 = toObj(raw.s1);
     const s2 = toObj(raw.s2);
     const s3 = toObj(raw.s3);
-    const doneCount = out.doneCount ?? ([s1.done,s2.done,s3.done].filter(Boolean).length);
+    const doneCount = (out.doneCount != null) ? out.doneCount : ([s1.done,s2.done,s3.done].filter(Boolean).length);
     return { s1, s2, s3, doneCount };
   }
 
+  // =========================
+  // SUBMIT
+  // =========================
   const form = document.getElementById("f");
   const btn  = document.getElementById("btn");
   const msg  = document.getElementById("msg");
@@ -523,6 +643,8 @@
 
     const fd = new FormData(form);
     const payload = Object.fromEntries(fd.entries());
+
+    // audit
     payload.clientNow = new Date().toISOString();
     payload.tzOffsetMin = new Date().getTimezoneOffset();
 
@@ -538,24 +660,28 @@
         msg.className = "msg ok";
         msg.textContent = "บันทึกข้อมูลเรียบร้อย ✅";
 
-        // popup
+        // popup (เปิดก่อน)
         window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย");
 
-        // show boxes inside popup (best effort)
+        // เติมกล่องสถานะใน popup (ดึงจาก checkStatus)
         try{
           const justSavedKey = normalizeSessionKey(payload.session);
           const justSavedTime = hhmmNow();
           const st = await fetchCheckStatus(payload.name, payload.logDate);
-          renderAfterSaveBoxesSafe({ ...st, justSavedKey, justSavedTime });
+          renderAfterSaveBoxes({ ...st, justSavedKey, justSavedTime });
         } catch(err){
           console.warn("checkStatus error:", err);
+          // ถ้าดึงไม่ได้ ก็ซ่อนกล่องไป ไม่ให้ UI ดูพัง
           hideAfterSaveGrid();
         }
 
+        // reset form
         form.reset();
         buildLogDateOptions7DaysNoPast();
 
-        setTimeout(() => location.reload(), window.__REFRESH_AFTER_MS__ || 4500);
+        // refresh หลัง popup หาย + 2 วิ (ตามเดิม)
+        setTimeout(() => location.reload(), window.__REFRESH_AFTER_MS__ || 14000);
+
       } else {
         msg.className = "msg bad";
         msg.textContent = "บันทึกไม่สำเร็จ ❌ " + (out.error || "unknown_error");
