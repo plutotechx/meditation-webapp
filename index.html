@@ -223,7 +223,7 @@
           <option>ณัฐพล (ท๊อด)</option>
           <option>กิตติพงษ์ (พี)</option>
           <option>ธนพร (พร)</option>
-          <option>รายาวดี (เฟริน)</option>
+          <option>รายาวดี (เฝริน)</option>
           <option>บัญญัติ (บอย)</option>
           <option>ธีรพล (ต้อม)</option>
           <option>นริศ (เอ็กซ์)</option>
@@ -483,7 +483,20 @@
     }
   }
 
-  prefetchPromise = prefetchToday();
+  // เมื่อ prefetch เสร็จ → ถ้ามีชื่อเลือกอยู่แล้ว อัปเดต status อัตโนมัติ
+  prefetchPromise = prefetchToday().then(pc => {
+    if(pc && nameSel.value){
+      const name = nameSel.value.trim();
+      if(name){
+        const personData = pc.data[name];
+        showStatusResult(personData || {
+          doneCount: 0,
+          sessions: { s1:{mark:"—",time:""}, s2:{mark:"—",time:""}, s3:{mark:"—",time:""} }
+        });
+      }
+    }
+    return pc;
+  });
 
   // ===== SESSION DROPDOWN =====
   const sessionSel = document.getElementById("sessionSel");
@@ -560,7 +573,7 @@
 
     clearTimeout(allDoneTimer);
     if(doneCount === 3){
-      allDoneTimer = setTimeout(showAllDonePopup, 3000);
+      allDoneTimer = setTimeout(showAllDonePopup, 1000);
     }
   }
 
@@ -607,7 +620,7 @@
       return;
     }
 
-    const timeout = new Promise(r => setTimeout(() => r(null), 2000));
+    const timeout = new Promise(r => setTimeout(() => r(null), 5000));
     const pc = await Promise.race([prefetchPromise, timeout]);
 
     if (pc && pc.data && pc.date === logDate) {
@@ -635,7 +648,6 @@
     allDoneOverlay.setAttribute("aria-hidden","true");
   }
   allDoneCloseBtn.addEventListener("click", () => {
-    // แค่ปิด popup ไม่ reload, ไม่ welcome ซ้ำ
     hideAllDonePopup();
   });
 
@@ -644,7 +656,7 @@
     const overlay=document.getElementById("successOverlay");
     const textEl=document.getElementById("successText");
     let autoTimer=null;
-    const POPUP_MS=2500, REFRESH_AFTER_MS=4500;
+    const POPUP_MS=2500;
     window.showSuccessPopup=function(message="บันทึกข้อมูลเรียบร้อย",ms=POPUP_MS){
       textEl.textContent=message;
       overlay.classList.add("is-open");
@@ -658,7 +670,6 @@
     };
     document.addEventListener("keydown",(e)=>{if(e.key==="Escape")window.hideSuccessPopup();});
     window.__POPUP_MS__=POPUP_MS;
-    window.__REFRESH_AFTER_MS__=REFRESH_AFTER_MS;
   })();
 
   // ===== SUBMIT =====
@@ -682,15 +693,36 @@
         msg.className="msg ok";
         msg.textContent="บันทึกข้อมูลเรียบร้อย ✅";
         window.showSuccessPopup("บันทึกข้อมูลเรียบร้อย");
-        sessionStorage.setItem(SKIP_GREET_KEY, "1");
-        prefetchCache=null;
-        prefetchPromise=prefetchToday(true);
-        const selName=(nameSel.value||"").trim();
-        delete fallbackCache[selName+"|"+getTodayISO()];
+
+        // จำชื่อและ status จาก server response
+        const savedName = (nameSel.value || "").trim();
+        const savedStatus = out.status || null;
+
+        // อัปเดต prefetchCache ด้วย status ล่าสุดจาก server ทันที (ไม่ยิง API ใหม่)
+        if(savedStatus && savedName){
+          if(!prefetchCache) prefetchCache = { date: getTodayISO(), data: {} };
+          prefetchCache.data[savedName] = savedStatus;
+        }
+        delete fallbackCache[savedName + "|" + getTodayISO()];
+
+        // reset form
         form.reset();
         buildLogDateOptions();
-        hideStatus();
-        setTimeout(()=>location.reload(), window.__REFRESH_AFTER_MS__||4500);
+
+        // v2.7: re-select ชื่อเดิม + แสดง status จาก server response ทันที, dot คงเขียว
+        if(savedName && savedStatus){
+          nameSel.value = savedName;
+          showStatusResult(savedStatus);
+          setDot("ready"); // dot คงเขียวไว้ ไม่ต้องยิง API ใหม่
+        } else if(savedName && prefetchCache && prefetchCache.date === getTodayISO()){
+          nameSel.value = savedName;
+          showStatusResult(prefetchCache.data[savedName] || {
+            doneCount: 0,
+            sessions: { s1:{mark:"—",time:""}, s2:{mark:"—",time:""}, s3:{mark:"—",time:""} }
+          });
+          setDot("ready");
+        }
+
       } else {
         msg.className="msg bad";
         msg.textContent="บันทึกไม่สำเร็จ ❌ "+(out.error||"unknown_error");
