@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>รายงานสมาธิประจำวัน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Sarabun',system-ui,-apple-system,sans-serif;
+      background:#f0f4f8;
+      height:100dvh;
+      padding:8px 8px 8px;
+      color:#1a202c;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .page{
+      max-width:480px;
+      width:100%;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      flex:1;
+      min-height:0;
+    }
+
+    /* ===== Header card ===== */
+    .header{
+      background:linear-gradient(135deg,#1a56db 0%,#3b82f6 50%,#60a5fa 100%);
+      border-radius:12px;
+      padding:8px 12px;
+      color:#fff;
+      margin-bottom:6px;
+      box-shadow:0 3px 12px rgba(37,99,235,.25);
+      flex:0 0 auto;
+    }
+    .header-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .header-logo{
+      font-size:14px;
+      font-weight:800;
+    }
+    .header-badge{
+      background:rgba(255,255,255,.20);
+      border:1px solid rgba(255,255,255,.30);
+      border-radius:999px;
+      padding:2px 8px;
+      font-size:11px;
+      font-weight:700;
+    }
+    .header-date-sm{
+      font-size:12px;
+      font-weight:700;
+      opacity:.90;
+      white-space:nowrap;
+    }
+    .btn-refresh-sm{
+      background:rgba(255,255,255,.20);
+      border:1px solid rgba(255,255,255,.30);
+      border-radius:999px;
+      width:24px;height:24px;
+      display:grid;place-items:center;
+      cursor:pointer;
+      color:#fff;
+      flex:0 0 auto;
+    }
+    .btn-refresh-sm:hover{background:rgba(255,255,255,.30)}
+
+    /* ===== Section cards ===== */
+    .section{
+      background:#fff;
+      border-radius:12px;
+      padding:8px 10px;
+      margin-bottom:6px;
+      box-shadow:0 1px 4px rgba(0,0,0,.08);
+      border:1px solid #e2e8f0;
+      flex:0 0 auto;
+    }
+    .section.grow{
+      flex:1;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+    .section-header{
+      display:flex;
+      align-items:center;
+      gap:7px;
+      margin-bottom:6px;
+      flex:0 0 auto;
+    }
+    .section-icon{
+      width:26px;height:26px;
+      border-radius:8px;
+      display:grid;place-items:center;
+      font-size:13px;
+      flex:0 0 auto;
+    }
+    .icon-green{ background:#dcfce7; }
+    .icon-amber{ background:#fef9c3; }
+    .icon-red{   background:#fee2e2; }
+
+    .section-title{
+      font-size:13px;
+      font-weight:800;
+      line-height:1.2;
+    }
+    .section-sub{
+      font-size:10px;
+      color:#64748b;
+      font-weight:600;
+    }
+    .section-count{
+      margin-left:auto;
+      font-size:12px;
+      font-weight:800;
+      padding:2px 8px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+    .count-green{ background:#dcfce7; color:#166534; }
+    .count-amber{ background:#fef9c3; color:#854d0e; }
+    .count-red{   background:#fee2e2; color:#991b1b; }
+
+    /* 3-column grid for names */
+    .name-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:3px;
+      overflow:hidden;
+    }
+    .name-grid.grow-grid{
+      flex:1;
+      align-content:start;
+    }
+    .name-chip{
+      font-size:11px;
+      font-weight:700;
+      padding:3px 6px;
+      border-radius:6px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      text-align:center;
+    }
+    .chip-green{ background:#dcfce7; color:#166534; }
+    .chip-amber{ background:#fef9c3; color:#713f12; }
+    .chip-red{   background:#fee2e2; color:#991b1b; }
+    .chip-empty{
+      font-size:12px;
+      font-weight:600;
+      color:#94a3b8;
+      font-style:italic;
+      grid-column:1/-1;
+    }
+
+    /* ===== Loading ===== */
+    .loading{
+      text-align:center;
+      padding:24px 0;
+      color:#64748b;
+      font-size:14px;
+      font-weight:600;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+    .loading .spin{
+      width:24px;height:24px;
+      border:3px solid #e2e8f0;
+      border-top-color:#3b82f6;
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+      margin-bottom:8px;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-top">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1">
+        <div class="header-logo">🧘 สมาธิประจำวัน</div>
+        <span class="header-date-sm" id="hDate">—</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex:0 0 auto">
+        <button class="btn-refresh-sm" id="btnRefresh" onclick="load()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="content" style="display:contents">
+    <div class="loading">
+      <div class="spin"></div><br>กำลังโหลดข้อมูล...
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+  // ===== Utils =====
+  function escHtml(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) }
+
+  function getTodayISO(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function thaiDate(iso){
+    const [y,m,d] = iso.split('-').map(Number);
+    const months = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    const days   = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+    const dt = new Date(y, m-1, d);
+    return { day: days[dt.getDay()], d: d, month: months[m-1], be: y+543 };
+  }
+
+  function nowHHmm(){
+    const d = new Date();
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} น.`;
+  }
+
+  // ===== Render =====
+  function render(out){
+    const todayISO = getTodayISO();
+    const td = thaiDate(todayISO);
+    const people = out.people || [];
+    const total  = people.length;
+
+    // Categorise by today's count — 3 groups
+    const gDone=[], gPartial=[], gNone=[];
+    for(const p of people){
+      const perDay = Array.isArray(p.perDay)?p.perDay:[];
+      const d = perDay.find(x=>String(x.dateISO||'')===todayISO);
+      const cnt = d ? Number(d.count||0) : 0;
+      if(cnt>=3) gDone.push(p.name);
+      else if(cnt>0) gPartial.push(p.name);
+      else gNone.push(p.name);
+    }
+
+    const thSort = (a,b)=>String(a).localeCompare(String(b),'th');
+    gDone.sort(thSort);
+    gPartial.sort(thSort);
+    gNone.sort(thSort);
+
+    // Header
+    document.getElementById('hDate').textContent = `${td.d} ${td.month} ${td.be}`;
+
+    // Content
+    const chips = (arr, cls) =>
+      arr.length
+        ? arr.map(n=>`<span class="name-chip ${cls}">${escHtml(n)}</span>`).join('')
+        : `<span class="chip-empty">— ไม่มี —</span>`;
+
+    document.getElementById('content').innerHTML = `
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-green">✅</div>
+          <div>
+            <div class="section-title">ทำครบแล้ว</div>
+            <div class="section-sub">ครบ 3/3 ครั้ง</div>
+          </div>
+          <span class="section-count count-green">${gDone.length} คน</span>
+        </div>
+        <div class="name-grid">${chips(gDone,'chip-green')}</div>
+      </div>
+
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon icon-amber">🕐</div>
+          <div>
+            <div class="section-title">ทำแล้ว 1–2 ครั้ง</div>
+            <div class="section-sub">ยังไม่ครบ 3 ครั้ง</div>
+          </div>
+          <span class="section-count count-amber">${gPartial.length} คน</span>
+        </div>
+        <div class="name-grid">${chips(gPartial,'chip-amber')}</div>
+      </div>
+
+      <div class="section grow">
+        <div class="section-header">
+          <div class="section-icon icon-red">❌</div>
+          <div>
+            <div class="section-title">ยังไม่ได้ทำเลย</div>
+            <div class="section-sub">0/3 ครั้ง</div>
+          </div>
+          <span class="section-count count-red">${gNone.length} คน</span>
+        </div>
+        <div class="name-grid grow-grid">${chips(gNone,'chip-red')}</div>
+      </div>
+    `;
+  }
+
+  // ===== Fetch =====
+  let inFlight = false;
+  let retryTimer = null;
+
+  async function load(){
+    if(inFlight) return;
+    inFlight = true;
+    if(retryTimer){ clearTimeout(retryTimer); retryTimer = null; }
+    const btn = document.getElementById('btnRefresh');
+    if(btn) btn.disabled = true;
+    document.getElementById('content').innerHTML =
+      `<div class="loading"><div class="spin"></div><br>กำลังโหลดข้อมูล...</div>`;
+
+    try{
+      const res = await fetch('/api/dashboard?weekOffset=0', { cache:'no-store' });
+      const out = await res.json().catch(()=>({}));
+      if(!res.ok || !out.ok){
+        const isTimeout = /timeout|gas_timeout/i.test(out.error || '');
+        if(isTimeout){
+          document.getElementById('content').innerHTML =
+            `<div class="loading"><div class="spin"></div><br>กำลังโหลด — รอสักครู่...</div>`;
+          retryTimer = setTimeout(()=>{ retryTimer=null; load(); }, 5_000);
+        } else {
+          document.getElementById('content').innerHTML =
+            `<div class="loading" style="color:#ef4444">โหลดไม่สำเร็จ — กดรีเฟรชเพื่อลองใหม่</div>`;
+        }
+        return;
+      }
+      render(out, false);
+    }catch(e){
+      document.getElementById('content').innerHTML =
+        `<div class="loading"><div class="spin"></div><br>กำลังโหลด — รอสักครู่...</div>`;
+      retryTimer = setTimeout(()=>{ retryTimer=null; load(); }, 5_000);
+    }finally{
+      inFlight = false;
+      if(btn) btn.disabled = false;
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
