@@ -54,22 +54,36 @@
       gap: 8px; padding: 4px 0 10px;
     }
     @media(max-width:559px){ .status-boxes{ grid-template-columns: repeat(2,1fr); } }
+    @media(min-width:760px){ .status-boxes{ gap:12px; } }
     .sbox{
-      border-radius: 14px; border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18); padding: 10px 8px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 6px; text-align: center; min-height: 86px;
+      border-radius:16px; border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.18); padding:14px 12px;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:12px; text-align:center; min-height:122px;
+      box-shadow:0 14px 40px rgba(0,0,0,.25);
     }
-    .sbox.ok{ background: linear-gradient(180deg, var(--tint-ok), rgba(0,0,0,.14)); border-color: var(--tint-border-ok); }
-    .sbox.bad{ background: linear-gradient(180deg, var(--tint-bad), rgba(0,0,0,.14)); border-color: var(--tint-border-bad); }
-    .sbox.loading{ background: rgba(255,255,255,.04); border-color: rgba(255,255,255,.08); }
-    .sbox-title{font-size:12px;font-weight:800;color:rgba(234,240,255,.85);letter-spacing:.2px;}
-    .sbox-time{font-size:11px;font-weight:700;color:rgba(234,240,255,.6);}
-    .sbox-sum-count{font-size:26px;font-weight:1000;line-height:1;color:rgba(234,240,255,.95);}
-    .sbox-sum-count.all{color:var(--ok);}
-    .sbox-sum-count.none{color:var(--danger);}
-    .sbox-sum-label{font-size:11px;font-weight:700;color:rgba(234,240,255,.6);}
+    .sbox.ok{ background:linear-gradient(180deg,var(--tint-ok),rgba(0,0,0,.14)); border-color:var(--tint-border-ok); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(101,255,179,.1); }
+    .sbox.bad{ background:linear-gradient(180deg,var(--tint-bad),rgba(0,0,0,.14)); border-color:var(--tint-border-bad); box-shadow:0 8px 30px rgba(0,0,0,.2),0 0 24px rgba(255,106,106,.1); }
+    .sbox.loading{ background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.08); }
+    .sbox-title-row{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; }
+    .sbox-title{ font-weight:1000; color:rgba(234,240,255,.96); font-size:18px; letter-spacing:.2px; line-height:1.1; }
+    .sbox-badge{ width:30px;height:30px;border-radius:999px; border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.06); display:flex;align-items:center;justify-content:center; flex-shrink:0; }
+    .sbox-badge.ok{ border-color:rgba(101,255,179,.44); background:rgba(101,255,179,.14); }
+    .sbox-badge.bad{ border-color:rgba(255,106,106,.44); background:rgba(255,106,106,.14); }
+    .sbox-divider{ width:76%; height:1px; background:rgba(255,255,255,.14); display:block; }
+    .sbox-time{ font-weight:1100; font-size:26px; letter-spacing:.2px; line-height:1; }
+    .sbox-time.muted{ color:rgba(234,240,255,.55); font-weight:900; }
+    @media(min-width:760px){
+      .sbox{ min-height:140px; padding:18px 14px; }
+      .sbox-title{ font-size:20px; }
+      .sbox-badge{ width:34px; height:34px; }
+      .sbox-time{ font-size:30px; }
+    }
+    .sbox-sum-count{ font-size:40px; font-weight:1200; line-height:1; color:rgba(234,240,255,.96); }
+    .sbox-sum-count.all{ color:var(--ok); }
+    .sbox-sum-count.none{ color:var(--danger); }
+    @media(min-width:760px){ .sbox-sum-count{ font-size:50px; } }
 
     /* prefetch dot */
     #prefetchDot{
@@ -569,13 +583,21 @@
     function box(title,st){
       const ok=isDone(st), cls=ok?"ok":"bad";
       const icon=ok
-        ?`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20 7L10.5 16.5L4 10" stroke="#65ffb3" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
-        :`<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#ff6a6a" stroke-width="2.8" stroke-linecap="round"/></svg>`;
-      const timeStr=(st.time&&st.time!=="—")?`<div class="sbox-time">${st.time} น.</div>`:`<div class="sbox-time">—</div>`;
-      return `<div class="sbox ${cls}"><div class="sbox-title">${title}</div>${icon}${timeStr}</div>`;
+        ?`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 7L10.5 16.5L4 10" stroke="#65ffb3" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+        :`<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#ff6a6a" stroke-width="2.8" stroke-linecap="round"/></svg>`;
+      const timeStr=(st.time&&st.time!=="—")?`${st.time} น.`:`—`;
+      const timeCls=timeStr==="—"?"sbox-time muted":"sbox-time";
+      return `<div class="sbox ${cls}">
+        <div class="sbox-title-row">
+          <div class="sbox-title">${title}</div>
+          <div class="sbox-badge ${cls}">${icon}</div>
+        </div>
+        <div class="sbox-divider"></div>
+        <div class="${timeCls}">${timeStr}</div>
+      </div>`;
     }
     const sumCls=doneCount===3?"all":doneCount===0?"none":"";
-    const sumBox=`<div class="sbox"><div class="sbox-title">สรุป</div><div class="sbox-sum-count ${sumCls}">${doneCount}/3</div><div class="sbox-sum-label">${doneCount===3?"ครบแล้ว!":doneCount===0?"ยังไม่มี":"กำลังดี"}</div></div>`;
+    const sumBox=`<div class="sbox"><div class="sbox-title">สรุป</div><div class="sbox-sum-count ${sumCls}">${doneCount}/3</div></div>`;
     statusBoxes.innerHTML=box("ครั้งที่ 1",s1)+box("ครั้งที่ 2",s2)+box("ครั้งที่ 3",s3)+sumBox;
     statusBar.classList.add("visible");
 
